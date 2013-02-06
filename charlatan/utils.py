@@ -10,7 +10,7 @@ def apply_delta(dt, delta):
     :param datetime dt:
     :param str delta:
 
-    :rtype datetime:
+    :rtype: :py:class:`datetime.DateTime` instance
 
     >>> base = datetime.datetime(2012, 1, 1, 1, 1, 1)
     >>> apply_delta(base, "+1h")

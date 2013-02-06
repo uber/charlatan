@@ -42,7 +42,7 @@ def configure_yaml():
         """Return the current datetime."""
 
         delta = loader.construct_scalar(node)
-        now = datetime.utcnow()
+        now = datetime.datetime.utcnow()
 
         if delta:
             now = apply_delta(now, delta)

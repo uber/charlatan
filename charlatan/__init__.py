@@ -1,5 +1,10 @@
 # flake8: noqa
 
-__version__ = "0.1"
+from charlatan.fixtures_manager import FIXTURES_MANAGER as fixtures_manager
+from charlatan.fixtures_manager import FixturesManagerMixin
+from charlatan import utils
 
-from charlatan.fixtures_manager import FixturesManager
+
+# Shortcuts
+load = fixtures_manager.load
+set_hook = fixtures_manager.set_hook

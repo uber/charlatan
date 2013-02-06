@@ -1,0 +1,20 @@
+toaster:
+  fields:
+    brand: Flying
+    number_of_toasts: 2
+    toasts: [!rel toast1, !rel toast2]
+    bought: !now -1y
+  model: Toaster
+toast1:
+  fields:
+    bread: brioche
+  model: .toast:Toast
+toast2:
+  fields:
+    bread: campagne
+  model: .toast:Toast
+user:
+  fields:
+    name: Michel Audiard
+    toaster: !rel toaster
+  model: toaster.models.user:User

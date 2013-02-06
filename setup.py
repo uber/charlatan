@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-from charlatan import __version__ as version
-
-__VERSION__ = version
+__version__ = "0.1"
 
 
 def read_long_description(filename="README.rst"):
@@ -17,7 +15,7 @@ def read_requirements(filename="requirements.txt"):
 
 setup(
     name="charlatan",
-    version=__VERSION__,
+    version=__version__,
     author="Charles-Axel Dein",
     author_email="charles@uber.com",
     url="https://github.com/uber/charlatan",

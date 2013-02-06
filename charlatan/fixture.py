@@ -5,6 +5,22 @@ import importlib
 from charlatan.file_format import RelationshipToken
 
 
+def get_class(module, klass):
+    """Return a class object.
+
+    :param str module: module path
+    :param str klass: class name
+    """
+
+    try:
+        object_module = importlib.import_module(module)
+        cls = getattr(object_module, klass)
+    except ImportError:
+        raise ImportError("Unable to import %s:%s" % (module, klass))
+
+    return cls
+
+
 class Fixture(object):
     """Represent a fixture that can be installed."""
 
@@ -12,7 +28,8 @@ class Fixture(object):
                  post_creation=None, id_=None):
         """Create a Fixture object.
 
-        :param str model: model used to instantiate the fixture
+        :param str model: model used to instantiate the fixture, e.g.
+            "yourlib.toaster:Toaster".
         :param dict fields: args to be provided when instantiating the fixture
         :param fixture_manager: FixtureManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
@@ -23,7 +40,7 @@ class Fixture(object):
                 "Cannot provide both id and fields to create fixture.")
 
         self.key = key
-        self.model = model
+        self.model_name = model
         self.fields = fields or {}
         self.fixture_manager = fixture_manager
         self.post_creation = post_creation
@@ -64,15 +81,28 @@ class Fixture(object):
     def get_class(self):
         """Return class object for this instance."""
 
+        root_models_package = self.fixture_manager.models_package
+
+        # If model_name starts with a lowercase, then it's an absolute
+        # import, e.g. "yourlib.toaster:Toaster"
+        if self.model_name[0].islower():
+            module, klass = self.model_name.split(":")
+            return get_class(module, klass)
+
+        # Relative path, e.g. ".toaster:Toaster"
+        if self.model_name[0] == ".":
+            module, klass = self.model_name.split(":")
+            module = root_models_package + module
+            return get_class(module, klass)
+
+        # Class alone, e.g. "Toaster". Trying to import from e.g.
+        # yourlib.toaster:Toaster
         module = "{models_package}.{model}".format(
-            models_package=self.fixture_manager.models_package,
-            model=self.model.lower())
-        class_string = self.model
+            models_package=root_models_package,
+            model=self.model_name.lower())
+        klass = self.model_name
 
-        object_module = importlib.import_module(module)
-        object_class = getattr(object_module, class_string)
-
-        return object_class
+        return get_class(module, klass)
 
     def _process_relationships(self, fields, remove=False):
         """Create any relationship if needed.

@@ -123,7 +123,8 @@ class FixturesManager(object):
         :rtype: list of (:data:`fixture_key`, :data:`fixture_instance`) tuples.
         """
 
-        return self.install(self.fixtures.keys(), do_not_save=True,
+        return self.install(self.fixtures.keys(),
+                            do_not_save=do_not_save,
                             include_relationships=include_relationships)
 
     def get_fixture(self, fixture_key, include_relationships=True):

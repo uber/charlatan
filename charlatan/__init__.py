@@ -10,3 +10,4 @@ from charlatan import utils
 # Shortcuts
 load = fixtures_manager.load
 set_hook = fixtures_manager.set_hook
+install_all_fixtures = fixtures_manager.install_all_fixtures

@@ -1,4 +1,5 @@
 import datetime
+import functools
 import itertools
 import operator
 import re
@@ -96,3 +97,21 @@ def extended_timedelta(**kwargs):
         kwargs["days"] = kwargs.setdefault("days", 0) + add
 
     return datetime.timedelta(**kwargs)
+
+# TODO: does not copy the function signature
+# see http://stackoverflow.com/questions/2982974/copy-call-signature-to-decorator
+
+
+def copy_docstring_from(klass):
+    """Copy docstring from another class, using the same function name."""
+
+    def wrapper(func):
+        func.__doc__ = getattr(klass, func.__name__).__doc__
+
+        @functools.wraps(func)
+        def wrapped(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return wrapped
+
+    return wrapper

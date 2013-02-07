@@ -5,13 +5,33 @@ Quickstart
 Setting up your tests
 ---------------------
 
-There are two steps:
 
-1. Making sure your test class inherits from :py:class:`charlatan.FixturesManagerMixin`.
-2. Calling :py:meth:`charlatan.FixturesManagerMixin.load_fixtures` with the right arguments.
+You first need to load a fixtures file (do it once for the whole test suite)
+with :py:meth:`charlatan.FixturesManager.load`:
 
-.. include:: examples/testcase_with_fixtures.py
-    :code: python
+.. code-block:: python
+
+    import charlatan
+    charlatan.load("./tests/data/fixtures.yaml"
+                   db_session=Session,
+                   models_package="toaster.models")
+
+
+`Charlatan` works best when used with :py:class:`unittest.TestCase`. Your test
+class needs to inherits from :py:class:`charlatan.FixturesManagerMixin`.
+
+`Charlatan` uses an internal cache to store fixtures instance (in particular to
+create relationships). If you are resetting your database after each tests
+(using transactions or by manually truncating all tables), you need to clean
+the cache either in :py:meth:`TestCase.setUp`, otherwise `Charlatan` will try
+accessing objects that are not anymore in the sqlalchemy session.
+
+.. code-block:: python
+
+    class TestToaster(unittest.TestCase, charlatan.FixturesManagerMixin):
+
+        def setUp(self):
+            self.clean_fixtures_cache()
 
 
 Defining fixtures
@@ -40,19 +60,6 @@ Using fixtures
 --------------
 
 There are multiple ways to require and use fixtures.
-
-For each tests, in class attribute
-""""""""""""""""""""""""""""""""""
-
-.. code-block:: python
-
-    class MyTest(FixturesMixin):
-        fixtures = ("toaster", )
-
-        def test_stuff(self):
-            self.toaster.toast()
-            ...
-
 
 For each tests, in setUp
 """"""""""""""""""""""""
@@ -89,7 +96,6 @@ without saving it nor attaching it to the test class:
         def test_toaster(self):
             self.toaster = self.get_fixture("toaster")
             self.toaster.brand = "Flying"
-            ...
             self.toaster.save()
 
 

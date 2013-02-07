@@ -19,8 +19,10 @@ def clean():
 
 
 @task
-def doc(builder="html"):
+def doc():
     """Generate documentation."""
 
     with lcd("docs"):
-        local("make " + builder)
+        local("make html BUILDIR=../../charlatan-docs")
+
+    print green("Don't forget to push the changes to the gh-pages branch.")

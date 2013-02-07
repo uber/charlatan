@@ -16,6 +16,13 @@ FixturesManagerMixin
     :members:
 
 
+Fixture
+-------
+
+.. autoclass:: charlatan.Fixture
+    :members:
+
+
 Utils
 -----
 

@@ -2,6 +2,7 @@ import yaml
 
 from charlatan.file_format import configure_yaml
 from charlatan.fixture import Fixture
+from charlatan.utils import copy_docstring_from
 
 
 # TODO: refactor so that the Mixin and the class are less coupled and
@@ -46,7 +47,7 @@ class FixturesManager(object):
         """Pre-load the fixtures.
 
         :param str filename: file that holds the fixture data
-        :param Session session: sqlalchemy Session object
+        :param Session db_session: sqlalchemy Session object
         :param str models_package: package holding the models definition
 
         Note that this does not effectively instantiate anything. It just does
@@ -104,7 +105,15 @@ class FixturesManager(object):
 
     def install_fixture(self, fixture_key, do_not_save=False,
                         include_relationships=True):
-        """Install a fixture."""
+        """Install a fixture.
+
+        :param str fixture_key:
+        :param bool do_not_save: True if fixture should not be saved.
+        :param bool include_relationships: False if relationships should be
+            removed.
+
+        :rtype: :data:`fixture_instance`
+        """
 
         instance = self.get_fixture(fixture_key,
                                     include_relationships=include_relationships)
@@ -118,24 +127,24 @@ class FixturesManager(object):
 
         return instance
 
-    def install_fixtures(self, fixtures_keys, do_not_save=False,
+    def install_fixtures(self, fixture_keys, do_not_save=False,
                          include_relationships=True):
         """Install a list of fixtures.
 
         :param fixture_keys: fixtures to be installed
         :type fixture_keys: str or list of strs
-        :param boolean do_not_save: true if fixture should not be saved
-        :param boolean include_relationships: false if relationships should be
+        :param bool do_not_save: True if fixture should not be saved.
+        :param bool include_relationships: False if relationships should be
             removed.
 
-        :rtype: list of (:data:`fixture_key`, :data:`fixture_instance`) tuples.
+        :rtype: list of :data:`fixture_instance`
         """
 
-        if isinstance(fixtures_keys, basestring):
-            fixtures_keys = (fixtures_keys, )
+        if isinstance(fixture_keys, basestring):
+            fixture_keys = (fixture_keys, )
 
         instances = []
-        for f in fixtures_keys:
+        for f in fixture_keys:
             instances.append(self.install_fixture(
                 f,
                 do_not_save=do_not_save,
@@ -143,14 +152,15 @@ class FixturesManager(object):
 
         return instances
 
-    def install_all(self, do_not_save=False, include_relationships=True):
+    def install_all_fixtures(self, do_not_save=False,
+                             include_relationships=True):
         """Install all fixtures.
 
-        :param boolean do_not_save: true if fixture should not be saved
-        :param boolean include_relationships: false if relationships should be
+        :param bool do_not_save: True if fixture should not be saved.
+        :param bool include_relationships: False if relationships should be
             removed.
 
-        :rtype: list of (:data:`fixture_key`, :data:`fixture_instance`) tuples.
+        :rtype: list of :data:`fixture_instance`
         """
 
         return self.install_fixtures(self.fixtures.keys(),
@@ -160,10 +170,11 @@ class FixturesManager(object):
     def get_fixture(self, fixture_key, include_relationships=True):
         """Return a fixture instance (but do not save it).
 
-        :param boolean include_relationships: false if relationships should be
+        :param str fixture_key:
+        :param bool include_relationships: False if relationships should be
             removed.
 
-        :rtype: instantiated fixture
+        :rtype: instantiated but unsaved fixture
         """
 
         if not fixture_key in self.fixtures:
@@ -180,9 +191,16 @@ class FixturesManager(object):
         else:
             return self.cache[fixture_key]
 
-    def get_fixtures(self, fixtures_key):
-        """Return a list of fixtures instances."""
-        return [self.get_fixture(f) for f in fixtures_key]
+    def get_fixtures(self, fixture_keys, include_relationships=True):
+        """Return a list of fixtures instances.
+
+        :param iterable fixture_keys:
+        :param bool include_relationships: False if relationships should be
+            removed.
+
+        :rtype: list of instantiated but unsaved fixtures
+        """
+        return [self.get_fixture(f, include_relationships=include_relationships) for f in fixture_keys]
 
     def _get_hook(self, hook_name):
         """Return a hook."""
@@ -212,30 +230,48 @@ class FixturesManagerMixin(object):
 
     """Class from which test cases should inherit to use fixtures."""
 
-    def get_fixture(self, fixture_key):
-        return FIXTURES_MANAGER.get_fixture(fixture_key)
+    @copy_docstring_from(FixturesManager)
+    def get_fixture(self, fixture_key, include_relationships=True):
+        return FIXTURES_MANAGER.get_fixture(
+            fixture_key,
+            include_relationships=include_relationships)
 
-    def get_fixtures(self, fixtures_key):
-        return FIXTURES_MANAGER.get_fixtures(fixtures_key)
+    @copy_docstring_from(FixturesManager)
+    def get_fixtures(self, fixture_keys, include_relationships=True):
+        return FIXTURES_MANAGER.get_fixtures(fixture_keys)
 
-    def install_fixture(self, fixture_key, do_not_save=False):
-        instance = FIXTURES_MANAGER.install_fixture(fixture_key,
-                                                    do_not_save=do_not_save)
+    @copy_docstring_from(FixturesManager)
+    def install_fixture(self, fixture_key, do_not_save=False,
+                        include_relationships=True):
+
+        instance = FIXTURES_MANAGER.install_fixture(
+            fixture_key,
+            do_not_save=do_not_save,
+            include_relationships=include_relationships)
+
         setattr(self, fixture_key, instance)
         return instance
 
-    def install_fixtures(self, fixtures_key, do_not_save=False):
+    @copy_docstring_from(FixturesManager)
+    def install_fixtures(self, fixture_keys, do_not_save=False,
+                         include_relationships=True):
 
         # Let's be forgiving
-        if isinstance(fixtures_key, basestring):
-            fixtures_key = (fixtures_key, )
+        if isinstance(fixture_keys, basestring):
+            fixture_keys = (fixture_keys, )
 
-        for f in fixtures_key:
-            self.install_fixture(f, do_not_save=do_not_save)
+        for f in fixture_keys:
+            self.install_fixture(f,
+                                 do_not_save=do_not_save,
+                                 include_relationships=include_relationships)
 
-    def install_all_fixtures(self, do_not_save=False):
+    @copy_docstring_from(FixturesManager)
+    def install_all_fixtures(self, do_not_save=False,
+                             include_relationships=True):
         self.install_fixtures(FIXTURES_MANAGER.fixtures.keys(),
-                              do_not_save=do_not_save)
+                              do_not_save=do_not_save,
+                              include_relationships=include_relationships)
 
     def clean_fixtures_cache(self):
+        """Clean the cache."""
         FIXTURES_MANAGER.clean_cache()

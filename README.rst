@@ -8,50 +8,45 @@ far as even though it's designed to work out of the box with SQLAlchemy models,
 it can work with pretty much anything else.
 
 
+Documentation
+-------------
+
+
+Documentation is available at http://uber.github.com/charlatan/
+
+
 Getting started
-^^^^^^^^^^^^^^^
+---------------
 
 .. code-block:: python
 
-    from charlatan import FixtureManager
+    import unittest
 
-    fixture_manager = FixtureManager("./tests/data/fixtures.yaml")
+    from toaster.models import db_session
 
+    import charlatan
 
-    def run_test():
-        """Verify that the toaster is working."""
-
-        global fixture_manager
-        toaster = fixture_manager.install_fixture("toaster")
-        assert toaster.toast() == "toasting..."
+    charlatan.load_file("./tests/data/fixtures.yaml",
+                        models_package="toaster.models",
+                        db_session=db_session)
 
 
-Obviously, most of the time you would be wrapping your tests inside a
-``TestCase`` class:
+    class TestToaster(unittest.TestCase, charlatan.FixturesManagerMixin):
 
+        def setUp(self):
+            self.clean_fixtures_cache()
+            self.install_fixtures(("toaster", "user"))
 
-.. code-block:: python
+        def test_toaster(self):
+            """Verify that toaster can toast."""
 
-    from charlatan import FixtureManager
-
-    fixture_manager = FixtureManager("./tests/data/fixtures.yaml")
-
-
-    def run_test():
-        """Verify that the toaster is working."""
-
-        global fixture_manager
-        toaster = fixture_manager.install_fixture("toaster")
-        assert toaster.toast() == "toasting..."
+            self.toaster.toast()
 
 
 Installation
-^^^^^^^^^^^^
+------------
 
 For now, you need to install `charlatan` by adding the following to your
-``requirements.txt``:
+``requirements.txt``::
 
-.. code
-
-
-############################## RENDULA
+    -e git+git@github.com:uber/charlatan.git#egg=charlatan

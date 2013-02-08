@@ -103,6 +103,14 @@ class FixturesManager(object):
         """Clean the cache."""
         self.cache = {}
 
+    def save_instance(self, instance):
+        """Save a fixture instance using SQLAlchemy session."""
+
+        self._get_hook("before_save")(instance)
+        self.session.add(instance)
+        self.session.commit()
+        self._get_hook("after_save")(instance)
+
     def install_fixture(self, fixture_key, do_not_save=False,
                         include_relationships=True):
         """Install a fixture.
@@ -115,17 +123,23 @@ class FixturesManager(object):
         :rtype: :data:`fixture_instance`
         """
 
-        instance = self.get_fixture(fixture_key,
-                                    include_relationships=include_relationships)
+        try:
+            self._get_hook("before_install")()
+            instance = self.get_fixture(
+                fixture_key,
+                include_relationships=include_relationships)
 
-        # Save the instances
-        if not do_not_save:
-            self._get_hook("before_install")(instance)
-            self.session.add(instance)
-            self.session.commit()
-            self._get_hook("after_install")(instance)
+            # Save the instances
+            if not do_not_save:
+                self.save_instance(instance)
 
-        return instance
+        except Exception as exc:
+            self._get_hook("after_install")(exc)
+            raise
+
+        else:
+            self._get_hook("after_install")(None)
+            return instance
 
     def install_fixtures(self, fixture_keys, do_not_save=False,
                          include_relationships=True):

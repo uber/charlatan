@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
     Quickstart <quickstart>
+    Hooks <hooks>
     Api Reference <api-reference>
 
 `Charlatan` provides a centralized way to manage and use database objects in

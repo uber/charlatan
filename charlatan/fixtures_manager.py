@@ -36,6 +36,22 @@ def load_file(filename):
     return content
 
 
+def is_sqlalchemy_model(instance):
+    """Return True if instance is an SQLAlchemy model instance."""
+
+    from sqlalchemy.orm.util import class_mapper
+    from sqlalchemy.orm.exc import UnmappedClassError
+
+    try:
+        class_mapper(instance.__class__)
+
+    except UnmappedClassError:
+        return False
+
+    else:
+        return True
+
+
 class FixturesManager(object):
 
     """Manage Fixture objects."""
@@ -43,7 +59,7 @@ class FixturesManager(object):
     def __init__(self):
         self.hooks = {}
 
-    def load(self, filename, db_session, models_package):
+    def load(self, filename, db_session=None, models_package=None):
         """Pre-load the fixtures.
 
         :param str filename: file that holds the fixture data
@@ -104,11 +120,28 @@ class FixturesManager(object):
         self.cache = {}
 
     def save_instance(self, instance):
-        """Save a fixture instance using SQLAlchemy session."""
+        """Save a fixture instance.
+
+        If it's a SQLAlchemy model, it will be added to the session and
+        the session will be committed.
+
+        Otherwise, a :meth:`save` method will be run if the instance has
+        one. If it does not have one, nothing will happen.
+
+        Before and after the process, the :func:`before_save` and
+        :func:`after_save` hook are run.
+
+        """
 
         self._get_hook("before_save")(instance)
-        self.session.add(instance)
-        self.session.commit()
+
+        if self.session and is_sqlalchemy_model(instance):
+            self.session.add(instance)
+            self.session.commit()
+
+        else:
+            getattr(instance, "save", lambda: None)()
+
         self._get_hook("after_save")(instance)
 
     def install_fixture(self, fixture_key, do_not_save=False,
@@ -129,7 +162,7 @@ class FixturesManager(object):
                 fixture_key,
                 include_relationships=include_relationships)
 
-            # Save the instances
+            # Save the instance
             if not do_not_save:
                 self.save_instance(instance)
 

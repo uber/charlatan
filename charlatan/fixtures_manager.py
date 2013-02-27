@@ -36,6 +36,22 @@ def load_file(filename):
     return content
 
 
+def is_sqlalchemy_model(instance):
+    """Return True if instance is an SQLAlchemy model instance."""
+
+    from sqlalchemy.orm.util import class_mapper
+    from sqlalchemy.orm.exc import UnmappedClassError
+
+    try:
+        class_mapper(instance.__class__)
+
+    except UnmappedClassError:
+        return False
+
+    else:
+        return True
+
+
 class FixturesManager(object):
 
     """Manage Fixture objects."""
@@ -43,7 +59,7 @@ class FixturesManager(object):
     def __init__(self):
         self.hooks = {}
 
-    def load(self, filename, db_session, models_package):
+    def load(self, filename, db_session=None, models_package=None):
         """Pre-load the fixtures.
 
         :param str filename: file that holds the fixture data
@@ -104,15 +120,33 @@ class FixturesManager(object):
         self.cache = {}
 
     def save_instance(self, instance):
-        """Save a fixture instance using SQLAlchemy session."""
+        """Save a fixture instance.
+
+        If it's a SQLAlchemy model, it will be added to the session and
+        the session will be committed.
+
+        Otherwise, a :meth:`save` method will be run if the instance has
+        one. If it does not have one, nothing will happen.
+
+        Before and after the process, the :func:`before_save` and
+        :func:`after_save` hook are run.
+
+        """
 
         self._get_hook("before_save")(instance)
-        self.session.add(instance)
-        self.session.commit()
+
+        if self.session and is_sqlalchemy_model(instance):
+            self.session.add(instance)
+            self.session.commit()
+
+        else:
+            getattr(instance, "save", lambda: None)()
+
         self._get_hook("after_save")(instance)
 
     def install_fixture(self, fixture_key, do_not_save=False,
-                        include_relationships=True):
+                        include_relationships=True, attrs=None):
+
         """Install a fixture.
 
         :param str fixture_key:
@@ -127,9 +161,10 @@ class FixturesManager(object):
             self._get_hook("before_install")()
             instance = self.get_fixture(
                 fixture_key,
-                include_relationships=include_relationships)
+                include_relationships=include_relationships,
+                attrs=attrs)
 
-            # Save the instances
+            # Save the instance
             if not do_not_save:
                 self.save_instance(instance)
 
@@ -181,7 +216,7 @@ class FixturesManager(object):
                                      do_not_save=do_not_save,
                                      include_relationships=include_relationships)
 
-    def get_fixture(self, fixture_key, include_relationships=True):
+    def get_fixture(self, fixture_key, include_relationships=True, attrs={}):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
@@ -200,10 +235,15 @@ class FixturesManager(object):
             instance = self.fixtures[fixture_key].get_instance(
                 include_relationships=include_relationships)
             self.cache[fixture_key] = instance
-            return instance
-
         else:
-            return self.cache[fixture_key]
+            instance = self.cache[fixture_key]
+
+        #If any arguments are passed in, set them before returning
+        if attrs:
+            for attr, value in attrs.items():
+                setattr(instance, attr, value)
+
+        return instance
 
     def get_fixtures(self, fixture_keys, include_relationships=True):
         """Return a list of fixtures instances.
@@ -256,12 +296,13 @@ class FixturesManagerMixin(object):
 
     @copy_docstring_from(FixturesManager)
     def install_fixture(self, fixture_key, do_not_save=False,
-                        include_relationships=True):
+                        include_relationships=True, attrs=None):
 
         instance = FIXTURES_MANAGER.install_fixture(
             fixture_key,
             do_not_save=do_not_save,
-            include_relationships=include_relationships)
+            include_relationships=include_relationships,
+            attrs=attrs)
 
         setattr(self, fixture_key, instance)
         return instance

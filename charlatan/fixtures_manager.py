@@ -145,7 +145,8 @@ class FixturesManager(object):
         self._get_hook("after_save")(instance)
 
     def install_fixture(self, fixture_key, do_not_save=False,
-                        include_relationships=True):
+                        include_relationships=True, attrs=None):
+
         """Install a fixture.
 
         :param str fixture_key:
@@ -160,7 +161,8 @@ class FixturesManager(object):
             self._get_hook("before_install")()
             instance = self.get_fixture(
                 fixture_key,
-                include_relationships=include_relationships)
+                include_relationships=include_relationships,
+                attrs=attrs)
 
             # Save the instance
             if not do_not_save:
@@ -214,7 +216,7 @@ class FixturesManager(object):
                                      do_not_save=do_not_save,
                                      include_relationships=include_relationships)
 
-    def get_fixture(self, fixture_key, include_relationships=True):
+    def get_fixture(self, fixture_key, include_relationships=True, attrs={}):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
@@ -233,10 +235,15 @@ class FixturesManager(object):
             instance = self.fixtures[fixture_key].get_instance(
                 include_relationships=include_relationships)
             self.cache[fixture_key] = instance
-            return instance
-
         else:
-            return self.cache[fixture_key]
+            instance = self.cache[fixture_key]
+
+        #If any arguments are passed in, set them before returning
+        if attrs:
+            for attr, value in attrs.items():
+                setattr(instance, attr, value)
+
+        return instance
 
     def get_fixtures(self, fixture_keys, include_relationships=True):
         """Return a list of fixtures instances.
@@ -289,12 +296,13 @@ class FixturesManagerMixin(object):
 
     @copy_docstring_from(FixturesManager)
     def install_fixture(self, fixture_key, do_not_save=False,
-                        include_relationships=True):
+                        include_relationships=True, attrs=None):
 
         instance = FIXTURES_MANAGER.install_fixture(
             fixture_key,
             do_not_save=do_not_save,
-            include_relationships=include_relationships)
+            include_relationships=include_relationships,
+            attrs=attrs)
 
         setattr(self, fixture_key, instance)
         return instance

@@ -1,19 +1,18 @@
 Charlatan: Fixtures Made Easy
 =============================
 
+**A Python library to efficiently manage and install database fixtures**
+
 `Charlatan` is a library that you can use in your tests to create database
 fixtures. Its aim is to provide a pragmatic interface that focuses on making it
 simple to define and install fixtures for your tests. It is also agnostic in so
 far as even though it's designed to work out of the box with SQLAlchemy models,
 it can work with pretty much anything else.
 
-
 Documentation
 -------------
 
-
-Documentation is available at http://uber.github.com/charlatan/
-
+Latest documentation: `uber.github.io/charlatan <http://uber.github.io/charlatan/>`_
 
 Getting started
 ---------------
@@ -26,9 +25,9 @@ Getting started
 
     import charlatan
 
-    charlatan.load_file("./tests/data/fixtures.yaml",
-                        models_package="toaster.models",
-                        db_session=db_session)
+    charlatan.load("./tests/data/fixtures.yaml",
+                   models_package="toaster.models",
+                   db_session=db_session)
 
 
     class TestToaster(unittest.TestCase, charlatan.FixturesManagerMixin):
@@ -42,7 +41,6 @@ Getting started
 
             self.toaster.toast()
 
-
 Installation
 ------------
 
@@ -50,3 +48,10 @@ For now, you need to install `charlatan` by adding the following to your
 ``requirements.txt``::
 
     -e git+git@github.com:uber/charlatan.git#egg=charlatan
+
+License
+-------
+
+charlatan is available under the MIT License.
+
+Copyright Uber 2013, Charles-Axel Dein <charles@uber.com>

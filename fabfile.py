@@ -20,10 +20,38 @@ def clean():
 
 
 @task
-def doc():
+def docs():
     """Generate documentation."""
+
+    print green("\nGenerating documentation...")
 
     with lcd("docs"):
         local("make html BUILDDIR=../../charlatan-docs")
 
-    print green("Don't forget to push the changes to the gh-pages branch.")
+
+@task
+def push_docs():
+    """Generate and push the docs."""
+
+    print green("\nPushing docs...")
+
+    docs()
+    with lcd("../charlatan-docs/html"):
+        local("git commit -am 'Update documentation'")
+        local("git push")
+
+
+@task
+def release():
+    """Prepare a release."""
+
+    print green("\nRunning prerelease...")
+    test()
+    docs()
+    local("prerelease")
+
+    print green("\nReleasing...")
+    local("release")
+    local("git push --tags")
+    local("git push")
+    push_docs()

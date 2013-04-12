@@ -4,9 +4,9 @@ from toaster.models import db_session
 
 import charlatan
 
-charlatan.load_file("./tests/data/fixtures.yaml",
-                    models_package="toaster.models",
-                    db_session=db_session)
+charlatan.load("./tests/data/fixtures.yaml",
+               models_package="toaster.models",
+               db_session=db_session)
 
 
 class TestToaster(unittest.TestCase, charlatan.FixturesManagerMixin):

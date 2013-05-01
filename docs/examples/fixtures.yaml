@@ -18,3 +18,5 @@ user:
     name: Michel Audiard
     toaster: !rel toaster
   model: toaster.models.user:User
+  post_creation:
+    has_used_toaster: true

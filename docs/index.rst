@@ -21,6 +21,7 @@ Contents
    :maxdepth: 2
 
    quickstart
+   file-format
    hooks
    api-reference
 

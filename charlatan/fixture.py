@@ -44,6 +44,9 @@ class Fixture(object):
         self.fields = fields or {}
         self.fixture_manager = fixture_manager
         self.post_creation = post_creation
+        if not self.post_creation:
+            self.post_creation = {}
+
         self.database_id = id_
 
     def get_instance(self, include_relationships=True):
@@ -72,9 +75,11 @@ class Fixture(object):
             instance = object_class(**fields)
 
         # Do any extra assignment
-        if self.post_creation:
-            for attr, value in self.post_creation.items():
-                setattr(instance, attr, value)
+        for attr, value in self.post_creation.items():
+            if isinstance(value, RelationshipToken):
+                value = self.get_relationship(value)
+
+            setattr(instance, attr, value)
 
         return instance
 
@@ -119,36 +124,13 @@ class Fixture(object):
         # FIXME: no error when trying to do circular relationship
         # FIXME: no error on stange objects
 
-        # This function is needed so that this fixture can require other
-        # fixtures. If a fixture requires another fixture, it necessarily means
-        # that it needs to include other relationships as well.
-        get_fixture = functools.partial(self.fixture_manager.get_fixture,
-                                        include_relationships=True)
-
-        def get_relationship(name):
-            """Get a relationship and its attribute if necessary."""
-
-            rel_name = name  # e.g. toaster.color
-            attr = None
-
-            # TODO: we support only one level for now
-            if "." in name:
-                rel_name, attr = name.split(".")
-
-            rel = get_fixture(rel_name)
-
-            if attr:
-                return getattr(rel, attr)
-            else:
-                return rel
-
         for name, value in fields.items():
             # One to one relationship
             if isinstance(value, RelationshipToken):
                 if remove:
                     del fields[name]
                 else:
-                    fields[name] = get_relationship(value)
+                    fields[name] = self.get_relationship(value)
 
             # One to many relationship
             elif isinstance(value, (tuple, list)):
@@ -157,4 +139,28 @@ class Fixture(object):
                         if remove:
                             del fields[name]
                         else:
-                            fields[name][i] = get_relationship(nested_value)
+                            fields[name][i] = self.get_relationship(nested_value)
+
+    def get_relationship(self, name):
+        """Get a relationship and its attribute if necessary."""
+
+        # This function is needed so that this fixture can require other
+        # fixtures. If a fixture requires another fixture, it
+        # necessarily means that it needs to include other relationships
+        # as well.
+        get_fixture = functools.partial(self.fixture_manager.get_fixture,
+                                        include_relationships=True)
+
+        rel_name = name  # e.g. toaster.color
+        attr = None
+
+        # TODO: we support only one level for now
+        if "." in name:
+            rel_name, attr = name.split(".")
+
+        rel = get_fixture(rel_name)
+
+        if attr:
+            return getattr(rel, attr)
+        else:
+            return rel

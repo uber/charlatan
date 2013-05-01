@@ -22,6 +22,8 @@ Example:
       model: User
       post_creation:
         has_used_toaster: true
+        # Note that rel are allowed in post_creation
+        new_toaster: !rel blue_toaster
 
 For a given fixture, `post_creation` lets you change some attributes after
 instantiation. Here's the pseudo-code:
@@ -31,6 +33,9 @@ instantiation. Here's the pseudo-code:
     instance = ObjectClass(**fields)
     for k, v in post_creation:
         setattr(instance, k, v)
+
+.. versionadded:: 0.2.0
+    It is now possible to use rel in post_creation.
 
 Linking to other objects
 ------------------------

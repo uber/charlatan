@@ -44,7 +44,7 @@ Fixtures are defined using a YAML file. Here is its general structure:
     :code: yaml
 
 
-In this example: 
+In this example:
 
 * ``toaster``, ``toast1`` and ``toast2`` are the fixture keys.
 * ``model`` is where to get the model. Both relative and absolute addressing are supported
@@ -102,14 +102,15 @@ without saving it nor attaching it to the test class:
 What happens when you install a fixture
 """""""""""""""""""""""""""""""""""""""
 
-Here is the simplified workflow:
+Here's the general process:
 
-.. code-block:: python
-
-    Model, fields = get_fixture_for_key("toaster")
-    instance = Model(**fields)
-    session.add(instance)
-    session.commit()
+1. The fixture is instantiated: ``Model(**fields)``.
+2. If there's any post creation hook, they are run (see :ref:`post_creation`
+   for more information).
+3. The fixture is then saved. If it's a sqlalchemy model, charlatan will detect
+   it, add it to the session and commit it (``db_session.add(instance); db_session.commit()``).
+   If it's not a sqlalchemy model, charlatan will try to call a `save` method
+   on the instance. If there's no such method, charlatan will do nothing.
 
 Fixtures are then attached to your test class, you can access them as instance
 attributes:
@@ -122,3 +123,5 @@ attributes:
 
         def test_toaster(self):
             self.toaster.toast(self.toast1, self.toast2)
+
+:ref:`hooks` are also supported.

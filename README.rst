@@ -1,7 +1,7 @@
 Charlatan: Fixtures Made Easy
 =============================
 
-**A Python library to efficiently manage and install database fixtures**
+**Efficiently manage and install data fixtures**
 
 `Charlatan` is a library that you can use in your tests to create database
 fixtures. Its aim is to provide a pragmatic interface that focuses on making it

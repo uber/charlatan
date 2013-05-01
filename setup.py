@@ -19,7 +19,7 @@ setup(
     url="https://github.com/uber/charlatan",
     packages=["charlatan"],
     keywords=["tests", "fixtures", "database"],
-    description="A Python library to efficiently manage and install database fixtures",
+    description="Efficiently manage and install data fixtures",
     long_description=read_long_description(),
     install_requires=read_requirements(),
     classifiers=[

@@ -108,7 +108,7 @@ class Fixture(object):
         """Create any relationship if needed.
 
         :param dict fields: fields to be processed
-        :param boolean remove: false if relationships should be removed
+        :param boolean remove: true if relationships should be removed
 
         For each field that is a relationship or a list of relationships,
         instantiate those relationships and update the fields.
@@ -122,8 +122,25 @@ class Fixture(object):
         # This function is needed so that this fixture can require other
         # fixtures. If a fixture requires another fixture, it necessarily means
         # that it needs to include other relationships as well.
-        get_relationship = functools.partial(self.fixture_manager.get_fixture,
-                                             include_relationships=True)
+        get_fixture = functools.partial(self.fixture_manager.get_fixture,
+                                        include_relationships=True)
+
+        def get_relationship(name):
+            """Get a relationship and its attribute if necessary."""
+
+            rel_name = name  # e.g. toaster.color
+            attr = None
+
+            # TODO: we support only one level for now
+            if "." in name:
+                rel_name, attr = name.split(".")
+
+            rel = get_fixture(rel_name)
+
+            if attr:
+                return getattr(rel, attr)
+            else:
+                return rel
 
         for name, value in fields.items():
             # One to one relationship

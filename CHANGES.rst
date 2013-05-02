@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.2.0 (unreleased)
+0.2.0 (2013-05-01)
 ------------------
 
 - Added ability to link to a relationship's attribute in YAML file.

@@ -25,6 +25,7 @@ def docs():
 
     print green("\nGenerating documentation...")
 
+    local("python setup.py develop")
     with lcd("docs"):
         local("make html BUILDDIR=../../charlatan-docs")
 

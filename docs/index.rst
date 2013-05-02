@@ -24,6 +24,7 @@ Contents
    file-format
    hooks
    api-reference
+   changelog
 
 
 Indices and tables

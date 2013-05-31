@@ -57,3 +57,12 @@ attribute (e.g. `!rel toaster.id`).
 
 .. versionadded:: 0.2.0
    It is now possible to link to another object' attribute.
+
+Relative timestamps
+-------------------
+
+Use ``!now``:
+
+* ``!now +1y`` returns the current datetime plus one year
+* ``!now +5m`` returns the current datetime plus five months
+* ``!now -10d`` returns the current datetime minus ten days

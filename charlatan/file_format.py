@@ -25,18 +25,7 @@ class UnnamedRelationshipToken(dict):
 
 
 def configure_yaml():
-    """Add some custom tags to the YAML constructor.
-
-    `!now` return the current datetime and supports basic operations::
-
-        `!now +1y` returns the current datetime plus one year
-        `!now +5m` returns the current datetime plus five months
-        `!now -10d` returns the current datetime minus ten days
-
-    `!rel` is used to mark relationships::
-
-        !rel client1
-    """
+    """Add some custom tags to the YAML constructor."""
 
     def now_constructor(loader, node):
         """Return the current datetime."""

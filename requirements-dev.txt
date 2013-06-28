@@ -12,4 +12,4 @@ Sphinx==1.1.3
 # Releaser tool
 zest.releaser==3.44
 # Package checking
-pyroma==1.3
+pyroma==1.4

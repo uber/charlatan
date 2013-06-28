@@ -30,6 +30,7 @@ in this case, you just need to specify the ``model`` and an ``id``.
     :code: yaml
 
 .. _post_creation:
+
 Post creation
 -------------
 

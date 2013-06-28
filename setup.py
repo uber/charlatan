@@ -4,7 +4,7 @@ from setuptools import setup
 
 def read_long_description(filename="README.rst"):
     with open(filename) as f:
-        return f.readlines()
+        return f.read().strip()
 
 
 def read_requirements(filename="requirements.txt"):
@@ -22,6 +22,7 @@ setup(
     description="Efficiently manage and install data fixtures",
     long_description=read_long_description(),
     install_requires=read_requirements(),
+    zip_safe=False,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python",

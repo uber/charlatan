@@ -12,7 +12,8 @@ it can work with pretty much anything else.
 Documentation
 -------------
 
-Latest documentation: `uber.github.io/charlatan <http://uber.github.io/charlatan/>`_
+Latest documentation:
+`charlatan.readthedocs.org/en/latest/ <https://charlatan.readthedocs.org/en/latest/>`_
 
 Getting started
 ---------------
@@ -44,10 +45,9 @@ Getting started
 Installation
 ------------
 
-For now, you need to install `charlatan` by adding the following to your
-``requirements.txt``::
+Using `pip`::
 
-    -e git+git@github.com:uber/charlatan.git#egg=charlatan
+    pip install charlatan
 
 License
 -------

@@ -4,8 +4,8 @@ File format
 charlatan only supports YAML at time of writing.
 Fixtures are defined using a YAML file. Here is its general structure:
 
-.. include:: examples/fixtures.yaml
-    :code: yaml
+.. literalinclude:: examples/fixtures.yaml
+    :language: yaml
 
 
 Defining a fixture
@@ -26,8 +26,8 @@ Getting an already existing fixture from the database
 You can also get a fixture directly from the database (it uses ``sqlalchemy``):
 in this case, you just need to specify the ``model`` and an ``id``.
 
-.. include:: examples/fixtures_id.yaml
-    :code: yaml
+.. literalinclude:: examples/fixtures_id.yaml
+    :language: yaml
 
 .. _post_creation:
 

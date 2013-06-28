@@ -40,8 +40,8 @@ Defining fixtures
 Fixtures are defined using a YAML file. Here is its general structure:
 
 
-.. include:: examples/fixtures.yaml
-    :code: yaml
+.. literalinclude:: examples/fixtures.yaml
+    :language: yaml
 
 
 In this example:

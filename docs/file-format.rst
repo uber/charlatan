@@ -7,8 +7,29 @@ Fixtures are defined using a YAML file. Here is its general structure:
 .. include:: examples/fixtures.yaml
     :code: yaml
 
-.. _post_creation:
 
+Defining a fixture
+------------------
+
+A fixture has an identifier (in the example above, ``toaster`` is one of
+the fixture identifiers), as well as the following configuration:
+
+* ``fields``: a dictionary for which keys are attribute, and values are their
+  values
+* ``model`` gives information about how to retrieve the model
+* ``post_creation`` lets you have some attribute values be assigned after
+  instantiation.
+
+Getting an already existing fixture from the database
+-----------------------------------------------------
+
+You can also get a fixture directly from the database (it uses ``sqlalchemy``):
+in this case, you just need to specify the ``model`` and an ``id``.
+
+.. include:: examples/fixtures_id.yaml
+    :code: yaml
+
+.. _post_creation:
 Post creation
 -------------
 
@@ -25,7 +46,7 @@ Example:
         # Note that rel are allowed in post_creation
         new_toaster: !rel blue_toaster
 
-For a given fixture, `post_creation` lets you change some attributes after
+For a given fixture, ``post_creation`` lets you change some attributes after
 instantiation. Here's the pseudo-code:
 
 .. code-block:: python
@@ -35,7 +56,7 @@ instantiation. Here's the pseudo-code:
         setattr(instance, k, v)
 
 .. versionadded:: 0.2.0
-    It is now possible to use rel in post_creation.
+    It is now possible to use ``rel`` in post_creation.
 
 Linking to other objects
 ------------------------
@@ -51,9 +72,9 @@ Example:
         toaster_id: !rel toaster.id
       model: User
 
-To link to another object defined in the configuration file, use `!rel`. You
-can link to another objet (e.g. `!rel red_toaster`) or to another object's
-attribute (e.g. `!rel toaster.id`).
+To link to another object defined in the configuration file, use ``!rel``. You
+can link to another objet (e.g. ``!rel red_toaster``) or to another object's
+attribute (e.g. ``!rel toaster.id``).
 
 .. versionadded:: 0.2.0
    It is now possible to link to another object' attribute.

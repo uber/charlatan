@@ -44,6 +44,14 @@ def push_docs():
 
 
 @task
+def open_docs():
+    """Generate and open the docs."""
+
+    docs()
+    local("open ../charlatan-docs/html/index.html")
+
+
+@task
 def release():
     """Prepare a release."""
 

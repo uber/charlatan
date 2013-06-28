@@ -1,0 +1,3 @@
+toaster_already_in_db:
+  id: 10
+  model: Toaster

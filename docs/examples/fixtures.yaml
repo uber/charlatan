@@ -5,6 +5,9 @@ toaster:
     toasts: [!rel toast1, !rel toast2]
     bought: !now -1y
   model: Toaster
+toaster_already_in_db:
+  id: 10
+  model: Toaster
 toast1:
   fields:
     bread: brioche

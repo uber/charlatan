@@ -24,12 +24,13 @@ def get_class(module, klass):
 class Fixture(object):
     """Represent a fixture that can be installed."""
 
-    def __init__(self, key, model, fixture_manager, fields=None,
+    def __init__(self, key, fixture_manager,
+                 model=None, fields=None,
                  post_creation=None, id_=None):
         """Create a Fixture object.
 
         :param str model: model used to instantiate the fixture, e.g.
-            "yourlib.toaster:Toaster".
+            "yourlib.toaster:Toaster". If empty, the fields will be used as is.
         :param dict fields: args to be provided when instantiating the fixture
         :param fixture_manager: FixtureManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
@@ -56,23 +57,28 @@ class Fixture(object):
             removed.
         """
 
-        object_class = self.get_class()
-
         if self.database_id:
+            object_class = self.get_class()
             # No need to create a new object, just get it from the db
             instance = self.fixture_manager.session.query(object_class).get(self.database_id)
 
         else:
             # We need to do a copy since we're modifying them.
             fields = copy.deepcopy(self.fields)
+            # Get the class to instantiate
+            object_class = self.get_class()
 
-            # Does not return anything, does the modification in place (in
-            # fields)
-            self._process_relationships(fields,
-                                        remove=not include_relationships)
+            if object_class:
+                # Does not return anything, does the modification in place (in
+                # fields)
+                self._process_relationships(
+                    fields, remove=not include_relationships)
+                instance = object_class(**fields)
 
-            # instantiate the class
-            instance = object_class(**fields)
+            else:
+                # Return the fields as is. This allows to enter dicts
+                # and lists directly.
+                instance = fields
 
         # Do any extra assignment
         for attr, value in self.post_creation.items():
@@ -87,6 +93,9 @@ class Fixture(object):
         """Return class object for this instance."""
 
         root_models_package = self.fixture_manager.models_package
+
+        if not self.model_name:
+            return
 
         # If model_name starts with a lowercase, then it's an absolute
         # import, e.g. "yourlib.toaster:Toaster"

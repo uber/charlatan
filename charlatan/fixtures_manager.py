@@ -1,8 +1,6 @@
-import yaml
-
-from charlatan.file_format import configure_yaml
 from charlatan.fixture import Fixture
 from charlatan.utils import copy_docstring_from
+from charlatan.file_format import load_file
 
 
 # TODO: refactor so that the Mixin and the class are less coupled and
@@ -15,25 +13,6 @@ from charlatan.utils import copy_docstring_from
 
 
 ALLOWED_HOOKS = ("before_save", "after_save", "before_install", "after_install")
-
-
-def load_file(filename):
-    """Load fixtures definition from file.
-
-    :param str filename:
-    """
-
-    with open(filename) as f:
-        content = f.read()
-
-    if filename.endswith(".yaml"):
-        # Load the custom YAML tags
-        configure_yaml()
-        content = yaml.load(content)
-    else:
-        raise KeyError("Unsupported filetype: '%s'" % filename)
-
-    return content
 
 
 def is_sqlalchemy_model(instance):
@@ -107,9 +86,6 @@ class FixturesManager(object):
                     # Renaming id because it's a Python builtin function
                     v["id_"] = v["id"]
                     del v["id"]
-
-                if not "model" in v:
-                    raise KeyError("Model is not defined for fixture '%s'" % k)
 
                 fixtures[k] = Fixture(key=k, fixture_manager=self, **v)
 

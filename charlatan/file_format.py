@@ -46,3 +46,22 @@ def configure_yaml():
 
     yaml.add_constructor(u'!now', now_constructor)
     yaml.add_constructor(u'!rel', relationship_constructor)
+
+
+def load_file(filename):
+    """Load fixtures definition from file.
+
+    :param str filename:
+    """
+
+    with open(filename) as f:
+        content = f.read()
+
+    if filename.endswith(".yaml"):
+        # Load the custom YAML tags
+        configure_yaml()
+        content = yaml.load(content)
+    else:
+        raise KeyError("Unsupported filetype: '%s'" % filename)
+
+    return content

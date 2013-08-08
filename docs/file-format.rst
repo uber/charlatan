@@ -1,6 +1,10 @@
 File format
 ===========
 
+.. testsetup:: *
+
+    from charlatan import FixturesManager
+
 charlatan only supports YAML at time of writing.
 Fixtures are defined using a YAML file. Here is its general structure:
 
@@ -19,6 +23,28 @@ the fixture identifiers), as well as the following configuration:
 * ``model`` gives information about how to retrieve the model
 * ``post_creation`` lets you have some attribute values be assigned after
   instantiation.
+
+Having dictionaries as fixtures
+-------------------------------
+
+If you don't specify the model, the content of ``fields`` will be returned as
+is. This is useful if you want to enter a dictionary or a list directly.
+
+.. literalinclude:: examples/fixtures_dict.yaml
+    :language: yaml
+
+.. doctest::
+
+    >>> manager = FixturesManager()
+    >>> manager.load("./examples/fixtures_dict.yaml")
+    >>> manager.get_fixture("fixture_name")
+    {'foo': 'bar'}
+    >>> manager.get_fixture("fixture_list")
+    ['foo', 'bar']
+
+.. versionadded:: 0.2.4
+
+    Empty models are allowed so that dict ands lists can be used as fixtures.
 
 Getting an already existing fixture from the database
 -----------------------------------------------------

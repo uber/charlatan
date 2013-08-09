@@ -1,7 +1,8 @@
 Charlatan: Fixtures Made Easy
 =============================
 
-.. image:: https://travis-ci.org/uber/charlatan.png?branch=master   :target: https://travis-ci.org/uber/charlatan
+.. image:: https://travis-ci.org/uber/charlatan.png?branch=master
+    :target: https://travis-ci.org/uber/charlatan
 
 **Efficiently manage and install data fixtures**
 

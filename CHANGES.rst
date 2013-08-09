@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.2.4 (unreleased)
+0.2.4 (2013-08-08)
 ------------------
 
 - Empty models are allowed so that dict ands lists can be used as fixtures.

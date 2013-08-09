@@ -13,7 +13,7 @@ def read_requirements(filename="requirements.txt"):
 
 setup(
     name="charlatan",
-    version='0.2.3',
+    version='0.2.4',
     author="Charles-Axel Dein",
     author_email="charles@uber.com",
     url="https://github.com/uber/charlatan",

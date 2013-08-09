@@ -24,6 +24,38 @@ the fixture identifiers), as well as the following configuration:
 * ``post_creation`` lets you have some attribute values be assigned after
   instantiation.
 
+Inheritance
+-----------
+
+Fixtures can inherit from other fixtures.
+
+.. literalinclude:: examples/fixtures_inheritance.yaml
+    :language: yaml
+
+.. doctest::
+
+    >>> manager = FixturesManager()
+    >>> manager.load("./examples/fixtures_inheritance.yaml")
+    >>> manager.get_fixture("first")
+    {'foo': 'bar'}
+    >>> manager.get_fixture("second")
+    {'foo': 'bar'}
+    >>> manager.get_fixture("third")
+    {'foo': 'bar', 'toaster': 'toasted'}
+    >>> fourth = manager.get_fixture("fourth")
+    >>> fourth
+    {'foo': 'bar'}
+    >>> fourth.__class__.__name__
+    'UserDict'
+    >>> fifth = manager.get_fixture("fifth")
+    >>> fifth
+    {'foo': 'bar', 'toaster': 'toasted'}
+    >>> fifth.__class__.__name__
+    'UserDict'
+
+.. versionadded:: 0.2.4
+    Fixtures can now inherits from other fixtures.
+
 Having dictionaries as fixtures
 -------------------------------
 
@@ -43,7 +75,6 @@ is. This is useful if you want to enter a dictionary or a list directly.
     ['foo', 'bar']
 
 .. versionadded:: 0.2.4
-
     Empty models are allowed so that dict ands lists can be used as fixtures.
 
 Getting an already existing fixture from the database

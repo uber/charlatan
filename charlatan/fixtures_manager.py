@@ -207,14 +207,13 @@ class FixturesManager(object):
 
         # Fixture are cached so that setting up relationships is not too
         # expensive.
-        if not self.cache.get(fixture_key):
+        instance = self.cache.get(fixture_key)
+        if not instance:
             instance = self.fixtures[fixture_key].get_instance(
                 include_relationships=include_relationships)
             self.cache[fixture_key] = instance
-        else:
-            instance = self.cache[fixture_key]
 
-        #If any arguments are passed in, set them before returning
+        # If any arguments are passed in, set them before returning
         if attrs:
             for attr, value in attrs.items():
                 setattr(instance, attr, value)

@@ -1,0 +1,25 @@
+first:
+  fields:
+    foo: bar
+
+# Everything is inherited from first.
+second:
+  inherit_from: first
+
+# You can overwrite fields.
+third:
+  inherit_from: first
+  fields:
+    toaster: toasted
+
+# You can also overwrite the model.
+fourth:
+  inherit_from: first
+  model: UserDict:UserDict
+
+# You can also overwrite both.
+fifth:
+  inherit_from: second
+  fields:
+    toaster: toasted
+  model: UserDict:UserDict

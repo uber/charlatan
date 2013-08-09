@@ -5,6 +5,7 @@ Changelog for Charlatan
 ------------------
 
 - Empty models are allowed so that dict ands lists can be used as fixtures.
+- Fixtures can now inherits from other fixtures.
 
 0.2.3 (2013-06-28)
 ------------------

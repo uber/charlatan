@@ -7,7 +7,6 @@ API Reference
     from charlatan.utils import apply_delta, extended_timedelta
 
 
-
 charlatan
 ---------
 

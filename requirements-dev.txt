@@ -13,3 +13,5 @@ Sphinx==1.1.3
 zest.releaser==3.44
 # Package checking
 pyroma==1.4
+# Syntax checking
+flake8==2.0

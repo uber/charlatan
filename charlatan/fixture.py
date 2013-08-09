@@ -24,15 +24,19 @@ def get_class(module, klass):
 class Fixture(object):
     """Represent a fixture that can be installed."""
 
-    def __init__(self, key, model, fixture_manager, fields=None,
+    def __init__(self, key, fixture_manager,
+                 model=None, fields=None,
+                 inherit_from=None,
                  post_creation=None, id_=None):
         """Create a Fixture object.
 
         :param str model: model used to instantiate the fixture, e.g.
-            "yourlib.toaster:Toaster".
+            "yourlib.toaster:Toaster". If empty, the fields will be used as is.
         :param dict fields: args to be provided when instantiating the fixture
         :param fixture_manager: FixtureManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
+        :param str inherit_from: model to inherit from
+
         """
 
         if id_ and fields:
@@ -40,14 +44,45 @@ class Fixture(object):
                 "Cannot provide both id and fields to create fixture.")
 
         self.key = key
-        self.model_name = model
-        self.fields = fields or {}
         self.fixture_manager = fixture_manager
-        self.post_creation = post_creation
-        if not self.post_creation:
-            self.post_creation = {}
 
         self.database_id = id_
+        self.inherit_from = inherit_from
+        self._has_updated_from_parent = False
+
+        # Stuff that can be inherited.
+        self.model_name = model
+        self.fields = fields or {}
+        self.post_creation = post_creation or {}
+
+    def update_with_parent(self):
+        """Update the object in place using its chain of inheritance."""
+
+        if self._has_updated_from_parent or not self.inherit_from:
+            # Nothing to do
+            return
+
+        parent = self.fixture_manager.fixtures[self.inherit_from]
+        # Recursive to make sure everything is updated.
+        parent.update_with_parent()
+
+        can_be_inherited = ["model_name", "fields", "post_creation"]
+        for key in can_be_inherited:
+            value = getattr(self, key)
+            new_value = None
+            if not value:
+                # We take the parent.
+                new_value = getattr(parent, key)
+
+            elif isinstance(value, basestring):
+                continue  # The children value takes precedence.
+
+            elif hasattr(value, "update"):  # Most probably a dict
+                new_value = copy.deepcopy(getattr(parent, key))
+                new_value.update(value)
+
+            if new_value:
+                setattr(self, key, new_value)
 
     def get_instance(self, include_relationships=True):
         """Instantiate the fixture using the model and return the instance.
@@ -56,23 +91,30 @@ class Fixture(object):
             removed.
         """
 
-        object_class = self.get_class()
+        self.update_with_parent()
 
         if self.database_id:
+            object_class = self.get_class()
             # No need to create a new object, just get it from the db
             instance = self.fixture_manager.session.query(object_class).get(self.database_id)
 
         else:
             # We need to do a copy since we're modifying them.
             fields = copy.deepcopy(self.fields)
+            # Get the class to instantiate
+            object_class = self.get_class()
 
-            # Does not return anything, does the modification in place (in
-            # fields)
-            self._process_relationships(fields,
-                                        remove=not include_relationships)
+            if object_class:
+                # Does not return anything, does the modification in place (in
+                # fields)
+                self._process_relationships(
+                    fields, remove=not include_relationships)
+                instance = object_class(**fields)
 
-            # instantiate the class
-            instance = object_class(**fields)
+            else:
+                # Return the fields as is. This allows to enter dicts
+                # and lists directly.
+                instance = fields
 
         # Do any extra assignment
         for attr, value in self.post_creation.items():
@@ -88,20 +130,22 @@ class Fixture(object):
 
         root_models_package = self.fixture_manager.models_package
 
-        # If model_name starts with a lowercase, then it's an absolute
-        # import, e.g. "yourlib.toaster:Toaster"
-        if self.model_name[0].islower():
-            module, klass = self.model_name.split(":")
-            return get_class(module, klass)
+        if not self.model_name:
+            return
 
         # Relative path, e.g. ".toaster:Toaster"
-        if self.model_name[0] == ".":
+        if ":" in self.model_name and self.model_name[0] == ".":
             module, klass = self.model_name.split(":")
             module = root_models_package + module
             return get_class(module, klass)
 
-        # Class alone, e.g. "Toaster". Trying to import from e.g.
-        # yourlib.toaster:Toaster
+        # Absolute import, e.g. "yourlib.toaster:Toaster"
+        if ":" in self.model_name:
+            module, klass = self.model_name.split(":")
+            return get_class(module, klass)
+
+        # Class alone, e.g. "Toaster".
+        # Trying to import from e.g.  yourlib.toaster:Toaster
         module = "{models_package}.{model}".format(
             models_package=root_models_package,
             model=self.model_name.lower())

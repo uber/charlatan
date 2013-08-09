@@ -1,0 +1,7 @@
+fixture_name:
+  fields:
+    foo: bar
+fixture_list:
+  fields:
+    - "foo"
+    - "bar"

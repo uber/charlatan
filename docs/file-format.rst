@@ -145,3 +145,5 @@ Use ``!now``:
 * ``!now +1y`` returns the current datetime plus one year
 * ``!now +5m`` returns the current datetime plus five months
 * ``!now -10d`` returns the current datetime minus ten days
+* ``!now +15M`` (note the case) returns the current datetime plus 15 minutes
+* ``!now -30s`` returns the current datetime minus 30 seconds

@@ -30,6 +30,11 @@ def apply_delta(dt, delta):
     datetime.datetime(2011, 12, 21, 23, 1, 1)
     >>> apply_delta(base, "-21y2m1d24h")
     datetime.datetime(1990, 11, 5, 1, 1, 1)
+    >>> apply_delta(base, "+5M")
+    datetime.datetime(2012, 1, 1, 1, 6, 1)
+    >>> apply_delta(base, "+4M30s")
+    datetime.datetime(2012, 1, 1, 1, 5, 31)
+
     """
 
     sign = delta[0]
@@ -39,11 +44,13 @@ def apply_delta(dt, delta):
     # re.split returns empty strings if the capturing groups matches the
     # start and the end of string.
     for part in filter(lambda p: p, re.split(r"(\d+\w)", delta)):
-        amount, unit = re.findall(r"(\d+)([ymdh])", part)[0]
+        amount, unit = re.findall(r"(\d+)([ymdhMs])", part)[0]
 
         operators = {"+": operator.add,
                      "-": operator.sub}
         units = {
+            "s": "seconds",
+            "M": "minutes",
             "h": "hours",
             "d": "days",
             "m": "months",

@@ -170,10 +170,17 @@ class FixturesManager(object):
 
         instances = []
         for f in fixture_keys:
-            instances.append(self.install_fixture(
+            instance = self.install_fixture(
                 f,
-                do_not_save=do_not_save,
-                include_relationships=include_relationships))
+                do_not_save=True,
+                include_relationships=include_relationships)
+            if not do_not_save:
+                if self.session and is_sqlalchemy_model(instance):
+                    self.session.add(instance)
+            instances.append(instance)
+
+        if not do_not_save:
+            self.session.commit()
 
         return instances
 
@@ -290,10 +297,25 @@ class FixturesManagerMixin(object):
         if isinstance(fixture_keys, basestring):
             fixture_keys = (fixture_keys, )
 
+        FIXTURES_MANAGER._get_hook("before_install")()
+        instances = []
         for f in fixture_keys:
-            self.install_fixture(f,
-                                 do_not_save=do_not_save,
+            instance = self.install_fixture(f,
+                                 do_not_save=True,
                                  include_relationships=include_relationships)
+            instances.append(instance)
+            if not do_not_save:
+                FIXTURES_MANAGER.session.add(instance)
+
+        for instance in instances:
+            FIXTURES_MANAGER._get_hook("before_save")(instance)
+
+        if not do_not_save:
+            FIXTURES_MANAGER.session.commit()
+
+        FIXTURES_MANAGER._get_hook("after_install")(None)
+        for instance in instances:
+            FIXTURES_MANAGER._get_hook("after_save")(instance)
 
     @copy_docstring_from(FixturesManager)
     def install_all_fixtures(self, do_not_save=False,

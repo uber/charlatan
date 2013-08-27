@@ -1,0 +1,15 @@
+simple_dict:
+  fields:
+    field1: lolin
+    field2: 2
+
+dict_with_nest:
+  fields:
+    field1: asdlkf
+    field2: 4
+    simple_dict: !rel simple_dict
+
+list_of_relationships:
+  fields:
+    - !rel dict_with_nest
+    - !rel simple_dict

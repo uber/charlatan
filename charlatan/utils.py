@@ -106,7 +106,7 @@ def extended_timedelta(**kwargs):
     return datetime.timedelta(**kwargs)
 
 # TODO: does not copy the function signature
-# see http://stackoverflow.com/questions/2982974/copy-call-signature-to-decorator
+# see http://stackoverflow.com/questions/2982974/copy-call-signature-to-decorator  # noqa
 
 
 def copy_docstring_from(klass):

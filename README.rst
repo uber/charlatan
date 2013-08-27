@@ -63,3 +63,4 @@ Authors
 -------
 
 Charles-Axel Dein <charles@uber.com>
+Erik Formella <erik@uber.com>

@@ -36,8 +36,9 @@ class FixturesMixin(object):
         else:
             fixtures_to_install = self.fixtures
 
-        installed = self.__fixtures_manager.install(fixtures_to_install,
-                                                    do_not_save=do_not_save)
+        installed = self.__fixtures_manager.install_fixtures(
+            fixtures_to_install,
+            do_not_save=do_not_save)
 
         # Adding fixtures to the class
         for f in installed:

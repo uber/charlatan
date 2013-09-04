@@ -12,7 +12,8 @@ from charlatan.file_format import load_file
 # TODO: check if the row still exists instead of requiring clean cache
 
 
-ALLOWED_HOOKS = ("before_save", "after_save", "before_install", "after_install")
+ALLOWED_HOOKS = ("before_save", "after_save", "before_install",
+                 "after_install")
 
 
 def is_sqlalchemy_model(instance):
@@ -150,7 +151,7 @@ class FixturesManager(object):
 
         else:
             self._get_hook("after_install")(None)
-            return instance
+            return (fixture_key, instance,)
 
     def install_fixtures(self, fixture_keys, do_not_save=False,
                          include_relationships=True):
@@ -188,9 +189,10 @@ class FixturesManager(object):
         :rtype: list of :data:`fixture_instance`
         """
 
-        return self.install_fixtures(self.fixtures.keys(),
-                                     do_not_save=do_not_save,
-                                     include_relationships=include_relationships)
+        return self.install_fixtures(
+            self.fixtures.keys(),
+            do_not_save=do_not_save,
+            include_relationships=include_relationships)
 
     def get_fixture(self, fixture_key, include_relationships=True, attrs={}):
         """Return a fixture instance (but do not save it).
@@ -229,7 +231,13 @@ class FixturesManager(object):
 
         :rtype: list of instantiated but unsaved fixtures
         """
-        return [self.get_fixture(f, include_relationships=include_relationships) for f in fixture_keys]
+        fixtures = []
+        for f in fixture_keys:
+            fixtures.append(
+                self.get_fixture(
+                    f,
+                    include_relationships=include_relationships))
+        return fixtures
 
     def _get_hook(self, hook_name):
         """Return a hook."""

@@ -96,7 +96,10 @@ class Fixture(object):
         if self.database_id:
             object_class = self.get_class()
             # No need to create a new object, just get it from the db
-            instance = self.fixture_manager.session.query(object_class).get(self.database_id)
+            instance = (
+                self.fixture_manager.session.query(object_class)
+                .get(self.database_id)
+            )
 
         else:
             # We need to do a copy since we're modifying them.
@@ -104,13 +107,13 @@ class Fixture(object):
             # Get the class to instantiate
             object_class = self.get_class()
 
-            if object_class:
-                # Does not return anything, does the modification in place (in
-                # fields)
-                self._process_relationships(
-                    fields, remove=not include_relationships)
-                instance = object_class(**fields)
+            # Does not return anything, does the modification in place (in
+            # fields)
+            self._process_relationships(fields,
+                                        remove=not include_relationships)
 
+            if object_class:
+                instance = object_class(**fields)
             else:
                 # Return the fields as is. This allows to enter dicts
                 # and lists directly.
@@ -168,7 +171,14 @@ class Fixture(object):
         # FIXME: no error when trying to do circular relationship
         # FIXME: no error on stange objects
 
-        for name, value in fields.items():
+        # For dictionaries, iterate over key, value and for lists iterate over
+        # inex, item
+        if hasattr(fields, 'iteritems'):
+            field_iterator = fields.iteritems()
+        else:
+            field_iterator = enumerate(fields)
+
+        for name, value in field_iterator:
             # One to one relationship
             if isinstance(value, RelationshipToken):
                 if remove:
@@ -183,7 +193,9 @@ class Fixture(object):
                         if remove:
                             del fields[name]
                         else:
-                            fields[name][i] = self.get_relationship(nested_value)
+                            fields[name][i] = (
+                                self.get_relationship(nested_value)
+                            )
 
     def get_relationship(self, name):
         """Get a relationship and its attribute if necessary."""

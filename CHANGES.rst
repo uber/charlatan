@@ -1,6 +1,12 @@
 Changelog for Charlatan
 =======================
 
+0.2.5 (unreleased)
+------------------
+
+- Allow relationships to be used in dicts and lists. (thanks to @erikformella)
+- Allow for seconds and minutes in relative timestamps (thanks to @kmnovak)
+
 0.2.4 (2013-08-08)
 ------------------
 

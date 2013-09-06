@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.2.5 (unreleased)
+0.2.5 (2013-09-06)
 ------------------
 
 - Allow relationships to be used in dicts and lists. (thanks to @erikformella)

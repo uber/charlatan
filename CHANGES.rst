@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.2.6 (unreleased)
+0.2.6 (2013-09-06)
 ------------------
 
 - Fix regression that broke API. install_fixture started returning the fixture

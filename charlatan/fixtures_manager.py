@@ -151,7 +151,7 @@ class FixturesManager(object):
 
         else:
             self._get_hook("after_install")(None)
-            return (fixture_key, instance,)
+            return instance
 
     def install_fixtures(self, fixture_keys, do_not_save=False,
                          include_relationships=True):

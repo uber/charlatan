@@ -1,6 +1,3 @@
-import operator
-
-
 class FixturesMixin(object):
 
     """Class from which test cases should inherit to use fixtures."""
@@ -41,12 +38,11 @@ class FixturesMixin(object):
             do_not_save=do_not_save)
 
         # Adding fixtures to the class
-        for f in installed:
-            # First item is fixture name, second is fixture instance
-            setattr(self, f[0], f[1])
+        for fixture_name, fixture in zip(fixtures_to_install, installed):
+            setattr(self, fixture_name, fixture)
 
         # Return list of fixture instances
-        return map(operator.itemgetter(1), installed)
+        return installed
 
     def install_fixture(self, fixture_name):
         """Install a fixture and return it."""

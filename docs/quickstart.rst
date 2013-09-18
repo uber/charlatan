@@ -12,7 +12,7 @@ with :py:meth:`charlatan.FixturesManager.load`:
 .. code-block:: python
 
     import charlatan
-    charlatan.load("./tests/data/fixtures.yaml"
+    charlatan.load("./tests/data/fixtures.yaml",
                    db_session=Session,
                    models_package="toaster.models")
 

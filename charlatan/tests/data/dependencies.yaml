@@ -1,0 +1,18 @@
+fixture1:
+    fields:
+        foo: bar
+
+
+fixture2:
+    fields:
+        foo: !rel fixture1
+
+fixture3:
+    depends_on:
+        - !rel fixture1
+    fields:
+        foo: !rel fixture4
+
+fixture4:
+    depends_on:
+        - !rel fixture2

@@ -88,6 +88,19 @@ in this case, you just need to specify the ``model`` and an ``id``.
 
 .. _post_creation:
 
+
+Dependencies
+-----------
+
+If a fixture depends on some side effect of another fixture, you can mark
+that dependency (and, necessarily, ordering) by using the ``depends_on``
+section.
+
+.. literalinclude:: examples/dependencies.yaml
+    :language: yaml
+
+.. versionadded:: 0.2.7
+
 Post creation
 -------------
 

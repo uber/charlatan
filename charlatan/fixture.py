@@ -56,7 +56,6 @@ class Fixture(object):
         self.model_name = model
         self.fields = fields or {}
         self.post_creation = post_creation or {}
-
         self.depend_on = depend_on
 
     def update_with_parent(self):
@@ -70,7 +69,7 @@ class Fixture(object):
         # Recursive to make sure everything is updated.
         parent.update_with_parent()
 
-        can_be_inherited = ["model_name", "fields", "post_creation"]
+        can_be_inherited = ["model_name", "fields", "post_creation", "depend_on"]
         for key in can_be_inherited:
             value = getattr(self, key)
             new_value = None

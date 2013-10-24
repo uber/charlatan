@@ -9,10 +9,10 @@ fixture2:
 
 fixture3:
     depend_on:
-        - !rel fixture1
+        - fixture1
     fields:
         foo: !rel fixture4
 
 fixture4:
     depend_on:
-        - !rel fixture2
+        - fixture2

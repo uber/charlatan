@@ -162,6 +162,8 @@ class Fixture(object):
 
     @staticmethod
     def extract_rel_name(name):
+        """Helper function to extract the relationship and attr from an argument to !rel"""
+
         rel_name = name  # e.g. toaster.color
         attr = None
 
@@ -171,8 +173,7 @@ class Fixture(object):
         return rel_name, attr
 
     def extract_relationships(self):
-        """Get all of the relationships and dependencies in this Fixture, but
-        do not do anything with them."""
+        """Iterator of all relationships and dependencies for this fixture"""
 
         # TODO: make this DRYer since it's mostly copied from _process_relationships
 
@@ -180,7 +181,7 @@ class Fixture(object):
             yield dep, None
 
         # For dictionaries, iterate over key, value and for lists iterate over
-        # inex, item
+        # index, item
         if hasattr(self.fields, 'iteritems'):
             field_iterator = self.fields.iteritems()
         else:

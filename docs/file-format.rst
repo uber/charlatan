@@ -93,7 +93,7 @@ Dependencies
 -----------
 
 If a fixture depends on some side effect of another fixture, you can mark
-that dependency (and, necessarily, ordering) by using the ``depends_on``
+that dependency (and, necessarily, ordering) by using the ``depend_on``
 section.
 
 .. literalinclude:: examples/dependencies.yaml

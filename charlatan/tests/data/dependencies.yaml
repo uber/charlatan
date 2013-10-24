@@ -8,11 +8,11 @@ fixture2:
         foo: !rel fixture1
 
 fixture3:
-    depends_on:
+    depend_on:
         - !rel fixture1
     fields:
         foo: !rel fixture4
 
 fixture4:
-    depends_on:
+    depend_on:
         - !rel fixture2

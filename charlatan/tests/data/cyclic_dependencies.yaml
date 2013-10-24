@@ -1,5 +1,5 @@
 fixture1:
-    depends_on:
+    depend_on:
         - fixture2
 
 fixture2:

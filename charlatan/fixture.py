@@ -28,7 +28,7 @@ class Fixture(object):
                  model=None, fields=None,
                  inherit_from=None,
                  post_creation=None, id_=None,
-                 depends_on=frozenset()):
+                 depend_on=frozenset()):
         """Create a Fixture object.
 
         :param str model: model used to instantiate the fixture, e.g.
@@ -37,7 +37,7 @@ class Fixture(object):
         :param fixture_manager: FixtureManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
         :param str inherit_from: model to inherit from
-        :param list depends_on: A list of relationships to depend on
+        :param list depend_on: A list of relationships to depend on
 
         """
 
@@ -57,7 +57,7 @@ class Fixture(object):
         self.fields = fields or {}
         self.post_creation = post_creation or {}
 
-        self.depends_on = depends_on
+        self.depend_on = depend_on
 
     def update_with_parent(self):
         """Update the object in place using its chain of inheritance."""
@@ -176,7 +176,7 @@ class Fixture(object):
 
         # TODO: make this DRYer since it's mostly copied from _process_relationships
 
-        for dep in self.depends_on:
+        for dep in self.depend_on:
             yield dep, None
 
         # For dictionaries, iterate over key, value and for lists iterate over

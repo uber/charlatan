@@ -90,7 +90,7 @@ in this case, you just need to specify the ``model`` and an ``id``.
 
 
 Dependencies
------------
+------------
 
 If a fixture depends on some side effect of another fixture, you can mark
 that dependency (and, necessarily, ordering) by using the ``depend_on``

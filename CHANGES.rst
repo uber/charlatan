@@ -1,11 +1,18 @@
 Changelog for Charlatan
 =======================
 
+0.2.7 (unreleased)
+------------------
+
+- Add ability to define dependencies outside of fields through the `depend_on`
+  key in the yaml file (thanks to @Roguelazer)
+
 0.2.6 (2013-09-06)
 ------------------
 
 - Fix regression that broke API. install_fixture started returning the fixture
   as well as its name. (thanks to @erikformella)
+
 0.2.5 (2013-09-06)
 ------------------
 

@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.2.7 (unreleased)
+0.2.7 (2013-10-24)
 ------------------
 
 - Add ability to define dependencies outside of fields through the `depend_on`

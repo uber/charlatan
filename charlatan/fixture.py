@@ -27,7 +27,8 @@ class Fixture(object):
     def __init__(self, key, fixture_manager,
                  model=None, fields=None,
                  inherit_from=None,
-                 post_creation=None, id_=None):
+                 post_creation=None, id_=None,
+                 depend_on=frozenset()):
         """Create a Fixture object.
 
         :param str model: model used to instantiate the fixture, e.g.
@@ -36,6 +37,7 @@ class Fixture(object):
         :param fixture_manager: FixtureManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
         :param str inherit_from: model to inherit from
+        :param list depend_on: A list of relationships to depend on
 
         """
 
@@ -54,6 +56,7 @@ class Fixture(object):
         self.model_name = model
         self.fields = fields or {}
         self.post_creation = post_creation or {}
+        self.depend_on = depend_on
 
     def update_with_parent(self):
         """Update the object in place using its chain of inheritance."""
@@ -66,7 +69,7 @@ class Fixture(object):
         # Recursive to make sure everything is updated.
         parent.update_with_parent()
 
-        can_be_inherited = ["model_name", "fields", "post_creation"]
+        can_be_inherited = ["model_name", "fields", "post_creation", "depend_on"]
         for key in can_be_inherited:
             value = getattr(self, key)
             new_value = None
@@ -156,6 +159,43 @@ class Fixture(object):
 
         return get_class(module, klass)
 
+    @staticmethod
+    def extract_rel_name(name):
+        """Helper function to extract the relationship and attr from an argument to !rel"""
+
+        rel_name = name  # e.g. toaster.color
+        attr = None
+
+        # TODO: we support only one level for now
+        if "." in name:
+            rel_name, attr = name.split(".")
+        return rel_name, attr
+
+    def extract_relationships(self):
+        """Iterator of all relationships and dependencies for this fixture"""
+
+        # TODO: make this DRYer since it's mostly copied from _process_relationships
+
+        for dep in self.depend_on:
+            yield dep, None
+
+        # For dictionaries, iterate over key, value and for lists iterate over
+        # index, item
+        if hasattr(self.fields, 'iteritems'):
+            field_iterator = self.fields.iteritems()
+        else:
+            field_iterator = enumerate(self.fields)
+
+        for name, value in field_iterator:
+            # One to one relationship
+            if isinstance(value, RelationshipToken):
+                yield self.extract_rel_name(value)
+            # One to many relationship
+            elif isinstance(value, (tuple, list)):
+                for i, nested_value in enumerate(value):
+                    if isinstance(nested_value, RelationshipToken):
+                        yield self.extract_rel_name(nested_value)
+
     def _process_relationships(self, fields, remove=False):
         """Create any relationship if needed.
 
@@ -207,13 +247,7 @@ class Fixture(object):
         get_fixture = functools.partial(self.fixture_manager.get_fixture,
                                         include_relationships=True)
 
-        rel_name = name  # e.g. toaster.color
-        attr = None
-
-        # TODO: we support only one level for now
-        if "." in name:
-            rel_name, attr = name.split(".")
-
+        rel_name, attr = self.extract_rel_name(name)
         rel = get_fixture(rel_name)
 
         if attr:

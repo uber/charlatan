@@ -1,0 +1,12 @@
+fixture1:
+  fields:
+    - name: "foo"
+
+
+fixture2:
+  depend_on:
+    - fixture1
+  fields:
+    - name: "bar"
+  post_creation:
+    - some_descriptor_that_depend_on_fixture1: true

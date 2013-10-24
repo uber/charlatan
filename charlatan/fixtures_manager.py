@@ -1,6 +1,7 @@
 from charlatan.fixture import Fixture
 from charlatan.utils import copy_docstring_from
 from charlatan.file_format import load_file
+from charlatan.depgraph import DepGraph
 
 
 # TODO: refactor so that the Mixin and the class are less coupled and
@@ -56,7 +57,7 @@ class FixturesManager(object):
         self.session = db_session
 
         # Load the data
-        self.fixtures = self._load_fixtures(self.filename)
+        self.fixtures, self.depgraph = self._load_fixtures(self.filename)
 
         # Initiate the cache
         self.clean_cache()
@@ -90,7 +91,13 @@ class FixturesManager(object):
 
                 fixtures[k] = Fixture(key=k, fixture_manager=self, **v)
 
-        return fixtures
+        d = DepGraph()
+        for key, fixture in fixtures.iteritems():
+            for dependency, _ in fixture.extract_relationships():
+                d.add_edge(dependency, key)
+        # this does nothing except raise an error if there's a cycle
+        d.topo_sort()
+        return fixtures, d
 
     def clean_cache(self):
         """Clean the cache."""
@@ -203,6 +210,10 @@ class FixturesManager(object):
 
         :rtype: instantiated but unsaved fixture
         """
+        # initialize all parents in topological order
+        parents = []
+        for fixture in self.depgraph.ancestors_of(fixture_key):
+            parents.append(self.get_fixture(fixture, include_relationships=include_relationships))
 
         if not fixture_key in self.fixtures:
             raise KeyError("No such fixtures: '%s'" % fixture_key)

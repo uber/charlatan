@@ -143,6 +143,17 @@ class FixturesManager(object):
 
         try:
             self._get_hook("before_install")()
+
+            # things included by depend_on need to be saved if this obj is saved
+            if not do_not_save:
+                for explicit_dependency_key in self.fixtures[fixture_key].depend_on:
+                    explicit_parent = self.get_fixture(
+                        explicit_dependency_key,
+                        include_relationships=include_relationships,
+                        load_parents=False
+                    )
+                    self.save_instance(explicit_parent)
+
             instance = self.get_fixture(
                 fixture_key,
                 include_relationships=include_relationships,
@@ -201,7 +212,7 @@ class FixturesManager(object):
             do_not_save=do_not_save,
             include_relationships=include_relationships)
 
-    def get_fixture(self, fixture_key, include_relationships=True, attrs={}):
+    def get_fixture(self, fixture_key, include_relationships=True, attrs={}, load_parents=True):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
@@ -212,8 +223,14 @@ class FixturesManager(object):
         """
         # initialize all parents in topological order
         parents = []
-        for fixture in self.depgraph.ancestors_of(fixture_key):
-            parents.append(self.get_fixture(fixture, include_relationships=include_relationships))
+        if load_parents:
+            for parent_fixture_key in self.depgraph.ancestors_of(fixture_key):
+                parent = self.get_fixture(
+                    parent_fixture_key,
+                    include_relationships=include_relationships,
+                    load_parents=False
+                )
+                parents.append(parent)
 
         if not fixture_key in self.fixtures:
             raise KeyError("No such fixtures: '%s'" % fixture_key)

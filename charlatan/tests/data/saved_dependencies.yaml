@@ -1,0 +1,12 @@
+fixture1:
+    model: mock.Mock
+
+fixture3:
+    model: mock.Mock
+
+fixture2:
+    model: mock.Mock
+    fields:
+        f3: !rel fixture3
+    depend_on:
+        - fixture1

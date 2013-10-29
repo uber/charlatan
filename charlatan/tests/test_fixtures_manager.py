@@ -8,7 +8,7 @@ from charlatan import Fixture
 from charlatan import FixturesManager
 
 
-class testFixturesManager(testing.TestCase):
+class TestFixturesManager(testing.TestCase):
 
     def test_install_fixture(self):
         """install_fixture should return the fixture"""
@@ -25,42 +25,42 @@ class testFixturesManager(testing.TestCase):
         })
 
     def test_dependency_parsing(self):
-        fm = FixturesManager()
-        fm.load(
+        fixture_manager = FixturesManager()
+        fixture_manager.load(
             './charlatan/tests/data/dependencies.yaml'
         )
-        assert fm.depgraph.has_edge_between('fixture1', 'fixture2')
-        assert fm.depgraph.has_edge_between('fixture1', 'fixture3')
-        assert fm.depgraph.has_edge_between('fixture4', 'fixture3')
-        assert fm.depgraph.has_edge_between('fixture2', 'fixture4')
+        assert fixture_manager.depgraph.has_edge_between('fixture1', 'fixture2')
+        assert fixture_manager.depgraph.has_edge_between('fixture1', 'fixture3')
+        assert fixture_manager.depgraph.has_edge_between('fixture4', 'fixture3')
+        assert fixture_manager.depgraph.has_edge_between('fixture2', 'fixture4')
 
     def test_notices_cyclic_dependencies(self):
-        """test that charlatan bails early if you created a cyclic dependency"""
+        """Test that charlatan bails early if you created a cyclic dependency"""
 
-        fm = FixturesManager()
+        fixture_manager = FixturesManager()
         self.assertRaises(
             depgraph.HasACycle,
-            fm.load,
+            fixture_manager.load,
             './charlatan/tests/data/cyclic_dependencies.yaml'
         )
 
     def test_constructs_ancestors(self):
-        """test that all ancestors (both depend_on and !rel) are constructed"""
+        """Test that all ancestors (both depend_on and !rel) are constructed"""
 
-        fm = FixturesManager()
-        fm.load(
+        fixture_manager = FixturesManager()
+        fixture_manager.load(
             './charlatan/tests/data/dependencies.yaml'
         )
-        assert not fm.cache
+        assert not fixture_manager.cache
         # loading fixture3 should load fixture1 and fixture2 also
-        fm.get_fixture('fixture3')
-        self.assertIn('fixture1', fm.cache)
-        self.assertIn('fixture4', fm.cache)
+        fixture_manager.get_fixture('fixture3')
+        self.assertIn('fixture1', fixture_manager.cache)
+        self.assertIn('fixture4', fixture_manager.cache)
 
     def test_depend_on_ancestors_are_saved(self):
-        """test that other fixtures explicitly dependend on with `depend_on` are saved"""
+        """Test that other fixtures explicitly dependend on with `depend_on` are saved"""
 
-        fm = FixturesManager()
+        fixture_manager = FixturesManager()
         mocks = {}
 
         def mock_get_class(other):
@@ -68,17 +68,17 @@ class testFixturesManager(testing.TestCase):
                 mocks[other.key] = mock.Mock(name=other.key)
             return mocks[other.key]
         with mock.patch.object(Fixture, 'get_class', mock_get_class):
-            fm.load(
+            fixture_manager.load(
                 './charlatan/tests/data/saved_dependencies.yaml',
             )
-            fm.install_fixture('fixture2')
+            fixture_manager.install_fixture('fixture2')
             # all fixtures should have been initialized because they're dependencies of fixture2
-            self.assertIn('fixture1', fm.cache)
-            self.assertIn('fixture2', fm.cache)
-            self.assertIn('fixture3', fm.cache)
-            f1 = fm.get_fixture('fixture1')
-            f2 = fm.get_fixture('fixture2')
-            f3 = fm.get_fixture('fixture3')
+            self.assertIn('fixture1', fixture_manager.cache)
+            self.assertIn('fixture2', fixture_manager.cache)
+            self.assertIn('fixture3', fixture_manager.cache)
+            f1 = fixture_manager.get_fixture('fixture1')
+            f2 = fixture_manager.get_fixture('fixture2')
+            f3 = fixture_manager.get_fixture('fixture3')
             # fixtures 1 and 2 should be saved (2 because it's installed, 1 because it's a dep of 2)
             # fixture 3 should *not* be saved because it's a !rel and we don't save those implicitly
             f1.save.assert_called_once_with()

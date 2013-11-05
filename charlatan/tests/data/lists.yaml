@@ -1,0 +1,18 @@
+fixture_list:
+  objects:
+    -
+      field1: stuff
+    -
+      field1: more_stuff
+
+
+related_fixture:
+  fields:
+    elements: !rel fixture_list
+
+
+list_fixture:
+  fields:
+    - Lolin
+    - at
+    - Stuff

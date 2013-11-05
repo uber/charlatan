@@ -73,14 +73,20 @@ class FixturesManager(object):
         fixtures = {}
         for k, v in content.items():
 
-            # Unnamed fixtures
+            # List of fixtures
             if "objects" in v:
 
+                fixture_list = []
                 # v["objects"] is a list of fixture fields dict
                 for i, fields in enumerate(v["objects"]):
                     key = k + "_" + str(i)
-                    fixtures[key] = Fixture(key=key, fixture_manager=self,
-                                            model=v["model"], fields=fields)
+                    fixture = Fixture(key=key, fixture_manager=self,
+                                      model=v.get("model"), fields=fields)
+
+                    fixtures[key] = fixture
+                    fixture_list.append(fixture)
+
+                fixtures[k] = fixture_list
 
             # Named fixtures
             else:
@@ -92,9 +98,19 @@ class FixturesManager(object):
                 fixtures[k] = Fixture(key=k, fixture_manager=self, **v)
 
         d = DepGraph()
-        for key, fixture in fixtures.iteritems():
+
+        def add_to_graph(fixture):
+            """Closure for adding fixtures to the dependency graph"""
             for dependency, _ in fixture.extract_relationships():
-                d.add_edge(dependency, key)
+                d.add_edge(dependency, fixture.key)
+
+        for fixture in fixtures.values():
+            if isinstance(fixture, list):
+                for fix in fixture:
+                    add_to_graph(fix)
+            else:
+                add_to_graph(fixture)
+
         # this does nothing except raise an error if there's a cycle
         d.topo_sort()
         return fixtures, d
@@ -213,7 +229,12 @@ class FixturesManager(object):
         # initialize all parents in topological order
         parents = []
         for fixture in self.depgraph.ancestors_of(fixture_key):
-            parents.append(self.get_fixture(fixture, include_relationships=include_relationships))
+            parents.append(
+                self.get_fixture(
+                    fixture,
+                    include_relationships=include_relationships
+                )
+            )
 
         if not fixture_key in self.fixtures:
             raise KeyError("No such fixtures: '%s'" % fixture_key)
@@ -222,12 +243,25 @@ class FixturesManager(object):
         # expensive.
         instance = self.cache.get(fixture_key)
         if not instance:
-            instance = self.fixtures[fixture_key].get_instance(
-                include_relationships=include_relationships)
+            fixture = self.fixtures[fixture_key]
+
+            fixture_is_list = isinstance(fixture, list)
+
+            if fixture_is_list:
+                instance = [
+                    self.get_fixture(f.key, include_relationships, attrs)
+                    for f in fixture
+                ]
+            else:
+                instance = fixture.get_instance(
+                    include_relationships=include_relationships
+                )
+
             self.cache[fixture_key] = instance
 
-        # If any arguments are passed in, set them before returning
-        if attrs:
+        # If any arguments are passed in, set them before returning. But do not
+        # set them on a list of fixtures (they are already set on all elements)
+        if attrs and not fixture_is_list:
             for attr, value in attrs.items():
                 setattr(instance, attr, value)
 

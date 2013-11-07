@@ -4,6 +4,9 @@ Charlatan: Fixtures Made Easy
 .. image:: https://travis-ci.org/uber/charlatan.png?branch=master
     :target: https://travis-ci.org/uber/charlatan
 
+.. image:: https://coveralls.io/repos/uber/charlatan/badge.png
+  :target: https://coveralls.io/r/uber/charlatan
+
 **Efficiently manage and install data fixtures**
 
 `Charlatan` is a library that you can use in your tests to create database

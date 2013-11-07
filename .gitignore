@@ -19,9 +19,13 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+cover
 
 # Translations
 *.mo
 
 # Doc
 docs/_build
+
+# pyenv
+.python-version

@@ -8,7 +8,10 @@ def test(args=""):
 
     clean()
     local("flake8 charlatan/ --ignore=E501,E702")
-    local("nosetests --with-doctest")
+    local(
+        "nosetests --with-doctest --with-coverage --cover-erase --cover-html "
+        "--cover-package=charlatan"
+    )
     with lcd("docs"):
         local("make doctest")
 

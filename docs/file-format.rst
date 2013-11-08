@@ -150,6 +150,43 @@ attribute (e.g. ``!rel toaster.id``).
 .. versionadded:: 0.2.0
    It is now possible to link to another object' attribute.
 
+Collections of Fixtures
+-----------------------
+
+Example:
+
+.. code-block:: yaml
+
+    cahracters
+      model: Character
+      objects:
+        -
+        name: Rick Deckard
+        favorite_toaster: !rel red_toaster
+        -
+        name: Roy Batty
+        favorite_toaster: !rel green_toaster
+
+    movie:
+      model: Movie
+      fields:
+        characters: !rel characters
+
+A collection of models can be defined by simply providing the ``objects`` key.
+The whole list can be installed by the fixture name (``'characters'`` in the
+example). Alterniatively, single items can be retrieved from the list by
+appending an ``_<index>`` to the end of the collection name. So to get Rick
+Deckard, the fixture name is ``'characters_0'``.
+
+Like any fixture, this collection can be linked to in a relationship using the
+``!rel`` keyword. In the example, installing the ``'movie'`` fixture gives a
+model that has an ``characters`` attribute that is a list containing Rick and
+Roy.
+
+.. versionadded:: 0.2.8
+    It is now possible to retrieve lists of fixtures and link to them with
+    ``!rel``
+
 Relative timestamps
 -------------------
 

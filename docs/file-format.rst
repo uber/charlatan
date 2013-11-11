@@ -157,7 +157,7 @@ Example:
 
 .. code-block:: yaml
 
-    cahracters
+    characters
       model: Character
       objects:
         -
@@ -174,7 +174,7 @@ Example:
 
 A collection of models can be defined by simply providing the ``objects`` key.
 The whole list can be installed by the fixture name (``'characters'`` in the
-example). Alterniatively, single items can be retrieved from the list by
+example). Alternatively, single items can be retrieved from the list by
 appending an ``_<index>`` to the end of the collection name. So to get Rick
 Deckard, the fixture name is ``'characters_0'``.
 

@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.2.8 (unreleased)
+------------------
+
+- Add ability to point to a list fixture (thanks to @erikformella)
+
 0.2.7 (2013-10-24)
 ------------------
 

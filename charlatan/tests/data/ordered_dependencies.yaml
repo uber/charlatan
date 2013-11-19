@@ -1,0 +1,12 @@
+fixture1:
+    fields:
+        foo: bar
+
+fixture2:
+    fields:
+        foo: baz
+
+fixture3:
+    fields:
+        foo: !rel fixture1
+        bar: !rel fixture2

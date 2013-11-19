@@ -70,6 +70,8 @@ class FixturesManager(object):
 
         content = load_file(filename)
 
+        print 'heyzzzz'
+
         fixtures = {}
         for k, v in content.items():
 
@@ -133,6 +135,7 @@ class FixturesManager(object):
 
         """
 
+        print 'heywwww'
         self._get_hook("before_save")(instance)
 
         if self.session and is_sqlalchemy_model(instance):
@@ -157,6 +160,7 @@ class FixturesManager(object):
         :rtype: :data:`fixture_instance`
         """
 
+        print 'heyooo'
         try:
             self._get_hook("before_install")()
             instance = self.get_fixture(

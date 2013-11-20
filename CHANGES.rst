@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.2.9 (unreleased)
+------------------
+
+- Add ``!epoch_now`` for Unix timestamps (thanks to @erikformella)
+
 0.2.8 (2013-11-12)
 ------------------
 

@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import calendar
 import datetime
 
 import yaml
@@ -38,6 +39,13 @@ def configure_yaml():
 
         return now
 
+    def epoch_now_constructor(loader, node):
+        """Return the current datetime as seconds since the epoch"""
+
+        now = now_constructor(loader, node)
+
+        return calendar.timegm(now.utctimetuple())
+
     def relationship_constructor(loader, node):
         """Create _RelationshipToken for `!rel` tags."""
 
@@ -45,6 +53,7 @@ def configure_yaml():
         return RelationshipToken(name)
 
     yaml.add_constructor(u'!now', now_constructor)
+    yaml.add_constructor(u'!epoch_now', epoch_now_constructor)
     yaml.add_constructor(u'!rel', relationship_constructor)
 
 

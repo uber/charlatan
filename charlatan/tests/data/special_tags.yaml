@@ -1,0 +1,7 @@
+current_time: !now
+
+tomorrow: !now +1d
+
+current_epoch_time: !epoch_now
+
+relationship: !rel tomorrow

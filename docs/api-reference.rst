@@ -4,7 +4,11 @@ API Reference
 .. testsetup:: *
 
     import datetime
-    from charlatan.utils import apply_delta, extended_timedelta
+    from charlatan.utils import (
+        apply_delta,
+        extended_timedelta,
+        datetime_to_epoch_timestamp
+    )
 
 
 charlatan

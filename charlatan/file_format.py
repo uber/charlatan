@@ -1,10 +1,9 @@
 from __future__ import absolute_import
-import calendar
 import datetime
 
 import yaml
 
-from charlatan.utils import apply_delta
+from charlatan.utils import apply_delta, datetime_to_epoch_timestamp
 
 
 class RelationshipToken(str):
@@ -44,7 +43,7 @@ def configure_yaml():
 
         now = now_constructor(loader, node)
 
-        return calendar.timegm(now.utctimetuple())
+        return datetime_to_epoch_timestamp(now)
 
     def relationship_constructor(loader, node):
         """Create _RelationshipToken for `!rel` tags."""

@@ -5,10 +5,10 @@
 
 # Script
 fabric
-# Running tests
-nose==1.2.1
 mock==1.0.1
 coverage==3.7
+# Test runner
+pytest==2.4.2
 coveralls==0.3
 # Documentation
 Sphinx==1.1.3

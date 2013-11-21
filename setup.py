@@ -1,5 +1,8 @@
 #!/usr/bin/env python
+import sys
+
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
 
 def read_long_description(filename="README.rst"):
@@ -11,11 +14,25 @@ def read_requirements(filename="requirements.txt"):
     with open(filename) as f:
         return f.readlines()
 
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errcode = pytest.main(self.test_args)
+        sys.exit(errcode)
+
 setup(
     name="charlatan",
     version='0.2.9',
     author="Charles-Axel Dein",
     author_email="charles@uber.com",
+    tests_require=['pytest'],
+    cmdclass={'test': PyTest},
     url="https://github.com/uber/charlatan",
     packages=["charlatan"],
     keywords=["tests", "fixtures", "database"],

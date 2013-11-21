@@ -34,8 +34,9 @@ Fixtures can inherit from other fixtures.
 
 .. doctest::
 
+    >>> from charlatan import FixturesManager
     >>> manager = FixturesManager()
-    >>> manager.load("./examples/fixtures_inheritance.yaml")
+    >>> manager.load("docs/examples/fixtures_inheritance.yaml")
     >>> manager.get_fixture("first")
     {'foo': 'bar'}
     >>> manager.get_fixture("second")
@@ -68,7 +69,7 @@ is. This is useful if you want to enter a dictionary or a list directly.
 .. doctest::
 
     >>> manager = FixturesManager()
-    >>> manager.load("./examples/fixtures_dict.yaml")
+    >>> manager.load("docs/examples/fixtures_dict.yaml")
     >>> manager.get_fixture("fixture_name")
     {'foo': 'bar'}
     >>> manager.get_fixture("fixture_list")

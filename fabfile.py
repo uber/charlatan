@@ -8,12 +8,16 @@ def test(args=""):
 
     clean()
     local("flake8 charlatan/ --ignore=E501,E702")
-    local(
-        "nosetests --with-doctest --with-coverage --cover-erase --cover-html "
-        "--cover-package=charlatan"
-    )
-    with lcd("docs"):
-        local("make doctest")
+    local("python setup.py test")
+
+
+@task
+def coverage():
+    """Run the coverage."""
+    local("coverage run --source charlatan setup.py test")
+    local("coverage report -m")
+    local("coverage html")
+    local("open htmlcov/index.html")
 
 
 @task

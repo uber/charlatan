@@ -15,8 +15,8 @@ def get_class(module, klass):
     try:
         object_module = importlib.import_module(module)
         cls = getattr(object_module, klass)
-    except ImportError:
-        raise ImportError("Unable to import %s:%s" % (module, klass))
+    except (ImportError, TypeError) as e:
+        raise ImportError("Unable to import %s:%s. %r" % (module, klass, e))
 
     return cls
 

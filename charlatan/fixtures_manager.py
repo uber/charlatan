@@ -40,7 +40,7 @@ class FixturesManager(object):
     def __init__(self):
         self.hooks = {}
 
-    def load(self, filename, db_session=None, models_package=None):
+    def load(self, filename, db_session=None, models_package=""):
         """Pre-load the fixtures.
 
         :param str filename: file that holds the fixture data
@@ -153,6 +153,7 @@ class FixturesManager(object):
         :param bool do_not_save: True if fixture should not be saved.
         :param bool include_relationships: False if relationships should be
             removed.
+        :param dict attrs: override fields
 
         :rtype: :data:`fixture_instance`
         """
@@ -217,12 +218,13 @@ class FixturesManager(object):
             do_not_save=do_not_save,
             include_relationships=include_relationships)
 
-    def get_fixture(self, fixture_key, include_relationships=True, attrs={}):
+    def get_fixture(self, fixture_key, include_relationships=True, attrs=None):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
         :param bool include_relationships: False if relationships should be
             removed.
+        :param dict attrs: override fields
 
         :rtype: instantiated but unsaved fixture
         """

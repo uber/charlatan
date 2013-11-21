@@ -37,6 +37,14 @@ class TestFileFormat(testing.TestCase):
 
         self.assertEqual(current_epoch_time, self.yaml['current_epoch_time'])
 
+    def test_epoch_now_tag_with_offset(self):
+        """Assert !epoch_now accepts an offset"""
+
+        tomorrow_datetime = self.current_time + datetime.timedelta(days=1)
+        tomorrow = datetime_to_epoch_timestamp(tomorrow_datetime)
+
+        self.assertEqual(tomorrow, self.yaml['tomorrow_epoch_time'])
+
     def test_rel_tag(self):
         """Assert !rel tag makes the value a relationship token"""
 

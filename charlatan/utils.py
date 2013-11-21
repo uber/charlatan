@@ -1,3 +1,4 @@
+import calendar
 import datetime
 import functools
 import itertools
@@ -104,6 +105,24 @@ def extended_timedelta(**kwargs):
         kwargs["days"] = kwargs.setdefault("days", 0) + add
 
     return datetime.timedelta(**kwargs)
+
+
+def datetime_to_epoch_timestamp(a_datetime):
+    """Return the epoch timestamp for the given datetime
+
+    :param datetime a_datetime: The datetime to translate
+    :rtype: float
+
+    >>> a_datetime = datetime.datetime(2013, 11, 21, 1, 33, 11, 160611)
+    >>> datetime_to_epoch_timestamp(a_datetime)
+    1384997591.160611
+    """
+
+    return (
+        calendar.timegm(a_datetime.utctimetuple())
+        + a_datetime.microsecond / 1000000.0
+    )
+
 
 # TODO: does not copy the function signature
 # see http://stackoverflow.com/questions/2982974/copy-call-signature-to-decorator  # noqa

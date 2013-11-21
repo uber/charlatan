@@ -3,7 +3,7 @@ import datetime
 
 import yaml
 
-from charlatan.utils import apply_delta
+from charlatan.utils import apply_delta, datetime_to_epoch_timestamp
 
 
 class RelationshipToken(str):
@@ -38,6 +38,13 @@ def configure_yaml():
 
         return now
 
+    def epoch_now_constructor(loader, node):
+        """Return the current datetime as seconds since the epoch"""
+
+        now = now_constructor(loader, node)
+
+        return datetime_to_epoch_timestamp(now)
+
     def relationship_constructor(loader, node):
         """Create _RelationshipToken for `!rel` tags."""
 
@@ -45,6 +52,7 @@ def configure_yaml():
         return RelationshipToken(name)
 
     yaml.add_constructor(u'!now', now_constructor)
+    yaml.add_constructor(u'!epoch_now', epoch_now_constructor)
     yaml.add_constructor(u'!rel', relationship_constructor)
 
 

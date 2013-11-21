@@ -197,3 +197,13 @@ Use ``!now``:
 * ``!now -10d`` returns the current datetime minus ten days
 * ``!now +15M`` (note the case) returns the current datetime plus 15 minutes
 * ``!now -30s`` returns the current datetime minus 30 seconds
+
+For Unix timestamps (seconds since the epoch) you can use ``!epoch_now``:
+
+* ``!epoch_now +1d`` returns the current datetime plus one year in seconds
+  since the epoch
+
+All the same time deltas work.
+
+.. versionadded:: 0.2.9
+    It is now possible to use times in seconds since the epoch

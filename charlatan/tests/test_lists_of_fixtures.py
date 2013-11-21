@@ -31,3 +31,10 @@ class TestListOfFixtures(testing.TestCase):
         """Assert that installing a list as a fixture does not error"""
 
         self.fm.install_fixture('list_fixture')
+
+    def test_get_many_items_by_name(self):
+        """Assert lists of fixtures returns lists"""
+
+        (fixtures,) = self.fm.install_fixtures(('fixture_list',))
+
+        self.assertIsInstance(fixtures, list)

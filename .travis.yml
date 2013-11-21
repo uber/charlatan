@@ -5,5 +5,5 @@ install:
   - "pip install -r requirements.txt --use-mirrors"
   - "pip install -r requirements-dev.txt --use-mirrors"
   - "python setup.py develop"
-script: python setup.py test
+script: coverage run --source charlatan setup.py test
 after_success: coveralls

@@ -22,9 +22,9 @@ def coverage():
 
 @task
 def clean():
-    """Remove all .pyc files"""
+    """Remove all .pyc files."""
     # Ignore hidden files and folder
-    local("find . \( ! -regex '.*/\..*/..*' \) -type f -name '*.pyc' -exec rm '{}' +")
+    local("find . -name '*.py[co]' -exec rm -f '{}' ';'")
 
 
 @task

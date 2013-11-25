@@ -11,3 +11,5 @@ pytest==2.5.1
 flake8==2.1.0
 # For tests
 sqlalchemy==0.9.1
+# Multi-version testing
+tox==1.6.1

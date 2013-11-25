@@ -5,11 +5,9 @@ fixture_list:
     -
       field1: more_stuff
 
-
 related_fixture:
   fields:
     elements: !rel fixture_list
-
 
 list_fixture:
   fields:

@@ -3,6 +3,7 @@ import functools
 import importlib
 
 from charlatan.file_format import RelationshipToken
+from ._six import string_types
 
 
 def get_class(module, klass):
@@ -77,7 +78,7 @@ class Fixture(object):
                 # We take the parent.
                 new_value = getattr(parent, key)
 
-            elif isinstance(value, basestring):
+            elif isinstance(value, string_types):
                 continue  # The children value takes precedence.
 
             elif hasattr(value, "update"):  # Most probably a dict
@@ -190,6 +191,7 @@ class Fixture(object):
             # One to one relationship
             if isinstance(value, RelationshipToken):
                 yield self.extract_rel_name(value)
+
             # One to many relationship
             elif isinstance(value, (tuple, list)):
                 for i, nested_value in enumerate(value):

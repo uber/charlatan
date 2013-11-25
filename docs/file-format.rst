@@ -57,14 +57,14 @@ Fixtures can inherit from other fixtures.
     {'foo': 'bar', 'toaster': 'toasted'}
     >>> fourth = manager.get_fixture("fourth")
     >>> fourth
-    {'foo': 'bar'}
+    Counter({'foo': 'bar'})
     >>> fourth.__class__.__name__
-    'UserDict'
+    'Counter'
     >>> fifth = manager.get_fixture("fifth")
     >>> fifth
-    {'foo': 'bar', 'toaster': 'toasted'}
+    Counter({'toaster': 'toasted', 'foo': 'bar'})
     >>> fifth.__class__.__name__
-    'UserDict'
+    'Counter'
 
 .. versionadded:: 0.2.4
     Fixtures can now inherits from other fixtures.

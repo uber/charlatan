@@ -61,8 +61,8 @@ Using fixtures
 
 There are multiple ways to require and use fixtures.
 
-For each tests, in setUp
-""""""""""""""""""""""""
+For each tests, in setUp and tearDown
+"""""""""""""""""""""""""""""""""""""
 
 .. code-block:: python
 
@@ -72,16 +72,21 @@ For each tests, in setUp
             # This will create self.client and self.driver
             self.install_fixtures(("client", "driver"))
 
+        def tearDown(self):
+            # This will delete self.client and self.driver
+            self.uninstall_fixtures(("client", "driver"))
+
 For a single test
 """""""""""""""""
 
 .. code-block:: python
 
-  class MyTest(FixturesManagerMixin):
+    class MyTest(FixturesMixin):
 
-      def test_toaster(self):
-          self.install_fixtures("toaster")
-
+        def test_toaster(self):
+            self.install_fixture("toaster")
+            # do things... and optionally uninstall it once you're done
+            self.uninstall_fixture("toaster")
 
 Getting a fixture without saving it
 """""""""""""""""""""""""""""""""""

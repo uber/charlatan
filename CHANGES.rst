@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.0 (2014-01-10)
+0.3.1 (2014-01-10)
 ------------------
 
 - Numerous tests added, a lot of cleanup.

@@ -1,5 +1,4 @@
 from charlatan.fixture import Fixture
-from charlatan.utils import copy_docstring_from
 from charlatan.file_format import load_file
 from charlatan.depgraph import DepGraph
 
@@ -35,26 +34,38 @@ def is_sqlalchemy_model(instance):
 
 class FixturesManager(object):
 
-    """Manage Fixture objects."""
+    """
+    Manage Fixture objects.
 
-    def __init__(self):
+    :param Session db_session: sqlalchemy Session object
+
+    .. versionadded:: 0.3.0
+        ``db_session`` argument was added.
+
+    """
+
+    def __init__(self, db_session=None):
         self.hooks = {}
+        self.session = db_session
 
-    def load(self, filename, db_session=None, models_package=""):
+    def load(self, filename, models_package=""):
         """Pre-load the fixtures.
 
         :param str filename: file that holds the fixture data
-        :param Session db_session: sqlalchemy Session object
         :param str models_package: package holding the models definition
 
         Note that this does not effectively instantiate anything. It just does
         some pre-instantiation work, like prepending the root model package
         and doing some basic sanity check.
+
+        .. versionchanged:: 0.3.0
+            ``db_session`` argument was removed and put in the object's
+            constructor arguments.
+
         """
 
         self.filename = filename
         self.models_package = models_package
-        self.session = db_session
 
         # Load the data
         self.fixtures, self.depgraph = self._load_fixtures(self.filename)
@@ -255,6 +266,7 @@ class FixturesManager(object):
                     for f in fixture
                 ]
             else:
+
                 instance = fixture.get_instance(
                     include_relationships=include_relationships
                 )
@@ -305,58 +317,3 @@ class FixturesManager(object):
             raise KeyError("'%s' is not an allowed hook." % hookname)
 
         self.hooks[hookname] = func
-
-
-FIXTURES_MANAGER = FixturesManager()
-
-
-class FixturesManagerMixin(object):
-
-    """Class from which test cases should inherit to use fixtures."""
-
-    @copy_docstring_from(FixturesManager)
-    def get_fixture(self, fixture_key, include_relationships=True):
-        return FIXTURES_MANAGER.get_fixture(
-            fixture_key,
-            include_relationships=include_relationships)
-
-    @copy_docstring_from(FixturesManager)
-    def get_fixtures(self, fixture_keys, include_relationships=True):
-        return FIXTURES_MANAGER.get_fixtures(fixture_keys)
-
-    @copy_docstring_from(FixturesManager)
-    def install_fixture(self, fixture_key, do_not_save=False,
-                        include_relationships=True, attrs=None):
-
-        instance = FIXTURES_MANAGER.install_fixture(
-            fixture_key,
-            do_not_save=do_not_save,
-            include_relationships=include_relationships,
-            attrs=attrs)
-
-        setattr(self, fixture_key, instance)
-        return instance
-
-    @copy_docstring_from(FixturesManager)
-    def install_fixtures(self, fixture_keys, do_not_save=False,
-                         include_relationships=True):
-
-        # Let's be forgiving
-        if isinstance(fixture_keys, basestring):
-            fixture_keys = (fixture_keys, )
-
-        for f in fixture_keys:
-            self.install_fixture(f,
-                                 do_not_save=do_not_save,
-                                 include_relationships=include_relationships)
-
-    @copy_docstring_from(FixturesManager)
-    def install_all_fixtures(self, do_not_save=False,
-                             include_relationships=True):
-        self.install_fixtures(FIXTURES_MANAGER.fixtures.keys(),
-                              do_not_save=do_not_save,
-                              include_relationships=include_relationships)
-
-    def clean_fixtures_cache(self):
-        """Clean the cache."""
-        FIXTURES_MANAGER.clean_cache()

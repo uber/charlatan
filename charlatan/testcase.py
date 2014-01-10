@@ -1,63 +1,74 @@
-class FixturesMixin(object):
+from charlatan.utils import copy_docstring_from
+from charlatan import FixturesManager
 
-    """Class from which test cases should inherit to use fixtures."""
 
-    def use_fixtures_manager(self, fixtures_manager):
-        """Set the fixture manager.
+class FixturesManagerMixin(object):
+
+    """Class from which test cases should inherit to use fixtures.
+
+    .. versionchanged:: 0.3.0
+        ``use_fixtures_manager`` method renamed ``init_fixtures.``
+
+    .. versionchanged:: 0.3.0
+        Extensive change to the function signatures.
+
+    """
+
+    def init_fixtures(self):
+        """Initialize the fixtures.
 
         This function *must* be called before doing anything else.
         """
-
-        self.__fixtures_manager = fixtures_manager
-        self.__fixtures_manager.clean_cache()
+        self.fixtures_manager.clean_cache()
 
         if hasattr(self, "fixtures"):
             self.install_fixtures(self.fixtures)
 
-    def install_fixtures(self, fixtures, do_not_save=False):
-        """Install required fixtures.
+    @copy_docstring_from(FixturesManager)
+    def install_fixture(self, fixture_key,
+                        attrs=None,
+                        do_not_save=False,
+                        include_relationships=True
+                        ):
+        fixture = self.fixtures_manager.install_fixture(
+            fixture_key, do_not_save, include_relationships, attrs)
+        setattr(self, fixture_key, fixture)
+        return fixture
 
-        :param fixtures: fixtures key
-        :type fixtures: list of strings
+    @copy_docstring_from(FixturesManager)
+    def install_fixtures(self, fixtures, do_not_save=False,
+                         include_relationships=True):
+        # Be forgiving
+        if not isinstance(fixtures, (list, tuple)):
+            fixtures = (fixtures, )
 
-        If :data:`fixtures` is not provided, the method will look for a class
-        property named :attr:`fixtures`.
-        """
+        installed = []
+        for fixture in fixtures:
+            installed.append(
+                self.install_fixture(
+                    fixture, do_not_save, include_relationships)
+            )
 
-        if fixtures:
-            # Be forgiving
-            if not isinstance(fixtures, (list, tuple)):
-                fixtures = (fixtures, )
-            fixtures_to_install = fixtures
-
-        else:
-            fixtures_to_install = self.fixtures
-
-        installed = self.__fixtures_manager.install_fixtures(
-            fixtures_to_install,
-            do_not_save=do_not_save)
-
-        # Adding fixtures to the class
-        for fixture_name, fixture in zip(fixtures_to_install, installed):
-            setattr(self, fixture_name, fixture)
-
-        # Return list of fixture instances
         return installed
 
-    def install_fixture(self, fixture_name):
-        """Install a fixture and return it."""
-        return self.install_fixtures(fixture_name)[0]
+    @copy_docstring_from(FixturesManager)
+    def install_all_fixtures(self, do_not_save=False,
+                             include_relationships=True):
+        return self.install_fixtures(
+            self.fixtures_manager.fixtures.keys(),
+            do_not_save=do_not_save,
+            include_relationships=include_relationships,
+        )
 
-    def create_all_fixtures(self):
-        """Create all available fixtures but do not save them."""
+    @copy_docstring_from(FixturesManager)
+    def get_fixture(self, fixture_key,
+                    include_relationships=True,
+                    attrs=None):
+        return self.fixtures_manager.get_fixture(
+            fixture_key, include_relationships, attrs)
 
-        # Adding fixtures to the class
-        for f in self.__fixtures_manager.install_all(do_not_save=True):
-            setattr(self, f[0], f[1])
-
-    def get_fixture(self, fixture_name):
-        """Return a fixture instance (but do not save it).
-
-        :param str fixture_name: fixture key
-        """
-        return self.__fixtures_manager.get_fixture(fixture_name)
+    @copy_docstring_from(FixturesManager)
+    def get_fixtures(self, fixtures,
+                     include_relationships=True):
+        return self.fixtures_manager.get_fixtures(
+            fixtures, include_relationships)

@@ -17,8 +17,5 @@ The following hooks are available:
   single argument that will be the exception that may have been raised during
   the whole process. This function is guaranteed to be called.
 
-
-You can register them using :meth:`charlatan.set_hook`.
-
 .. automethod:: charlatan.FixturesManager.set_hook
     :noindex:

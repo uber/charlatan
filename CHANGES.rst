@@ -1,6 +1,24 @@
 Changelog for Charlatan
 =======================
 
+0.3.0 (unreleased)
+------------------
+
+- Numerous tests added, a lot of cleanup.
+- Clarification in documentation.
+- Remove ``load``, ``set_hook` and ``install_all_fixtures`` shortcuts from
+  charlatan package.
+- Remove ``FIXTURES_MANAGER`` singleton. Remove ``charlatan.fixtures_manager``
+  shortcut.
+- Remove ``db_session`` argument to ``FixturesManager.load``.
+- Add ``db_session`` argument to ``FixturesManager`` constructor.
+- Remove ``charlatan.fixtures_manager.FixturesMixin``. Replaced by
+  ``charlatan.testcase.FixturesManagerMixin``.
+- ``FixturesManagerMixin`` now exposes pretty much the same method as
+  ``FixturesManager``.
+- ``FixturesManagerMixin``'s ``use_fixtures_manager`` was renamed
+  ``init_fixtures``.
+
 0.2.9 (2013-11-20)
 ------------------
 

@@ -6,10 +6,22 @@ File format
     from charlatan import FixturesManager
 
 charlatan only supports YAML at time of writing.
-Fixtures are defined using a YAML file. Here is its general structure:
+
+Fixtures are defined in a YAML file. Here is its general structure:
 
 .. literalinclude:: examples/fixtures.yaml
     :language: yaml
+
+In this example:
+
+* ``toaster``, ``toast1`` and ``toast2`` are the fixture keys.
+* ``model`` is where to get the model. Both relative and absolute addressing are supported
+* ``fields`` are provided as argument when instantiating the class:
+  ``Toaster(**fields)``.
+* ``!rel`` lets you create relationships by pointing to another fixture key.
+* ``!now`` lets you enter timestamps. It supports basic operations
+  (adding/subtracting days, months, years). **Note** that ``!now`` is evaluated when
+  the fixture file is read, not when the test is run.
 
 
 Defining a fixture

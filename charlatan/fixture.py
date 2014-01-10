@@ -212,7 +212,7 @@ class Fixture(object):
         # FIXME: no error on stange objects
 
         # For dictionaries, iterate over key, value and for lists iterate over
-        # inex, item
+        # index, item
         if hasattr(fields, 'iteritems'):
             field_iterator = fields.iteritems()
         else:

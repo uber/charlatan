@@ -2,16 +2,6 @@ from charlatan.fixture import Fixture
 from charlatan.file_format import load_file
 from charlatan.depgraph import DepGraph
 
-
-# TODO: refactor so that the Mixin and the class are less coupled and
-# more DRY
-# TODO: have more hooks
-# TODO: have more consistent hooks (function params and names)
-# TODO: complain if not loaded
-# TODO: fixture should be the general cases, not install_fixture*s*
-# TODO: check if the row still exists instead of requiring clean cache
-
-
 ALLOWED_HOOKS = ("before_save", "after_save", "before_install",
                  "after_install")
 

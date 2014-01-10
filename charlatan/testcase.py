@@ -46,7 +46,8 @@ class FixturesManagerMixin(object):
         for fixture in fixtures:
             installed.append(
                 self.install_fixture(
-                    fixture, do_not_save, include_relationships)
+                    fixture, do_not_save=do_not_save,
+                    include_relationships=include_relationships)
             )
 
         return installed

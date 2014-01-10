@@ -1,0 +1,9 @@
+# If you add a lib here, please include a short description of what it's doing
+
+mock==1.0.1
+# Test runner
+pytest==2.5.1
+# Syntax checking
+flake8==2.1.0
+# For tests
+sqlalchemy==0.9.1

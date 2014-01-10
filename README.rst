@@ -21,39 +21,12 @@ Documentation
 Latest documentation:
 `charlatan.readthedocs.org/en/latest/ <https://charlatan.readthedocs.org/en/latest/>`_
 
-Getting started
----------------
-
-.. code-block:: python
-
-    import unittest
-
-    from toaster.models import db_session
-
-    import charlatan
-
-    charlatan.load("./tests/data/fixtures.yaml",
-                   models_package="toaster.models",
-                   db_session=db_session)
-
-
-    class TestToaster(unittest.TestCase, charlatan.FixturesManagerMixin):
-
-        def setUp(self):
-            self.clean_fixtures_cache()
-            self.install_fixtures(("toaster", "user"))
-
-        def test_toaster(self):
-            """Verify that toaster can toast."""
-
-            self.toaster.toast()
-
 Installation
 ------------
 
 Using `pip`::
 
-    pip install charlatan
+    $ pip install charlatan
 
 License
 -------

@@ -1,25 +1,48 @@
 Quickstart
 ==========
 
-.. testsetup:: *
+A simple example
+----------------
 
-    from charlatan import FixturesManager
+Let's say we have the following model:
 
+.. literalinclude:: ../charlatan/tests/fixtures/simple_models.py
+    :language: python
 
-Setting up your tests
----------------------
+Let's define a very simple fixtures YAML file:
 
+.. literalinclude:: examples/simple_fixtures.yaml
+    :language: yaml
+
+In this example:
+
+* ``toaster`` and ``toasts`` are the fixture keys.
+* ``fields`` is provided as argument when instantiating the class:
+  ``Toaster(**fields)``.
+* ``model`` is the path to the model that we defined.
+* ``!rel`` lets you create relationships by pointing to another fixture key.
 
 You first need to load a fixtures file (do it once for the whole test suite)
 with :py:meth:`charlatan.FixturesManager.load`:
 
-.. code-block:: python
+.. doctest::
 
-    import charlatan
-    charlatan.load("./tests/data/fixtures.yaml",
-                   db_session=Session,
-                   models_package="toaster.models")
+    >>> import charlatan
+    >>> fixtures_manager = charlatan.FixturesManager()
+    >>> fixtures_manager.load("./docs/examples/simple_fixtures.yaml",
+    ...     models_package="toaster.models")
+    >>> toaster = fixtures_manager.install_fixture("toaster")
+    >>> toaster.color
+    'red'
+    >>> toaster.slots
+    5
+    >>> toaster.content
+    ['Toast 1', 'Toast 2']
 
+Voila!
+
+Using charlatan in test cases
+-----------------------------
 
 `Charlatan` works best when used with :py:class:`unittest.TestCase`. Your test
 class needs to inherits from :py:class:`charlatan.FixturesManagerMixin`.
@@ -30,35 +53,8 @@ create relationships). If you are resetting your database after each tests
 the cache either in :py:meth:`TestCase.setUp`, otherwise `Charlatan` will try
 accessing objects that are not anymore in the sqlalchemy session.
 
-.. code-block:: python
-
-    class TestToaster(unittest.TestCase, charlatan.FixturesManagerMixin):
-
-        def setUp(self):
-            self.clean_fixtures_cache()
-
-
-Defining fixtures
------------------
-
-Fixtures are defined using a YAML file. Here is its general structure:
-
-
-.. literalinclude:: examples/fixtures.yaml
-    :language: yaml
-
-
-In this example:
-
-* ``toaster``, ``toast1`` and ``toast2`` are the fixture keys.
-* ``model`` is where to get the model. Both relative and absolute addressing are supported
-* ``fields`` are provided as argument when instantiating the class:
-  ``Toaster(**fields)``.
-* ``!rel`` lets you create relationships by pointing to another fixture key.
-* ``!now`` lets you enter timestamps. It supports basic operations
-  (adding/subtracting days, months, years). **Note** that ``!now`` is evaluated when
-  the fixture file is read, not when the test is run.
-
+.. literalinclude:: ../charlatan/tests/test_simple_testcase.py
+    :language: python
 
 Using fixtures
 --------------
@@ -70,7 +66,7 @@ For each tests, in setUp
 
 .. code-block:: python
 
-    class MyTest(FixturesMixin):
+    class MyTest(FixturesManagerMixin):
 
         def setUp(self):
             # This will create self.client and self.driver
@@ -81,7 +77,7 @@ For a single test
 
 .. code-block:: python
 
-  class MyTest(FixturesMixin):
+  class MyTest(FixturesManagerMixin):
 
       def test_toaster(self):
           self.install_fixtures("toaster")
@@ -96,7 +92,7 @@ without saving it nor attaching it to the test class:
 
 .. code-block:: python
 
-    class MyTest(FixturesMixin):
+    class MyTest(FixturesManagerMixin):
 
         def test_toaster(self):
             self.toaster = self.get_fixture("toaster")
@@ -133,7 +129,7 @@ attributes:
 
 .. code-block:: python
 
-    class MyTest(FixturesMixin):
+    class MyTest(FixturesManagerMixin):
 
         fixtures = ("toaster", "toast1", "toast2")
 

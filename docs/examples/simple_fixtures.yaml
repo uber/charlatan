@@ -1,0 +1,13 @@
+toaster:   # The fixture's name
+  fields:  # The fixture's content
+    color: red
+    slots: 5
+    content: !rel toasts  # You can reference other fixtures
+  model: charlatan.tests.fixtures.simple_models:Toaster
+
+toasts:
+  fields:
+    - "Toast 1"
+    - "Toast 2"
+  # No model is defined, so it defaults to what `fields` actually is, i.e.
+  # in our case, a list.

@@ -1,0 +1,13 @@
+# If you add a lib here, please include a short description of what it's doing
+
+mock==1.0.1
+# Coverage
+coverage==3.7.1
+# Coverage service
+coveralls==0.4
+# Test runner
+pytest==2.5.1
+# Syntax checking
+flake8==2.1.0
+# For tests
+sqlalchemy==0.9.1

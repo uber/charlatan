@@ -3,12 +3,19 @@ from fabric.colors import green
 
 
 @task
-def test(args=""):
+def test():
     """Run the test suite."""
 
     clean()
     local("flake8 charlatan/ --ignore=E501,E702")
     local("python setup.py test")
+
+
+@task
+def tu(args=""):
+    """Run the unit test suite."""
+    clean()
+    local("py.test %s" % args)
 
 
 @task

@@ -28,7 +28,7 @@ class PyTest(TestCommand):
 
 setup(
     name="charlatan",
-    version='0.3.1',
+    version='0.3.2',
     author="Charles-Axel Dein",
     author_email="charles@uber.com",
     tests_require=['pytest'],

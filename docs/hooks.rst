@@ -16,6 +16,17 @@ The following hooks are available:
 * ``after_install``: called after doing anything. The callback must accept a
   single argument that will be the exception that may have been raised during
   the whole process. This function is guaranteed to be called.
+* ``before_uninstall``: called before uninstalling fixtures. The callback takes
+  no argument.
+* ``before_delete``: called before deleting an instance using either the
+  SQLAlchemy session or in the following order `delete_instance` and `delete`.
+  The callback takes a single argument which is the instance being deleted.
+* ``after_delete``: called after deleting an instance using either the
+  SQLAlchemy session or in the following order `delete_instance` and `delete`.
+  The callback takes a single argument which is the instance that was deleted.
+* ``after_uninstall``: called after uninstalling fixtures. The callback must
+  accept a single argument that will be the exception that may have been raised
+  during the whole process. This function is guaranteed to be called.
 
 .. automethod:: charlatan.FixturesManager.set_hook
     :noindex:

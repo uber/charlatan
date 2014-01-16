@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.3.2 (unreleased)
+------------------
+
+- Add ability to uninstall fixtures (thanks to @JordanB)
+
 0.3.1 (2014-01-10)
 ------------------
 

@@ -1,7 +1,6 @@
 from charlatan.fixture import Fixture
 from charlatan.file_format import load_file
 from charlatan.depgraph import DepGraph
-from ._six import string_types
 
 ALLOWED_HOOKS = ("before_save", "after_save", "before_install",
                  "after_install")

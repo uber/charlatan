@@ -11,6 +11,9 @@ develop:
 test: clean lint
 	python setup.py test
 
+test-all: clean lint
+	tox
+
 tu:
 	py.test
 
@@ -25,6 +28,11 @@ coverage:
 
 clean:
 	find . -name '*.py[co]' -exec rm -f {} +
+
+clean-build:
+	rm -fr build/
+	rm -fr dist/
+	rm -fr *.egg-info
 
 release: clean test docs
 	prerelease && release

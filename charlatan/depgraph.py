@@ -1,8 +1,10 @@
 from __future__ import absolute_import
+from __future__ import print_function
+
 import collections
 import copy
 
-from ._six import itervalues
+from ._compat import itervalues
 
 
 class HasACycle(Exception):

@@ -23,7 +23,7 @@ class TestDepGraph(testing.TestCase):
         d.add_edge('d', 'e')
         d.add_edge('d', 'f')
         l = d.topo_sort()
-        self.assertEqual(l, ['a', 'b', 'c', 'd', 'e', 'f'])
+        self.assertCountEqual(l, ['a', 'b', 'c', 'd', 'e', 'f'])
         assert d.acyclic
 
     def test_topo_sort_knows_what_cycles_are(self):
@@ -52,7 +52,7 @@ class TestDepGraph(testing.TestCase):
         d.add_edge('c', 'e')
         d.add_edge('d', 'f')
         l = d.ancestors_of('d')
-        self.assertEqual(l, ['a', 'b', 'c'])
+        self.assertCountEqual(l, ['a', 'b', 'c'])
 
     def test_has_edge_between(self):
         """Test the has_edge_between function"""

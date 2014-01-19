@@ -12,6 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from __future__ import print_function
 import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -53,7 +54,7 @@ import pkg_resources
 try:
     release = pkg_resources.get_distribution('charlatan').version
 except pkg_resources.DistributionNotFound:
-    print "Distribution information not found. Run 'setup.py develop'"
+    print("Distribution information not found. Run 'setup.py develop'")
     sys.exit(1)
 del pkg_resources
 version = '.'.join(release.split('.')[:2])

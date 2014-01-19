@@ -15,11 +15,11 @@ third:
 # You can also overwrite the model.
 fourth:
   inherit_from: first
-  model: UserDict:UserDict
+  model: collections:Counter
 
 # You can also overwrite both.
 fifth:
   inherit_from: second
   fields:
     toaster: toasted
-  model: UserDict:UserDict
+  model: collections:Counter

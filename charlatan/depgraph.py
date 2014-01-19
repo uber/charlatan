@@ -1,10 +1,13 @@
 from __future__ import absolute_import
+from __future__ import print_function
 
 import collections
 import copy
 
+from ._compat import itervalues
 
-class HasACycle(StandardError):
+
+class HasACycle(Exception):
     pass
 
 
@@ -56,7 +59,7 @@ class DepGraph(object):
                 back_edges[target].remove(node)
                 if not back_edges[target]:
                     root_nodes.append(target)
-        if any(v for v in edges.itervalues()):
+        if any(v for v in itervalues(edges)):
             raise HasACycle()
         return sorted_list
 
@@ -67,7 +70,7 @@ class DepGraph(object):
         return self._topo_sort_cache
 
     def ancestors_of(self, node):
-        """Get a list of ancestors of given node, in topological order"""
+        """Return a list of ancestors of given node, in topological order."""
         parents = []
         work_queue = [node]
         while work_queue:

@@ -3,6 +3,7 @@ import functools
 import importlib
 
 from charlatan.file_format import RelationshipToken
+from charlatan import _compat
 
 
 def get_class(module, klass):
@@ -77,7 +78,7 @@ class Fixture(object):
                 # We take the parent.
                 new_value = getattr(parent, key)
 
-            elif isinstance(value, basestring):
+            elif isinstance(value, _compat.string_types):
                 continue  # The children value takes precedence.
 
             elif hasattr(value, "update"):  # Most probably a dict
@@ -112,6 +113,7 @@ class Fixture(object):
 
             # Does not return anything, does the modification in place (in
             # fields)
+
             self._process_relationships(fields,
                                         remove=not include_relationships)
 
@@ -181,8 +183,8 @@ class Fixture(object):
 
         # For dictionaries, iterate over key, value and for lists iterate over
         # index, item
-        if hasattr(self.fields, 'iteritems'):
-            field_iterator = self.fields.iteritems()
+        if hasattr(self.fields, 'items'):
+            field_iterator = _compat.iteritems(self.fields)
         else:
             field_iterator = enumerate(self.fields)
 
@@ -190,6 +192,7 @@ class Fixture(object):
             # One to one relationship
             if isinstance(value, RelationshipToken):
                 yield self.extract_rel_name(value)
+
             # One to many relationship
             elif isinstance(value, (tuple, list)):
                 for i, nested_value in enumerate(value):
@@ -208,13 +211,10 @@ class Fixture(object):
         Does not return anything, modify fields in place.
         """
 
-        # FIXME: no error when trying to do circular relationship
-        # FIXME: no error on stange objects
-
         # For dictionaries, iterate over key, value and for lists iterate over
         # index, item
-        if hasattr(fields, 'iteritems'):
-            field_iterator = fields.iteritems()
+        if hasattr(fields, 'items'):
+            field_iterator = _compat.iteritems(fields)
         else:
             field_iterator = enumerate(fields)
 

@@ -1,3 +1,6 @@
+from __future__ import print_function
+
+from charlatan import _compat
 from charlatan.fixture import Fixture
 from charlatan.file_format import load_file
 from charlatan.depgraph import DepGraph
@@ -24,9 +27,9 @@ def is_sqlalchemy_model(instance):
 
 def make_list(obj):
     """Return list of objects if necessary."""
-    if isinstance(obj, (list, tuple)):
-        return obj
-    return (obj, )
+    if isinstance(obj, _compat.string_types):
+        return (obj, )
+    return obj
 
 
 class FixturesManager(object):
@@ -120,7 +123,7 @@ class FixturesManager(object):
             else:
                 add_to_graph(fixture)
 
-        # this does nothing except raise an error if there's a cycle
+        # This does nothing except raise an error if there's a cycle
         d.topo_sort()
         return fixtures, d
 

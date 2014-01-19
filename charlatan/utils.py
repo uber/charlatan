@@ -101,7 +101,7 @@ def extended_timedelta(**kwargs):
             days.append([number_of_days[k], kwargs.pop(k)])
 
     if days:
-        add = int(reduce(operator.add, itertools.starmap(operator.mul, days)))
+        add = int(functools.reduce(operator.add, itertools.starmap(operator.mul, days)))
         kwargs["days"] = kwargs.setdefault("days", 0) + add
 
     return datetime.timedelta(**kwargs)

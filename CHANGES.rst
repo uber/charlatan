@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.3.3 (unreleased)
+------------------
+
+- Add support for Python 3
+
 0.3.2 (2014-01-16)
 ------------------
 

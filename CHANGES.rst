@@ -16,7 +16,7 @@ Changelog for Charlatan
 
 - Numerous tests added, a lot of cleanup.
 - Clarification in documentation.
-- Remove ``load``, ``set_hook` and ``install_all_fixtures`` shortcuts from
+- Remove ``load``, ``set_hook`` and ``install_all_fixtures`` shortcuts from
   charlatan package.
 - Remove ``FIXTURES_MANAGER`` singleton. Remove ``charlatan.fixtures_manager``
   shortcut.

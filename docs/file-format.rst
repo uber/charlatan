@@ -200,8 +200,6 @@ You can also access the whole collection:
 
     >>> pprint.pprint(manager.get_fixture("toasters"))
     {'blue': <Toaster 'blue'>, 'green': <Toaster 'green'>}
-    >>> toasters['blue']
-    <Toaster 'blue'>
     >>> manager.get_fixture("anonymous_toasters")
     [<Toaster 'yellow'>, <Toaster 'black'>]
 

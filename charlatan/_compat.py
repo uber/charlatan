@@ -31,7 +31,7 @@ if PY3:
     string_types = str,
 
 else:
-    string_types = basestring,
+    string_types = basestring,  # noqa
 
 
 if PY3:

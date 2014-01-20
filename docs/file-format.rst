@@ -46,6 +46,7 @@ Fixtures can inherit from other fixtures.
 
 .. doctest::
 
+    >>> import pprint
     >>> from charlatan import FixturesManager
     >>> manager = FixturesManager()
     >>> manager.load("docs/examples/fixtures_inheritance.yaml")
@@ -197,9 +198,8 @@ You can also access the whole collection:
 
 .. doctest::
 
-    >>> toasters = manager.get_fixture("toasters")
-    >>> sorted(list(toasters.keys()))
-    ['blue', 'green']
+    >>> pprint.pprint(manager.get_fixture("toasters"))
+    {'blue': <Toaster 'blue'>, 'green': <Toaster 'green'>}
     >>> toasters['blue']
     <Toaster 'blue'>
     >>> manager.get_fixture("anonymous_toasters")
@@ -214,7 +214,7 @@ Like any fixture, this collection can be linked to in a relationship using the
 
 .. doctest::
 
-    >>> manager.get_fixture("collection")
+    >>> pprint.pprint(manager.get_fixture("collection"))
     {'things': {'blue': <Toaster 'blue'>, 'green': <Toaster 'green'>}}
     >>> user1 = manager.get_fixture("users.1")
     >>> user1.toasters

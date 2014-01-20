@@ -1,5 +1,4 @@
 import copy
-import functools
 import importlib
 
 from charlatan.file_format import RelationshipToken

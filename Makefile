@@ -18,7 +18,7 @@ tu:
 	py.test
 
 lint:
-	flake8 charlatan --ignore=E501,E702
+	flake8 charlatan
 
 coverage:
 	coverage run --source charlatan setup.py test

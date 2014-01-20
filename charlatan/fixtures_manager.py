@@ -1,5 +1,4 @@
 from __future__ import print_function
-import copy
 
 from charlatan import _compat
 from charlatan.depgraph import DepGraph

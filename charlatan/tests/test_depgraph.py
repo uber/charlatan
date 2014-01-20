@@ -66,6 +66,6 @@ class TestDepGraph(testing.TestCase):
         d.add_edge('c', 'd')
         d.add_node('e')
         assert d.has_edge_between('a', 'c')
-        assert not d.has_edge_between('c', 'a'), 'has_edge_between should not be commutative'
-        assert not d.has_edge_between('a', 'b'), 'has_edge_between should be edges, not paths'
+        assert not d.has_edge_between('c', 'a'), 'should not be commutative'
+        assert not d.has_edge_between('a', 'b'), 'should be edges, not paths'
         assert not d.has_edge_between('e', 'd')

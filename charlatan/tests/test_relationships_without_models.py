@@ -10,7 +10,8 @@ class TestRelationshipsWithoutModels(testing.TestCase,
 
     def setUp(self):
         self.fixtures_manager = FixturesManager()
-        self.fixtures_manager.load('./charlatan/tests/data/relationships_without_models.yaml')
+        self.fixtures_manager.load(
+            './charlatan/tests/data/relationships_without_models.yaml')
         self.init_fixtures()
 
     def test_dictionaries_nest(self):

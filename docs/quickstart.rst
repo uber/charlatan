@@ -41,6 +41,27 @@ with :py:meth:`charlatan.FixturesManager.load`:
 
 Voila!
 
+Factory features
+----------------
+
+`Charlatan` provides you with factory features. In particular, you can override
+a fixture's defined attributes:
+
+.. doctest::
+
+    >>> toaster = fixtures_manager.install_fixture("toaster",
+    ...     attrs={"color": "blue"})
+    >>> toaster.color
+    'blue'
+
+You can also use inheritance:
+
+.. doctest::
+
+    >>> toaster = fixtures_manager.install_fixture("toaster_green")
+    >>> toaster.color
+    'green'
+
 Using charlatan in test cases
 -----------------------------
 

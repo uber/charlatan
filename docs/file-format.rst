@@ -46,6 +46,7 @@ Fixtures can inherit from other fixtures.
 
 .. doctest::
 
+    >>> import pprint
     >>> from charlatan import FixturesManager
     >>> manager = FixturesManager()
     >>> manager.load("docs/examples/fixtures_inheritance.yaml")
@@ -166,35 +167,70 @@ attribute (e.g. ``!rel toaster.id``).
 Collections of Fixtures
 -----------------------
 
-Example:
+Charlatan also provides more efficient way to define variations of fixtures.
+The basic idea is to define the model and the default fields, then use the
+``objects`` key to define related fixtures. There's two ways to define those
+fixtures in the ``objects`` key:
 
-.. code-block:: yaml
+* Use a list. You will then be able to access those fixtures via their index,
+  e.g. ``toaster.0`` for the first item.
+* Use a dict. The key will be the name of the fixture, the value a dict of
+  fields. You can access them via their namespace: e.g. ``toaster.blue``.
 
-    characters
-      model: Character
-      objects:
-        -
-        name: Rick Deckard
-        favorite_toaster: !rel red_toaster
-        -
-        name: Roy Batty
-        favorite_toaster: !rel green_toaster
+You can also install all of them by installing the name of the collection.
 
-    movie:
-      model: Movie
-      fields:
-        characters: !rel characters
+.. literalinclude:: examples/collection.yaml
+    :language: yaml
+    :lines: 1-26
 
-A collection of models can be defined by simply providing the ``objects`` key.
-The whole list can be installed by the fixture name (``'characters'`` in the
-example). Alternatively, single items can be retrieved from the list by
-appending an ``_<index>`` to the end of the collection name. So to get Rick
-Deckard, the fixture name is ``'characters_0'``.
+Here's how you would use this fixture file to access specific fixtures:
+
+.. doctest::
+
+    >>> manager = FixturesManager()
+    >>> manager.load("docs/examples/collection.yaml")
+    >>> manager.get_fixture("toasters.green")
+    <Toaster 'green'>
+    >>> manager.get_fixture("anonymous_toasters.0")
+    <Toaster 'yellow'>
+
+You can also access the whole collection:
+
+.. doctest::
+
+    >>> pprint.pprint(manager.get_fixture("toasters"))
+    {'blue': <Toaster 'blue'>, 'green': <Toaster 'green'>}
+    >>> manager.get_fixture("anonymous_toasters")
+    [<Toaster 'yellow'>, <Toaster 'black'>]
 
 Like any fixture, this collection can be linked to in a relationship using the
-``!rel`` keyword. In the example, installing the ``'movie'`` fixture gives a
-model that has an ``characters`` attribute that is a list containing Rick and
-Roy.
+``!rel`` keyword in an intuitive way.
+
+.. literalinclude:: examples/collection.yaml
+    :language: yaml
+    :lines: 28-
+
+.. doctest::
+
+    >>> pprint.pprint(manager.get_fixture("collection"))
+    {'things': {'blue': <Toaster 'blue'>, 'green': <Toaster 'green'>}}
+    >>> user1 = manager.get_fixture("users.1")
+    >>> user1.toasters
+    [<Toaster 'blue'>, <Toaster 'green'>]
+    >>> user2 = manager.get_fixture("users.2")
+    >>> user2.toasters
+    [<Toaster 'yellow'>, <Toaster 'black'>]
+    >>> manager.get_fixture("users.3").toasters
+    [<Toaster 'green'>]
+    >>> manager.get_fixture("users.4").toasters
+    [<Toaster 'yellow'>]
+
+.. versionchanged:: 0.3.4
+    Access to unnamed fixture by using a ``.{index}`` notation instead of
+    ``.{index}``.
+
+.. versionadded:: 0.3.4
+    You can now have list of named fixtures.
 
 .. versionadded:: 0.2.8
     It is now possible to retrieve lists of fixtures and link to them with

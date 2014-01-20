@@ -2,7 +2,6 @@ fixture1:
   fields:
     - name: "foo"
 
-
 fixture2:
   depend_on:
     - fixture1

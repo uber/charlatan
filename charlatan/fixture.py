@@ -1,9 +1,11 @@
 import copy
-import functools
 import importlib
 
 from charlatan.file_format import RelationshipToken
 from charlatan import _compat
+
+CAN_BE_INHERITED = frozenset(
+    ["model_name", "fields", "post_creation", "depend_on"])
 
 
 def get_class(module, klass):
@@ -22,7 +24,58 @@ def get_class(module, klass):
     return cls
 
 
-class Fixture(object):
+class Inheritable(object):
+
+    def __init__(self, *args, **kwargs):
+        # This is to make sure we don't redo the inheritance twice, for
+        # performance reason.
+        self._has_inherited_from_parent = False
+        self.inherit_from = None
+        self.fixture_manager = None
+
+    def inherit_from_parent(self):
+        """Inherit the attributes from parent, modifying itself."""
+
+        if self._has_inherited_from_parent or not self.inherit_from:
+            # Nothing to do
+            return
+
+        for name, value in self.get_parent_values():
+            setattr(self, name, value)
+
+    def get_parent_values(self):
+        """Return parent values."""
+
+        parent, _ = self.fixture_manager.fixture_collection.get(
+            self.inherit_from)
+        # Recursive to make sure everything is updated.
+        parent.inherit_from_parent()
+
+        for key in CAN_BE_INHERITED:
+            children_value = getattr(self, key)
+            parent_value = getattr(parent, key)
+            new_value = None
+            if not children_value:
+                # If I don't have a value, then we try from the parent
+                # no matter what.
+                new_value = copy.deepcopy(parent_value)
+
+            elif isinstance(children_value, _compat.string_types):
+                # The children value is something, then it takes
+                # precedence no matter what.
+                continue
+
+            elif hasattr(children_value, "update"):
+                # If it's a dict, then we try inheriting from the
+                # parent.
+                new_value = copy.deepcopy(parent_value)
+                new_value.update(children_value)
+
+            if new_value:
+                yield key, new_value
+
+
+class Fixture(Inheritable):
     """Represent a fixture that can be installed."""
 
     def __init__(self, key, fixture_manager,
@@ -42,6 +95,8 @@ class Fixture(object):
 
         """
 
+        super(Fixture, self).__init__()
+
         if id_ and fields:
             raise TypeError(
                 "Cannot provide both id and fields to create fixture.")
@@ -51,7 +106,6 @@ class Fixture(object):
 
         self.database_id = id_
         self.inherit_from = inherit_from
-        self._has_updated_from_parent = False
 
         # Stuff that can be inherited.
         self.model_name = model
@@ -59,43 +113,19 @@ class Fixture(object):
         self.post_creation = post_creation or {}
         self.depend_on = depend_on
 
-    def update_with_parent(self):
-        """Update the object in place using its chain of inheritance."""
+    def __repr__(self):
+        return "<Fixture '%s'>" % self.key
 
-        if self._has_updated_from_parent or not self.inherit_from:
-            # Nothing to do
-            return
-
-        parent = self.fixture_manager.fixtures[self.inherit_from]
-        # Recursive to make sure everything is updated.
-        parent.update_with_parent()
-
-        can_be_inherited = ["model_name", "fields", "post_creation", "depend_on"]
-        for key in can_be_inherited:
-            value = getattr(self, key)
-            new_value = None
-            if not value:
-                # We take the parent.
-                new_value = getattr(parent, key)
-
-            elif isinstance(value, _compat.string_types):
-                continue  # The children value takes precedence.
-
-            elif hasattr(value, "update"):  # Most probably a dict
-                new_value = copy.deepcopy(getattr(parent, key))
-                new_value.update(value)
-
-            if new_value:
-                setattr(self, key, new_value)
-
-    def get_instance(self, include_relationships=True):
+    def get_instance(self, path=None, include_relationships=True, fields=None):
         """Instantiate the fixture using the model and return the instance.
 
+        :param str path: remaining path to return
+        :param dict fields: overriding fields
         :param boolean include_relationships: false if relationships should be
             removed.
         """
 
-        self.update_with_parent()
+        self.inherit_from_parent()  # Does the modification in place.
 
         if self.database_id:
             object_class = self.get_class()
@@ -107,22 +137,29 @@ class Fixture(object):
 
         else:
             # We need to do a copy since we're modifying them.
-            fields = copy.deepcopy(self.fields)
+            params = copy.deepcopy(self.fields)
+            if fields:
+                params.update(fields)
+
             # Get the class to instantiate
             object_class = self.get_class()
 
             # Does not return anything, does the modification in place (in
-            # fields)
-
-            self._process_relationships(fields,
+            # fields).
+            self._process_relationships(params,
                                         remove=not include_relationships)
 
             if object_class:
-                instance = object_class(**fields)
+                try:
+                    instance = object_class(**params)
+                except TypeError as exc:
+                    raise TypeError("Error while trying to instantiate %r "
+                                    "with %r: %s" %
+                                    (object_class, params, exc))
             else:
                 # Return the fields as is. This allows to enter dicts
                 # and lists directly.
-                instance = fields
+                instance = params
 
         # Do any extra assignment
         for attr, value in self.post_creation.items():
@@ -163,7 +200,7 @@ class Fixture(object):
 
     @staticmethod
     def extract_rel_name(name):
-        """Helper function to extract the relationship and attr from an argument to !rel"""
+        """Return the relationship and attr from an argument to !rel"""
 
         rel_name = name  # e.g. toaster.color
         attr = None
@@ -174,9 +211,16 @@ class Fixture(object):
         return rel_name, attr
 
     def extract_relationships(self):
-        """Iterator of all relationships and dependencies for this fixture"""
+        """Return all dependencies.
 
-        # TODO: make this DRYer since it's mostly copied from _process_relationships
+        :rtype generator:
+
+        Yields ``(depends_on, attr_name)``.
+
+        """
+
+        # TODO: make this DRYer since it's mostly copied from
+        # _process_relationships
 
         for dep in self.depend_on:
             yield dep, None
@@ -244,13 +288,7 @@ class Fixture(object):
         # fixtures. If a fixture requires another fixture, it
         # necessarily means that it needs to include other relationships
         # as well.
-        get_fixture = functools.partial(self.fixture_manager.get_fixture,
-                                        include_relationships=True)
-
-        rel_name, attr = self.extract_rel_name(name)
-        rel = get_fixture(rel_name)
-
-        if attr:
-            return getattr(rel, attr)
-        else:
-            return rel
+        return self.fixture_manager.get_fixture(
+            name,
+            include_relationships=True,
+        )

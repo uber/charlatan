@@ -46,7 +46,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.assertEqual(len(fixtures), 2)
 
     def test_install_all_fixtures(self):
-        """install_all_fixtures should install all fixtures of the yaml file."""
+        """Verify it installs all fixtures of the yaml file."""
         self.uninstall_all_fixtures()
 
         fixtures = self.install_all_fixtures()
@@ -66,7 +66,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.assertEqual(len(fixtures), 0)
 
     def test_uninstall_fixtures(self):
-        """uninstall_fixtures should return the list of uninstalled fixtures."""
+        """Verify it returns the list of uninstalled fixtures."""
         fixtures = self.uninstall_fixtures(('simple_dict', 'dict_with_nest'))
         self.assertEqual(len(fixtures), 2)
 

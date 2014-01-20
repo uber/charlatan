@@ -2,7 +2,6 @@ fixture1:
     fields:
         foo: bar
 
-
 fixture2:
     fields:
         foo: !rel fixture1

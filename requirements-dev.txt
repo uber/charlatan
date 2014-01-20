@@ -8,3 +8,5 @@ zest.releaser==3.49
 pyroma==1.5
 # Check packages version
 pip-tools==0.3.4
+# Better pdb
+ipdb==0.8

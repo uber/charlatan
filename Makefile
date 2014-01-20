@@ -8,7 +8,7 @@ bootstrap:
 develop:
 	python setup.py develop
 
-test: clean lint
+test: clean develop lint
 	python setup.py test
 
 test-all: clean lint
@@ -18,7 +18,7 @@ tu:
 	py.test
 
 lint:
-	flake8 charlatan --ignore=E501,E702
+	flake8 charlatan
 
 coverage:
 	coverage run --source charlatan setup.py test
@@ -26,7 +26,7 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 
-clean:
+clean: clean-build
 	find . -name '*.py[co]' -exec rm -f {} +
 
 clean-build:

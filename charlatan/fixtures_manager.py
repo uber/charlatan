@@ -1,12 +1,15 @@
 from __future__ import print_function
 
 from charlatan import _compat
-from charlatan.fixture import Fixture
-from charlatan.file_format import load_file
 from charlatan.depgraph import DepGraph
+from charlatan.file_format import load_file
+from charlatan.fixture import Fixture
+from charlatan.fixture_collection import ListFixtureCollection
+from charlatan.fixture_collection import DictFixtureCollection
 
 ALLOWED_HOOKS = ("before_save", "after_save", "before_install",
                  "after_install")
+ROOT_COLLECTION = "root"
 
 
 def is_sqlalchemy_model(instance):
@@ -69,7 +72,11 @@ class FixturesManager(object):
         self.models_package = models_package
 
         # Load the data
-        self.fixtures, self.depgraph = self._load_fixtures(self.filename)
+        fixtures, self.depgraph = self._load_fixtures(self.filename)
+        self.fixture_collection = DictFixtureCollection(
+            ROOT_COLLECTION,
+            fixture_manager=self,
+            fixtures=fixtures)
 
         # Initiate the cache
         self.clean_cache()
@@ -83,22 +90,15 @@ class FixturesManager(object):
         content = load_file(filename)
 
         fixtures = {}
-        for k, v in content.items():
+        for k, v in _compat.iteritems(content):
 
-            # List of fixtures
             if "objects" in v:
-
-                fixture_list = []
-                # v["objects"] is a list of fixture fields dict
-                for i, fields in enumerate(v["objects"]):
-                    key = k + "_" + str(i)
-                    fixture = Fixture(key=key, fixture_manager=self,
-                                      model=v.get("model"), fields=fields)
-
-                    fixtures[key] = fixture
-                    fixture_list.append(fixture)
-
-                fixtures[k] = fixture_list
+                # It's a collection of fictures.
+                fixtures[k] = self._handle_collection(
+                    namespace=k,
+                    definition=v,
+                    objects=v["objects"],
+                )
 
             # Named fixtures
             else:
@@ -110,22 +110,52 @@ class FixturesManager(object):
                 fixtures[k] = Fixture(key=k, fixture_manager=self, **v)
 
         d = DepGraph()
-
-        def add_to_graph(fixture):
-            """Closure for adding fixtures to the dependency graph"""
+        for fixture in fixtures.values():
             for dependency, _ in fixture.extract_relationships():
                 d.add_edge(dependency, fixture.key)
-
-        for fixture in fixtures.values():
-            if isinstance(fixture, list):
-                for fix in fixture:
-                    add_to_graph(fix)
-            else:
-                add_to_graph(fixture)
 
         # This does nothing except raise an error if there's a cycle
         d.topo_sort()
         return fixtures, d
+
+    def _handle_collection(self, namespace, definition, objects):
+        """Handle a collection of fixtures.
+
+        :param dict definition: definition of the collection
+        :param dict_or_list objects: fixtures in the collection
+
+        """
+
+        if isinstance(objects, list):
+            klass = ListFixtureCollection
+        else:
+            klass = DictFixtureCollection
+
+        collection = klass(
+            key=namespace,
+            fixture_manager=self,
+            model=definition.get('model'),
+            fields=definition.get('fields'),
+            post_creation=definition.get('post_creation'),
+            inherit_from=definition.get('inherit_from'),
+            depend_on=definition.get('depend_on'),
+        )
+
+        for name, new_fields in collection.iterator(objects):
+            qualified_name = "%s.%s" % (namespace, name)
+
+            fixture = Fixture(
+                key=qualified_name,
+                fixture_manager=self,
+                # Automatically inherit from the collection
+                inherit_from=namespace,
+                fields=new_fields,
+                # The rest (model, default fields, etc.) is
+                # automatically inherited from the collection.
+            )
+            collection.add(name, fixture)
+
+        return collection
 
     def clean_cache(self):
         """Clean the cache."""
@@ -252,7 +282,7 @@ class FixturesManager(object):
         """
 
         return self.install_fixtures(
-            self.fixtures.keys(),
+            self.keys(),
             do_not_save=do_not_save,
             include_relationships=include_relationships)
 
@@ -316,6 +346,10 @@ class FixturesManager(object):
         installed_fixtures.reverse()
         return self.uninstall_fixtures(installed_fixtures)
 
+    def keys(self):
+        """Return all fixture keys."""
+        return self.fixture_collection.fixtures.keys()
+
     def get_fixture(self, fixture_key, include_relationships=True, attrs=None):
         """Return a fixture instance (but do not save it).
 
@@ -332,42 +366,28 @@ class FixturesManager(object):
             parents.append(
                 self.get_fixture(
                     fixture,
-                    include_relationships=include_relationships
+                    include_relationships=include_relationships,
                 )
             )
 
-        if not fixture_key in self.fixtures:
-            raise KeyError("No such fixtures: '%s'" % fixture_key)
-
         # Fixture are cached so that setting up relationships is not too
-        # expensive.
-        instance = self.cache.get(fixture_key)
-        if not instance:
-            fixture = self.fixtures[fixture_key]
+        # expensive. We don't get the cached version if attrs are
+        # overriden.
+        returned = None
+        if not attrs:
+            returned = self.cache.get(fixture_key)
 
-            fixture_is_list = isinstance(fixture, list)
+        if not returned:
+            returned = self.fixture_collection.get_instance(
+                fixture_key,
+                include_relationships=include_relationships,
+                fields=attrs,
+            )
 
-            if fixture_is_list:
-                instance = [
-                    self.get_fixture(f.key, include_relationships, attrs)
-                    for f in fixture
-                ]
-            else:
-
-                instance = fixture.get_instance(
-                    include_relationships=include_relationships
-                )
-
-            self.cache[fixture_key] = instance
+            self.cache[fixture_key] = returned
             self.installed_keys.append(fixture_key)
 
-        # If any arguments are passed in, set them before returning. But do not
-        # set them on a list of fixtures (they are already set on all elements)
-        if attrs and not fixture_is_list:
-            for attr, value in attrs.items():
-                setattr(instance, attr, value)
-
-        return instance
+        return returned
 
     def get_fixtures(self, fixture_keys, include_relationships=True):
         """Return a list of fixtures instances.

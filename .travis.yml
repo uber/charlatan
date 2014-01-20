@@ -8,6 +8,6 @@ install:
   - "pip install -r requirements-test.txt --use-mirrors"
   - "python setup.py develop"
 
-script: coverage run --source charlatan setup.py test
+script: flake8 charlatan && coverage run --source charlatan setup.py test
 
 after_success: coveralls

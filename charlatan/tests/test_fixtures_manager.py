@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+import pytest
+
 from charlatan import testing
 from charlatan import depgraph
 from charlatan import FixturesManager
@@ -108,3 +110,15 @@ class TestFixturesManager(testing.TestCase):
         fm.get_fixture('fixture3')
         self.assertIn('fixture1', fm.cache)
         self.assertIn('fixture4', fm.cache)
+
+    def test_invalid_hook(self):
+        """Verify that can't set an invalid hook."""
+
+        manager = FixturesManager()
+        with pytest.raises(KeyError):
+            manager.set_hook("invalid", lambda p: p)
+
+    def test_set_hook(self):
+        """Verify that we can set a hook."""
+        manager = FixturesManager()
+        manager.set_hook("before_save", lambda p: p)

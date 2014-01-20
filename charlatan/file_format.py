@@ -71,6 +71,6 @@ def load_file(filename):
         configure_yaml()
         content = yaml.load(content)
     else:
-        raise KeyError("Unsupported filetype: '%s'" % filename)
+        raise ValueError("Unsupported filetype: '%s'" % filename)
 
     return content

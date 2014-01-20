@@ -8,7 +8,7 @@ bootstrap:
 develop:
 	python setup.py develop
 
-test: clean lint
+test: clean develop lint
 	python setup.py test
 
 test-all: clean lint
@@ -26,7 +26,7 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 
-clean:
+clean: clean-build
 	find . -name '*.py[co]' -exec rm -f {} +
 
 clean-build:

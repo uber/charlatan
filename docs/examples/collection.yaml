@@ -1,0 +1,52 @@
+toasters:
+  model: charlatan.tests.fixtures.simple_models:Toaster
+
+  # Those are the default for all fixtures
+  fields:
+    slots: 5
+
+  # You can have named fixtures in the collection. Note the use of dict.
+  objects:
+    green:  # This fixture can be accessed via toaster.green
+      color: green
+    blue:
+      color: blue
+
+anonymous_toasters:
+  inherit_from: toasters
+
+  # Here we define unamed fixtures. Note that we use a list instead of a dict.
+  objects:
+    # You access the first fixture via anonymous_toaster.0
+    -
+      color: yellow
+    -
+      color: black
+
+# Those collections can be used as is in relationships.
+
+collection:
+  fields:
+    # Since we defined the toasters collection as a dict, things's value will
+    # be a dict as well
+    things: !rel toasters
+
+users:
+  model: charlatan.tests.fixtures.simple_models:User
+
+  objects:
+
+    1:
+      # Since the collection is defined as a dict, we need to coerce it as a
+      # list.
+      toasters: !rel toasters.as_list
+
+    2:
+      toasters: !rel anonymous_toasters
+
+    3:
+      # You can also link to specific relationships using the namespace
+      toasters: [!rel toasters.green]
+
+    4:
+      toasters: [!rel anonymous_toasters.0]

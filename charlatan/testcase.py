@@ -53,7 +53,7 @@ class FixturesManagerMixin(object):
     def install_all_fixtures(self, do_not_save=False,
                              include_relationships=True):
         return self.install_fixtures(
-            self.fixtures_manager.fixtures.keys(),
+            self.fixtures_manager.keys(),
             do_not_save=do_not_save,
             include_relationships=include_relationships,
         )

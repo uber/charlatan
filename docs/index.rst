@@ -6,7 +6,17 @@
 Welcome to Charlatan's documentation!
 =====================================
 
-**Efficiently manage and install data fixtures**
+Charlatan is a library that lets you efficiently manage and install
+fixtures.
+
+Its features include:
+
+- Straightforward YAML syntax to define fixtures
+- Rich fixture definition functionalities, including inheritance and
+  relationships (fixtures factory)
+- ORM-agnostic. Tested with sqlalchemy
+- Hooks to further enhance the library
+- Support for Python 2 and 3
 
 Charlatan is a library that you can use in your tests to create database
 fixtures. Its aim is to provide a pragmatic interface that focuses on making it
@@ -26,6 +36,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   installation
    quickstart
    file-format
    hooks

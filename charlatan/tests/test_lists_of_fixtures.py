@@ -24,3 +24,12 @@ class TestListOfFixtures(testing.TestCase):
             fixture['elements'],
             self.fm.install_fixture('fixture_list')
         )
+
+    def test_override(self):
+        """Verify that we can override attributes on a list of fixtures."""
+        fixtures = self.fm.install_fixture(
+            'fixture_list',
+            attrs={"field1": 12})
+
+        for fixture in fixtures:
+            self.assertEqual(fixture["field1"], 12)

@@ -6,10 +6,11 @@ first:
 second:
   inherit_from: first
 
-# You can overwrite fields.
+# You can add fields without removing existing ones
 third:
   inherit_from: first
   fields:
+    # foo: bar is implied by inheritance
     toaster: toasted
 
 # You can also overwrite the model.

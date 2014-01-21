@@ -54,7 +54,7 @@ Fixtures can inherit from other fixtures.
     {'foo': 'bar'}
     >>> manager.get_fixture("second")
     {'foo': 'bar'}
-    >>> manager.get_fixture("third")
+    >>> pprint.pprint(manager.get_fixture("third"))
     {'foo': 'bar', 'toaster': 'toasted'}
     >>> fourth = manager.get_fixture("fourth")
     >>> fourth
@@ -246,7 +246,7 @@ Like any fixture, this collection can be linked to in a relationship using the
 
 .. versionchanged:: 0.3.4
     Access to unnamed fixture by using a ``.{index}`` notation instead of
-    ``.{index}``.
+    ``_{index}``.
 
 .. versionadded:: 0.3.4
     You can now have list of named fixtures.

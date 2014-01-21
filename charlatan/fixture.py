@@ -168,7 +168,10 @@ class Fixture(Inheritable):
 
             setattr(instance, attr, value)
 
-        return instance
+        if path:
+            return getattr(instance, path)
+        else:
+            return instance
 
     def get_class(self):
         """Return class object for this instance."""

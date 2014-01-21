@@ -8,3 +8,12 @@ relationship_alone:
   fields:
     name: "red"
   model: charlatan.tests.fixtures.models:Color
+
+toaster:
+  fields:
+    color: red
+    slots: 3
+  model: charlatan.tests.fixtures.simple_models:Toaster
+
+toaster_colors:
+  fields: [!rel toaster.color]

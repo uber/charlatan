@@ -2,7 +2,7 @@
 
 class Toaster(object):
 
-    def __init__(self, color, slots, content=None):
+    def __init__(self, color, slots=2, content=None):
         self.color = color
         self.slots = slots
         self.content = content

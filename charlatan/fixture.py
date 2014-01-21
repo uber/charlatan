@@ -1,5 +1,6 @@
 import copy
 import importlib
+import operator
 
 from charlatan.file_format import RelationshipToken
 from charlatan import _compat
@@ -169,7 +170,7 @@ class Fixture(Inheritable):
             setattr(instance, attr, value)
 
         if path:
-            return getattr(instance, path)
+            return operator.attrgetter(path)(instance)
         else:
             return instance
 
@@ -199,7 +200,11 @@ class Fixture(Inheritable):
             model=self.model_name.lower())
         klass = self.model_name
 
-        return get_class(module, klass)
+        try:
+            return get_class(module, klass)
+        except ImportError:
+            # Then try to import from yourlib:Toaster
+            return get_class(root_models_package, klass)
 
     @staticmethod
     def extract_rel_name(name):
@@ -210,7 +215,8 @@ class Fixture(Inheritable):
 
         # TODO: we support only one level for now
         if "." in name:
-            rel_name, attr = name.split(".")
+            path = name.split(".")
+            rel_name, attr = path[0], path[1]
         return rel_name, attr
 
     def extract_relationships(self):

@@ -111,7 +111,7 @@ class DictFixtureCollection(FixtureCollection):
         if not path[0] in self.fixtures:
             raise KeyError("No such fixtures: '%s'" % path[0])
 
-        return self.fixtures[path[0]], "".join(path[1:])
+        return self.fixtures[path[0]], ".".join(path[1:])
 
 
 class ListFixtureCollection(FixtureCollection):
@@ -128,4 +128,4 @@ class ListFixtureCollection(FixtureCollection):
         :param str path:
         """
         path = path.split(".")
-        return self.fixtures[int(path[0])], "".join(path[1:])
+        return self.fixtures[int(path[0])], ".".join(path[1:])

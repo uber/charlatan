@@ -1,0 +1,32 @@
+toaster:
+  model: Toaster
+  fields:
+    color: red
+
+user:
+  model: User
+  fields:
+    # You can link to another fixture
+    toasters:
+      - !rel toaster
+
+toaster_colors:
+  # You can also link to a specific attribute
+  fields:
+    color: !rel toaster.color
+
+toaster_colors_list:
+  fields: ['red']
+
+# Let's define a collection
+toasters:
+  model: Toaster
+  objects:
+    red:
+      color: red
+
+toaster_from_collection:
+  inherit_from: toaster
+  fields:
+    # You can link a specific attribute of a collection's item.
+    color: !rel toasters.red.color

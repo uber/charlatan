@@ -148,21 +148,40 @@ Linking to other objects
 
 Example:
 
-.. code-block:: yaml
-
-    user:
-      fields:
-        name: Michel Audiard
-        favorite_toaster: !rel red_toaster
-        toaster_id: !rel toaster.id
-      model: User
+.. literalinclude:: examples/relationships.yaml
+    :language: yaml
+    :lines: 1-16
 
 To link to another object defined in the configuration file, use ``!rel``. You
-can link to another objet (e.g. ``!rel red_toaster``) or to another object's
-attribute (e.g. ``!rel toaster.id``).
+can link to another objet (e.g. ``!rel toaster``) or to another object's
+attribute (e.g. ``!rel toaster.color``).
+
+.. doctest::
+
+    >>> manager = FixturesManager()
+    >>> manager.load("docs/examples/relationships.yaml",
+    ...     models_package="charlatan.tests.fixtures.simple_models")
+    >>> manager.get_fixture("user").toasters
+    [<Toaster 'red'>]
+    >>> manager.get_fixture("toaster_colors")
+    {'color': 'red'}
+
+You can also link to specific attributes of collection's item (see
+:ref:`collection` for more information about collections).
+
+.. literalinclude:: examples/relationships.yaml
+    :language: yaml
+    :lines: 18-
+
+.. doctest::
+
+    >>> manager.get_fixture("toaster_from_collection")
+    <Toaster 'red'>
 
 .. versionadded:: 0.2.0
    It is now possible to link to another object' attribute.
+
+.. _collection:
 
 Collections of Fixtures
 -----------------------

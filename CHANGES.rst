@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.3.4 (unreleased)
+------------------
+
+- Fix getting attribute from relationhips
+
 0.3.3 (2014-01-18)
 ------------------
 

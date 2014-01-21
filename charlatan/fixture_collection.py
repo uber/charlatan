@@ -5,6 +5,12 @@ LIST_FORMAT = "as_list"
 DICT_FORMAT = "as_dict"
 
 
+def _sorted_iteritems(dct):
+    """Iterate over the items in the dict in a deterministic fashion."""
+    for k, v in sorted(_compat.iteritems(dct)):
+        yield k, v
+
+
 class FixtureCollection(Inheritable):
 
     """A FixtureCollection holds Fixture objects."""
@@ -92,7 +98,7 @@ class FixtureCollection(Inheritable):
 
 class DictFixtureCollection(FixtureCollection):
     default_format = DICT_FORMAT
-    iterator = staticmethod(_compat.iteritems)
+    iterator = staticmethod(_sorted_iteritems)
     container = dict
 
     def add(self, name, fixture):

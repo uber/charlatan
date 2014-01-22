@@ -15,6 +15,7 @@ class TestSqlalchemyFixtures(testing.TestCase):
 
     def tearDown(self):
         Base.metadata.drop_all(engine)
+        self.session.close()
 
     def test_double_install(self):
         """Verify that there's no double install."""
@@ -23,3 +24,12 @@ class TestSqlalchemyFixtures(testing.TestCase):
 
         self.assertEqual(self.session.query(Toaster).count(), 1)
         self.assertEqual(self.session.query(Color).count(), 1)
+
+    def test_getting_from_database(self):
+        """Verify that we can get from the database."""
+        installed = Toaster(id=1)
+        self.session.add(installed)
+        self.session.commit()
+
+        toaster = self.manager.install_fixture("from_database")
+        self.assertEqual(toaster.id, 1)

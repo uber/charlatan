@@ -60,7 +60,7 @@ def configure_yaml():
 def configure_output(use_unicode=False):
     """Configure output options of the values loaded by pyyaml
 
-        :param boolean use_unicode: Use unicode constructor for loading strings
+    :param bool use_unicode: Use unicode constructor for loading strings
     """
     if use_unicode:
         yaml.add_constructor(
@@ -69,7 +69,7 @@ def configure_output(use_unicode=False):
         )
 
 
-def load_file(filename, unicode_output=False):
+def load_file(filename, use_unicode=False):
     """Load fixtures definition from file.
 
     :param str filename:
@@ -81,7 +81,7 @@ def load_file(filename, unicode_output=False):
     if filename.endswith(".yaml"):
         # Load the custom YAML tags
         configure_yaml()
-        configure_output(use_unicode=unicode_output)
+        configure_output(use_unicode=use_unicode)
         content = yaml.load(content)
     else:
         raise ValueError("Unsupported filetype: '%s'" % filename)

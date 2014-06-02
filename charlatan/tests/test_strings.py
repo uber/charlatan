@@ -17,7 +17,7 @@ class TestUnicodeLoad(testing.TestCase):
         ]
         self.yaml = file_format.load_file(
             './charlatan/tests/data/strings.yaml',
-            unicode_output=True,
+            use_unicode=True,
         )
 
     def tearDown(self):

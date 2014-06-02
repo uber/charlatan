@@ -47,11 +47,11 @@ class FixturesManager(object):
 
     """
 
-    def __init__(self, db_session=None, unicode_output=False):
+    def __init__(self, db_session=None, use_unicode=False):
         self.hooks = {}
         self.session = db_session
         self.installed_keys = []
-        self.unicode_output = unicode_output
+        self.use_unicode = use_unicode
 
     def load(self, filename, models_package=""):
         """Pre-load the fixtures.
@@ -88,7 +88,7 @@ class FixturesManager(object):
         :param str filename: file that holds the fixture data
         """
 
-        content = load_file(filename, self.unicode_output)
+        content = load_file(filename, self.use_unicode)
 
         fixtures = {}
         for k, v in _compat.iteritems(content):

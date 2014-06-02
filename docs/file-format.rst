@@ -281,6 +281,6 @@ Unicode Strings
 
 .. versionadded:: 0.3.5
 
-In python 2 strings are not, by default, loaded as unicode.  To load all the 
-strings from the yaml files as unicode strings, pass the option 
-`unicode_output` as `True` when you instantiate your fixture manager.
+In python 2 strings are not, by default, loaded as unicode.  To load all the
+strings from the yaml files as unicode strings, pass the option
+`use_unicode` as `True` when you instantiate your fixture manager.

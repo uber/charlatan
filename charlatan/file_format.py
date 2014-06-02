@@ -1,8 +1,8 @@
 from __future__ import absolute_import
-from __future__ import unicode_literals
 import datetime
 
 import yaml
+from yaml.constructor import Constructor
 
 from charlatan.utils import apply_delta, datetime_to_epoch_timestamp
 
@@ -57,7 +57,19 @@ def configure_yaml():
     yaml.add_constructor(u'!rel', relationship_constructor)
 
 
-def load_file(filename):
+def configure_output(use_unicode=False):
+    """Configure output options of the values loaded by pyyaml
+
+        :param boolean use_unicode: Use unicode constructor for loading strings
+    """
+    if use_unicode:
+        yaml.add_constructor(
+            u'tag:yaml.org,2002:str',
+            Constructor.construct_python_unicode,
+        )
+
+
+def load_file(filename, unicode_output=False):
     """Load fixtures definition from file.
 
     :param str filename:
@@ -69,6 +81,7 @@ def load_file(filename):
     if filename.endswith(".yaml"):
         # Load the custom YAML tags
         configure_yaml()
+        configure_output(use_unicode=unicode_output)
         content = yaml.load(content)
     else:
         raise ValueError("Unsupported filetype: '%s'" % filename)

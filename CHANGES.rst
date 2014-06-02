@@ -1,10 +1,15 @@
 Changelog for Charlatan
 =======================
 
+0.3.5 (unreleased)
+------------------
+
+- Support loading all strings as unicode
+
 0.3.4 (2014-01-21)
 ------------------
 
-- Fix getting attribute from relationhips
+- Fix getting attribute from relationships
 
 0.3.3 (2014-01-18)
 ------------------

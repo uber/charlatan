@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.5 (unreleased)
+0.3.5 (2014-06-02)
 ------------------
 
 - Support loading all strings as unicode

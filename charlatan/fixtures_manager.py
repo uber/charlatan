@@ -47,10 +47,11 @@ class FixturesManager(object):
 
     """
 
-    def __init__(self, db_session=None):
+    def __init__(self, db_session=None, unicode_output=False):
         self.hooks = {}
         self.session = db_session
         self.installed_keys = []
+        self.unicode_output = unicode_output
 
     def load(self, filename, models_package=""):
         """Pre-load the fixtures.
@@ -87,7 +88,7 @@ class FixturesManager(object):
         :param str filename: file that holds the fixture data
         """
 
-        content = load_file(filename)
+        content = load_file(filename, self.unicode_output)
 
         fixtures = {}
         for k, v in _compat.iteritems(content):
@@ -421,7 +422,7 @@ class FixturesManager(object):
         :param function func:
         """
 
-        if not hookname in ALLOWED_HOOKS:
+        if hookname not in ALLOWED_HOOKS:
             raise KeyError("'%s' is not an allowed hook." % hookname)
 
         self.hooks[hookname] = func

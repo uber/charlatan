@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.6 (unreleased)
+0.3.6 (2014-06-02)
 ------------------
 
 - Update PYYaml

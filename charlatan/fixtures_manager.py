@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import os
+
 from charlatan import _compat
 from charlatan.depgraph import DepGraph
 from charlatan.file_format import load_file
@@ -53,7 +55,7 @@ class FixturesManager(object):
         self.installed_keys = []
         self.use_unicode = use_unicode
 
-    def load(self, filename, models_package=""):
+    def load(self, *filenames, **kwargs):
         """Pre-load the fixtures.
 
         :param str filename: file that holds the fixture data
@@ -69,11 +71,11 @@ class FixturesManager(object):
 
         """
 
-        self.filename = filename
-        self.models_package = models_package
+        self.filenames = filenames
+        self.models_package = kwargs.get("models_package", "")
 
         # Load the data
-        fixtures, self.depgraph = self._load_fixtures(self.filename)
+        fixtures, self.depgraph = self._load_fixtures(self.filenames)
         self.fixture_collection = DictFixtureCollection(
             ROOT_COLLECTION,
             fixture_manager=self,
@@ -82,13 +84,33 @@ class FixturesManager(object):
         # Initiate the cache
         self.clean_cache()
 
-    def _load_fixtures(self, filename):
-        """Pre-load the fixtures.
+    def _get_namespace_from_filename(self, filename):
+        """Get a collection namespace from a fixtures filename.
 
-        :param str filename: file that holds the fixture data
+        :param str filename: filename to extract namespace from
         """
 
-        content = load_file(filename, self.use_unicode)
+        segments = os.path.basename(filename).split(".")
+        if len(segments) > 2:
+            raise ValueError("Fixtures filename stem may not contain periods")
+
+        return segments[0]
+
+    def _load_fixtures(self, filenames):
+        """Pre-load the fixtures.
+
+        :param [str] filenames: files that hold the fixture data
+        """
+
+        content = {}
+        if len(filenames) > 1:
+            for f in filenames:
+                ns = self._get_namespace_from_filename(f)
+                content[ns] = {
+                    "_type": "file", "objects": load_file(f, self.use_unicode)
+                }
+        else:
+            content = load_file(filenames[0], self.use_unicode)
 
         fixtures = {}
         for k, v in _compat.iteritems(content):
@@ -145,15 +167,31 @@ class FixturesManager(object):
         for name, new_fields in collection.iterator(objects):
             qualified_name = "%s.%s" % (namespace, name)
 
-            fixture = Fixture(
-                key=qualified_name,
-                fixture_manager=self,
-                # Automatically inherit from the collection
-                inherit_from=namespace,
-                fields=new_fields,
-                # The rest (model, default fields, etc.) is
-                # automatically inherited from the collection.
-            )
+            if "objects" in new_fields:
+                # A nested collection, either because we're dealing with a file
+                # collection or a sub-collection.
+                fixture = self._handle_collection(
+                    namespace=qualified_name,
+                    definition=new_fields,
+                    objects=new_fields["objects"]
+                )
+            else:
+                model = new_fields.pop("model", None)
+                # In the case of a file collection we'll be dealing with
+                # PyYAML's output from that file, which means that individual
+                # fixtures in this collection have the "fields" field.
+                fields = new_fields.pop("fields", new_fields)
+
+                fixture = Fixture(
+                    key=qualified_name,
+                    fixture_manager=self,
+                    # Automatically inherit from the collection
+                    inherit_from=namespace,
+                    fields=fields,
+                    model=model
+                    # The rest (default fields, etc.) is
+                    # automatically inherited from the collection.
+                )
             collection.add(name, fixture)
 
         return collection

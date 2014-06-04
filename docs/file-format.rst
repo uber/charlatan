@@ -244,6 +244,29 @@ Like any fixture, this collection can be linked to in a relationship using the
     >>> manager.get_fixture("users.4").toasters
     [<Toaster 'yellow'>]
 
+Loading fixtures from multiple files works similarly. In this case, every
+fixture in a single file is preceded by a namespace taken from the name of that
+file. Relationships between fixtures in different files specified using the
+``!rel`` keyword may be specified by prefixing the desired target fixture with
+its file namespace.
+
+.. literalinclude:: examples/relationships.yaml
+    :language: yaml
+    :lines: -4
+
+.. literalinclude:: examples/files.yaml
+    :language: yaml
+    :lines: 1-
+
+ .. doctest::
+
+    >>> manager = FixturesManager()
+    >>> manager.load("docs/examples/relationships.yaml",
+    ...     "docs/examples/files.yaml",
+    ...     models_package="charlatan.tests.fixtures.simple_models")
+    >>> manager.get_fixture("files.toaster")
+    <Toaster 'red'>
+
 .. versionchanged:: 0.3.4
     Access to unnamed fixture by using a ``.{index}`` notation instead of
     ``_{index}``.

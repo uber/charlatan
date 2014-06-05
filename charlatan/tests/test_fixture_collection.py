@@ -7,7 +7,8 @@ from charlatan.tests.fixtures.simple_models import User
 def get_collection(collection):
     """Return FixtureCollection.
 
-    :param str collection: name of collection to import"""
+    :param str collection: name of collection to import
+    """
 
     manager = FixturesManager()
     manager.load("docs/examples/collection.yaml")

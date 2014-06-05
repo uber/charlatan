@@ -244,27 +244,6 @@ Like any fixture, this collection can be linked to in a relationship using the
     >>> manager.get_fixture("users.4").toasters
     [<Toaster 'yellow'>]
 
-Loading fixtures from multiple files works similarly. In this case, every
-fixture in a single file is preceded by a namespace taken from the name of that
-file. Relationships between fixtures in different files specified using the
-``!rel`` keyword may be specified by prefixing the desired target fixture with
-its file namespace.
-
-.. literalinclude:: examples/relationships.yaml
-    :language: yaml
-
-.. literalinclude:: examples/files.yaml
-    :language: yaml
-
- .. doctest::
-
-    >>> manager = FixturesManager()
-    >>> manager.load(["docs/examples/relationships.yaml",
-    ...     "docs/examples/files.yaml"],
-    ...     models_package="charlatan.tests.fixtures.simple_models")
-    >>> manager.get_fixture("files.toaster")
-    <Toaster 'red'>
-
 .. versionchanged:: 0.3.4
     Access to unnamed fixture by using a ``.{index}`` notation instead of
     ``_{index}``.
@@ -275,6 +254,33 @@ its file namespace.
 .. versionadded:: 0.2.8
     It is now possible to retrieve lists of fixtures and link to them with
     ``!rel``
+
+Loading Fixtures from Multiple Files
+------------------------------------
+
+Loading fixtures from multiple files works similarly to loading collections. In
+this case, every fixture in a single file is preceded by a namespace taken from
+the name of that file. Relationships between fixtures in different files
+specified using the ``!rel`` keyword may be specified by prefixing the desired
+target fixture with its file namespace.
+
+.. literalinclude:: examples/relationships.yaml
+    :language: yaml
+
+.. literalinclude:: examples/files.yaml
+    :language: yaml
+
+.. doctest::
+
+    >>> manager = FixturesManager()
+    >>> manager.load(["docs/examples/relationships.yaml",
+    ...     "docs/examples/files.yaml"],
+    ...     models_package="charlatan.tests.fixtures.simple_models")
+    >>> manager.get_fixture("files.toaster")
+    <Toaster 'red'>
+
+.. versionadded:: 0.3.7
+    It is now possible to load multiple fixtures files with ``FixturesManager``
 
 Relative timestamps
 -------------------

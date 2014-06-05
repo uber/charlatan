@@ -122,6 +122,10 @@ class Fixture(Inheritable):
 
         :param str path: remaining path to return
         :param dict fields: overriding fields
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
 
         self.inherit_from_parent()  # Does the modification in place.

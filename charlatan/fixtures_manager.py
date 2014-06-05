@@ -58,7 +58,8 @@ class FixturesManager(object):
     def load(self, filenames, models_package=""):
         """Pre-load the fixtures.
 
-        :param str filename: file that holds the fixture data
+        :param list or str filename: file or list of files that holds the
+                                     fixture data
         :param str models_package: package holding the models definition
 
         Note that this does not effectively instantiate anything. It just does
@@ -68,6 +69,10 @@ class FixturesManager(object):
         .. versionchanged:: 0.3.0
             ``db_session`` argument was removed and put in the object's
             constructor arguments.
+
+        .. versionchanged:: 0.3.7
+            ``filename`` argument was changed to ``filenames``, which can be
+            list or string.
 
         """
 
@@ -99,7 +104,7 @@ class FixturesManager(object):
     def _load_fixtures(self, filenames):
         """Pre-load the fixtures.
 
-        :param [str] filenames: files that hold the fixture data
+        :param list or str filenames: files that hold the fixture data
         """
 
         if isinstance(filenames, basestring):
@@ -266,6 +271,10 @@ class FixturesManager(object):
         :param dict attrs: override fields
 
         :rtype: :data:`fixture_instance`
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
 
         try:
@@ -292,6 +301,10 @@ class FixturesManager(object):
         :param bool do_not_save: True if fixture should not be saved.
 
         :rtype: list of :data:`fixture_instance`
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
         instances = []
         for f in make_list(fixture_keys):
@@ -305,6 +318,10 @@ class FixturesManager(object):
         :param bool do_not_save: True if fixture should not be saved.
 
         :rtype: list of :data:`fixture_instance`
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
 
         return self.install_fixtures(self.keys(), do_not_save=do_not_save)
@@ -380,6 +397,10 @@ class FixturesManager(object):
         :param dict attrs: override fields
 
         :rtype: instantiated but unsaved fixture
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
         # initialize all parents in topological order
         parents = []
@@ -390,6 +411,10 @@ class FixturesManager(object):
         # expensive. We don't get the cached version if attrs are
         # overriden.
         returned = None
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         if not attrs:
             returned = self.cache.get(fixture_key)
 
@@ -409,6 +434,10 @@ class FixturesManager(object):
         :param iterable fixture_keys:
 
         :rtype: list of instantiated but unsaved fixtures
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
         fixtures = []
         for f in fixture_keys:

@@ -1,15 +1,31 @@
 import pytest
 
 from charlatan import FixturesManager
+from charlatan.tests.fixtures.simple_models import User
+
+
+def get_collection(collection):
+    """Return FixtureCollection.
+
+    :param str collection: name of collection to import"""
+
+    manager = FixturesManager()
+    manager.load("docs/examples/collection.yaml")
+    return manager.fixture_collection.get(collection)[0]
 
 
 @pytest.fixture(scope="module")
 def collection():
     """Return FixtureCollection."""
 
-    manager = FixturesManager()
-    manager.load("docs/examples/collection.yaml")
-    return manager.fixture_collection.get("toasters")[0]
+    return get_collection("toasters")
+
+
+@pytest.fixture(scope="module")
+def heterogeneous_collection():
+    """Return heterogeneous FixtureCollection."""
+
+    return get_collection("overridden_toasters")
 
 
 def test_repr(collection):
@@ -29,3 +45,14 @@ def test_cant_get_missing_fixture(collection):
 
     with pytest.raises(KeyError):
         collection.get("missing")
+
+
+def test_collection_members_can_override_model(heterogeneous_collection):
+    """Verify that we can override the inherited model for a collection
+    member.
+    """
+
+    user = heterogeneous_collection.get_instance(
+        "user"
+    )
+    assert isinstance(user, User)

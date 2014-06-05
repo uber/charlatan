@@ -117,13 +117,11 @@ class Fixture(Inheritable):
     def __repr__(self):
         return "<Fixture '%s'>" % self.key
 
-    def get_instance(self, path=None, include_relationships=True, fields=None):
+    def get_instance(self, path=None, fields=None):
         """Instantiate the fixture using the model and return the instance.
 
         :param str path: remaining path to return
         :param dict fields: overriding fields
-        :param boolean include_relationships: false if relationships should be
-            removed.
         """
 
         self.inherit_from_parent()  # Does the modification in place.
@@ -147,8 +145,7 @@ class Fixture(Inheritable):
 
             # Does not return anything, does the modification in place (in
             # fields).
-            self._process_relationships(params,
-                                        remove=not include_relationships)
+            self._process_relationships(params)
 
             if object_class:
                 try:
@@ -252,11 +249,10 @@ class Fixture(Inheritable):
                     if isinstance(nested_value, RelationshipToken):
                         yield self.extract_rel_name(nested_value)
 
-    def _process_relationships(self, fields, remove=False):
+    def _process_relationships(self, fields):
         """Create any relationship if needed.
 
         :param dict fields: fields to be processed
-        :param boolean remove: true if relationships should be removed
 
         For each field that is a relationship or a list of relationships,
         instantiate those relationships and update the fields.
@@ -274,21 +270,13 @@ class Fixture(Inheritable):
         for name, value in field_iterator:
             # One to one relationship
             if isinstance(value, RelationshipToken):
-                if remove:
-                    del fields[name]
-                else:
-                    fields[name] = self.get_relationship(value)
+                fields[name] = self.get_relationship(value)
 
             # One to many relationship
             elif isinstance(value, (tuple, list)):
                 for i, nested_value in enumerate(value):
                     if isinstance(nested_value, RelationshipToken):
-                        if remove:
-                            del fields[name]
-                        else:
-                            fields[name][i] = (
-                                self.get_relationship(nested_value)
-                            )
+                        fields[name][i] = (self.get_relationship(nested_value))
 
     def get_relationship(self, name):
         """Get a relationship and its attribute if necessary."""
@@ -297,7 +285,4 @@ class Fixture(Inheritable):
         # fixtures. If a fixture requires another fixture, it
         # necessarily means that it needs to include other relationships
         # as well.
-        return self.fixture_manager.get_fixture(
-            name,
-            include_relationships=True,
-        )
+        return self.fixture_manager.get_fixture(name)

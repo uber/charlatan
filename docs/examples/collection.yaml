@@ -23,6 +23,20 @@ anonymous_toasters:
     -
       color: black
 
+overridden_toasters:
+  inherit_from: toasters
+
+  # Here we override the model for one of the members of this collection
+  objects:
+
+    toaster:
+      color: red
+
+    user:
+      model: charlatan.tests.fixtures.simple_models:User
+      toasters: !rel toasters
+
+
 # Those collections can be used as is in relationships.
 
 collection:

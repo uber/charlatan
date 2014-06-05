@@ -45,27 +45,16 @@ class FixtureCollection(Inheritable):
     def __iter__(self):
         return self.iterator(self.fixtures)
 
-    def get_instance(self,
-                     path=None, include_relationships=None, fields=None):
+    def get_instance(self, path=None, fields=None):
         if not path or path in (DICT_FORMAT, LIST_FORMAT):
-            return self.get_all_instances(
-                include_relationships=include_relationships,
-                fields=fields,
-                format=path,
-            )
+            return self.get_all_instances(fields=fields, format=path)
 
         # First get the fixture
         fixture, remaining_path = self.get(path)
         # Then we ask it to return an instance.
-        return fixture.get_instance(
-            path=remaining_path,
-            include_relationships=include_relationships,
-            fields=fields,
-        )
+        return fixture.get_instance(path=remaining_path, fields=fields)
 
-    def get_all_instances(self, include_relationships=None,
-                          fields=None,
-                          format=None):
+    def get_all_instances(self, fields=None, format=None):
         if not format:
             format = self.default_format
 
@@ -77,10 +66,7 @@ class FixtureCollection(Inheritable):
             raise ValueError("Unknown format: %r" % format)
 
         for name, fixture in self:
-            instance = fixture.get_instance(
-                include_relationships=include_relationships,
-                fields=fields,
-            )
+            instance = fixture.get_instance(fields=fields)
 
             if format == LIST_FORMAT:
                 returned.append(instance)

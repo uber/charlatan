@@ -252,17 +252,15 @@ its file namespace.
 
 .. literalinclude:: examples/relationships.yaml
     :language: yaml
-    :lines: -4
 
 .. literalinclude:: examples/files.yaml
     :language: yaml
-    :lines: 1-
 
  .. doctest::
 
     >>> manager = FixturesManager()
-    >>> manager.load("docs/examples/relationships.yaml",
-    ...     "docs/examples/files.yaml",
+    >>> manager.load(["docs/examples/relationships.yaml",
+    ...     "docs/examples/files.yaml"],
     ...     models_package="charlatan.tests.fixtures.simple_models")
     >>> manager.get_fixture("files.toaster")
     <Toaster 'red'>

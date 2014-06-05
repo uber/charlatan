@@ -107,7 +107,7 @@ class FixturesManager(object):
         :param list or str filenames: files that hold the fixture data
         """
 
-        if isinstance(filenames, basestring):
+        if isinstance(filenames, _compat.string_types):
             content = load_file(filenames, self.use_unicode)
         else:
             content = {}

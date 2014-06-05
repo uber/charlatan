@@ -412,9 +412,6 @@ class FixturesManager(object):
         # overriden.
         returned = None
 
-        .. versionremoved:: 0.3.7
-            ``include_relationships`` argument was removed.
-
         if not attrs:
             returned = self.cache.get(fixture_key)
 

@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import os
+
 from charlatan import _compat
 from charlatan.depgraph import DepGraph
 from charlatan.file_format import load_file
@@ -53,10 +55,11 @@ class FixturesManager(object):
         self.installed_keys = []
         self.use_unicode = use_unicode
 
-    def load(self, filename, models_package=""):
+    def load(self, filenames, models_package=""):
         """Pre-load the fixtures.
 
-        :param str filename: file that holds the fixture data
+        :param list or str filename: file or list of files that holds the
+                                     fixture data
         :param str models_package: package holding the models definition
 
         Note that this does not effectively instantiate anything. It just does
@@ -67,13 +70,17 @@ class FixturesManager(object):
             ``db_session`` argument was removed and put in the object's
             constructor arguments.
 
+        .. versionchanged:: 0.3.7
+            ``filename`` argument was changed to ``filenames``, which can be
+            list or string.
+
         """
 
-        self.filename = filename
+        self.filenames = filenames
         self.models_package = models_package
 
         # Load the data
-        fixtures, self.depgraph = self._load_fixtures(self.filename)
+        fixtures, self.depgraph = self._load_fixtures(self.filenames)
         self.fixture_collection = DictFixtureCollection(
             ROOT_COLLECTION,
             fixture_manager=self,
@@ -82,13 +89,34 @@ class FixturesManager(object):
         # Initiate the cache
         self.clean_cache()
 
-    def _load_fixtures(self, filename):
-        """Pre-load the fixtures.
+    def _get_namespace_from_filename(self, filename):
+        """Get a collection namespace from a fixtures filename.
 
-        :param str filename: file that holds the fixture data
+        :param str filename: filename to extract namespace from
         """
 
-        content = load_file(filename, self.use_unicode)
+        segments = os.path.basename(filename).split(".")
+        if len(segments) > 2:
+            raise ValueError("Fixtures filename stem may not contain periods")
+
+        return segments[0]
+
+    def _load_fixtures(self, filenames):
+        """Pre-load the fixtures.
+
+        :param list or str filenames: files that hold the fixture data
+        """
+
+        if isinstance(filenames, basestring):
+            content = load_file(filenames, self.use_unicode)
+        else:
+            content = {}
+
+            for filename in filenames:
+                namespace = self._get_namespace_from_filename(filename)
+                content[namespace] = {
+                    "objects": load_file(filename, self.use_unicode)
+                }
 
         fixtures = {}
         for k, v in _compat.iteritems(content):
@@ -145,15 +173,32 @@ class FixturesManager(object):
         for name, new_fields in collection.iterator(objects):
             qualified_name = "%s.%s" % (namespace, name)
 
-            fixture = Fixture(
-                key=qualified_name,
-                fixture_manager=self,
-                # Automatically inherit from the collection
-                inherit_from=namespace,
-                fields=new_fields,
-                # The rest (model, default fields, etc.) is
-                # automatically inherited from the collection.
-            )
+            if "objects" in new_fields:
+                # A nested collection, either because we're dealing with a file
+                # collection or a sub-collection.
+                fixture = self._handle_collection(
+                    namespace=qualified_name,
+                    definition=new_fields,
+                    objects=new_fields["objects"]
+                )
+            else:
+                model = new_fields.pop("model", None)
+                # In the case of a file collection we'll be dealing with
+                # PyYAML's output from that file, which means that individual
+                # fixtures in this collection have the "fields" field.
+                fields = new_fields.pop("fields", new_fields)
+                inherit_from = namespace if model is None else None
+
+                fixture = Fixture(
+                    key=qualified_name,
+                    fixture_manager=self,
+                    # Automatically inherit from the collection
+                    inherit_from=inherit_from,
+                    fields=fields,
+                    model=model
+                    # The rest (default fields, etc.) is
+                    # automatically inherited from the collection.
+                )
             collection.add(name, fixture)
 
         return collection
@@ -217,26 +262,24 @@ class FixturesManager(object):
 
         self._get_hook("after_delete")(instance)
 
-    def install_fixture(self, fixture_key, do_not_save=False,
-                        include_relationships=True, attrs=None):
+    def install_fixture(self, fixture_key, do_not_save=False, attrs=None):
 
         """Install a fixture.
 
         :param str fixture_key:
         :param bool do_not_save: True if fixture should not be saved.
-        :param bool include_relationships: False if relationships should be
-            removed.
         :param dict attrs: override fields
 
         :rtype: :data:`fixture_instance`
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
 
         try:
             self._get_hook("before_install")()
-            instance = self.get_fixture(
-                fixture_key,
-                include_relationships=include_relationships,
-                attrs=attrs)
+            instance = self.get_fixture(fixture_key, attrs=attrs)
 
             # Save the instance
             if not do_not_save:
@@ -250,42 +293,38 @@ class FixturesManager(object):
             self._get_hook("after_install")(None)
             return instance
 
-    def install_fixtures(self, fixture_keys, do_not_save=False,
-                         include_relationships=True):
+    def install_fixtures(self, fixture_keys, do_not_save=False):
         """Install a list of fixtures.
 
         :param fixture_keys: fixtures to be installed
         :type fixture_keys: str or list of strs
         :param bool do_not_save: True if fixture should not be saved.
-        :param bool include_relationships: False if relationships should be
-            removed.
 
         :rtype: list of :data:`fixture_instance`
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
         instances = []
         for f in make_list(fixture_keys):
-            instances.append(self.install_fixture(
-                f,
-                do_not_save=do_not_save,
-                include_relationships=include_relationships))
+            instances.append(self.install_fixture(f, do_not_save=do_not_save))
 
         return instances
 
-    def install_all_fixtures(self, do_not_save=False,
-                             include_relationships=True):
+    def install_all_fixtures(self, do_not_save=False):
         """Install all fixtures.
 
         :param bool do_not_save: True if fixture should not be saved.
-        :param bool include_relationships: False if relationships should be
-            removed.
 
         :rtype: list of :data:`fixture_instance`
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
 
-        return self.install_fixtures(
-            self.keys(),
-            do_not_save=do_not_save,
-            include_relationships=include_relationships)
+        return self.install_fixtures(self.keys(), do_not_save=do_not_save)
 
     def uninstall_fixture(self, fixture_key, do_not_delete=False):
         """Uninstall a fixture.
@@ -351,38 +390,37 @@ class FixturesManager(object):
         """Return all fixture keys."""
         return self.fixture_collection.fixtures.keys()
 
-    def get_fixture(self, fixture_key, include_relationships=True, attrs=None):
+    def get_fixture(self, fixture_key, attrs=None):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
-        :param bool include_relationships: False if relationships should be
-            removed.
         :param dict attrs: override fields
 
         :rtype: instantiated but unsaved fixture
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
         # initialize all parents in topological order
         parents = []
         for fixture in self.depgraph.ancestors_of(fixture_key):
-            parents.append(
-                self.get_fixture(
-                    fixture,
-                    include_relationships=include_relationships,
-                )
-            )
+            parents.append(self.get_fixture(fixture))
 
         # Fixture are cached so that setting up relationships is not too
         # expensive. We don't get the cached version if attrs are
         # overriden.
         returned = None
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         if not attrs:
             returned = self.cache.get(fixture_key)
 
         if not returned:
             returned = self.fixture_collection.get_instance(
-                fixture_key,
-                include_relationships=include_relationships,
-                fields=attrs,
+                fixture_key, fields=attrs,
             )
 
             self.cache[fixture_key] = returned
@@ -390,21 +428,20 @@ class FixturesManager(object):
 
         return returned
 
-    def get_fixtures(self, fixture_keys, include_relationships=True):
+    def get_fixtures(self, fixture_keys):
         """Return a list of fixtures instances.
 
         :param iterable fixture_keys:
-        :param bool include_relationships: False if relationships should be
-            removed.
 
         :rtype: list of instantiated but unsaved fixtures
+
+        .. versionremoved:: 0.3.7
+            ``include_relationships`` argument was removed.
+
         """
         fixtures = []
         for f in fixture_keys:
-            fixtures.append(
-                self.get_fixture(
-                    f,
-                    include_relationships=include_relationships))
+            fixtures.append(self.get_fixture(f))
         return fixtures
 
     def _get_hook(self, hook_name):

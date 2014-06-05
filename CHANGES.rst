@@ -1,6 +1,12 @@
 Changelog for Charlatan
 =======================
 
+0.3.7 (unreleased)
+------------------
+
+- Support loading of multiple fixtures files
+- Remove include_relationships option in instance creation
+
 0.3.6 (2014-06-02)
 ------------------
 

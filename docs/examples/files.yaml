@@ -1,0 +1,4 @@
+toaster:
+  model: Toaster
+  fields:
+    color: !rel relationships.toaster.color

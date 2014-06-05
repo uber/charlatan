@@ -26,50 +26,36 @@ class FixturesManagerMixin(object):
             self.install_fixtures(self.fixtures)
 
     @copy_docstring_from(FixturesManager)
-    def install_fixture(self, fixture_key,
-                        attrs=None,
-                        do_not_save=False,
-                        include_relationships=True
-                        ):
+    def install_fixture(self, fixture_key, attrs=None, do_not_save=False):
         fixture = self.fixtures_manager.install_fixture(
-            fixture_key, do_not_save, include_relationships, attrs)
+            fixture_key, do_not_save, attrs)
         setattr(self, fixture_key, fixture)
         return fixture
 
     @copy_docstring_from(FixturesManager)
-    def install_fixtures(self, fixtures, do_not_save=False,
-                         include_relationships=True):
+    def install_fixtures(self, fixtures, do_not_save=False):
         installed = []
         for fixture in make_list(fixtures):
             installed.append(
-                self.install_fixture(
-                    fixture, do_not_save=do_not_save,
-                    include_relationships=include_relationships)
+                self.install_fixture(fixture, do_not_save=do_not_save)
             )
 
         return installed
 
     @copy_docstring_from(FixturesManager)
-    def install_all_fixtures(self, do_not_save=False,
-                             include_relationships=True):
+    def install_all_fixtures(self, do_not_save=False):
         return self.install_fixtures(
             self.fixtures_manager.keys(),
             do_not_save=do_not_save,
-            include_relationships=include_relationships,
         )
 
     @copy_docstring_from(FixturesManager)
-    def get_fixture(self, fixture_key,
-                    include_relationships=True,
-                    attrs=None):
-        return self.fixtures_manager.get_fixture(
-            fixture_key, include_relationships, attrs)
+    def get_fixture(self, fixture_key, attrs=None):
+        return self.fixtures_manager.get_fixture(fixture_key, attrs)
 
     @copy_docstring_from(FixturesManager)
-    def get_fixtures(self, fixtures,
-                     include_relationships=True):
-        return self.fixtures_manager.get_fixtures(
-            fixtures, include_relationships)
+    def get_fixtures(self, fixtures):
+        return self.fixtures_manager.get_fixtures(fixtures)
 
     @copy_docstring_from(FixturesManager)
     def uninstall_fixture(self, fixture_key, do_not_delete=False):

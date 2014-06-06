@@ -58,7 +58,7 @@ class FixturesManager(object):
     def load(self, filenames, models_package=""):
         """Pre-load the fixtures.
 
-        :param list or str filename: file or list of files that holds the
+        :param list_or_str filename: file or list of files that holds the
                                      fixture data
         :param str models_package: package holding the models definition
 

@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.7 (unreleased)
+0.3.7 (2014-07-07)
 ------------------
 
 - Support loading of multiple fixtures files

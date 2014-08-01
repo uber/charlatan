@@ -31,6 +31,7 @@ setup(
     version='0.3.7',
     author="Charles-Axel Dein",
     author_email="charles@uber.com",
+    license="MIT",
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
     url="https://github.com/uber/charlatan",

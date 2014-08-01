@@ -1,3 +1,3 @@
 # If you add a lib here, please include a short description of what it's doing
 
-PyYAML==3.11
+PyYAML>=3.11

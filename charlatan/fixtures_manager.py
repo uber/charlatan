@@ -110,18 +110,18 @@ class FixturesManager(object):
         """
 
         if isinstance(filenames, _compat.string_types):
-            globed_filenames = glob(filenames)
+            globbed_filenames = glob(filenames)
         else:
-            globed_filenames = list(
+            globbed_filenames = list(
                 chain.from_iterable(glob(f) for f in filenames)
             )
 
-        if len(globed_filenames) == 1:
+        if len(globbed_filenames) == 1:
             content = load_file(filenames, self.use_unicode)
         else:
             content = {}
 
-            for filename in globed_filenames:
+            for filename in globbed_filenames:
                 namespace = self._get_namespace_from_filename(filename)
                 content[namespace] = {
                     "objects": load_file(filename, self.use_unicode)

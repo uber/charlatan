@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+from glob import glob
+from itertools import chain
 import os
 
 from charlatan import _compat
@@ -108,11 +110,18 @@ class FixturesManager(object):
         """
 
         if isinstance(filenames, _compat.string_types):
+            globed_filenames = glob(filenames)
+        else:
+            globed_filenames = list(
+                chain.from_iterable(glob(f) for f in filenames)
+            )
+
+        if len(globed_filenames) == 1:
             content = load_file(filenames, self.use_unicode)
         else:
             content = {}
 
-            for filename in filenames:
+            for filename in globed_filenames:
                 namespace = self._get_namespace_from_filename(filename)
                 content[namespace] = {
                     "objects": load_file(filename, self.use_unicode)

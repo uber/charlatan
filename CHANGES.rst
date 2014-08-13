@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.3.8 (2014-08-11)
+------------------
+
+- Support loading of globbed filenames
+
 0.3.7 (2014-07-07)
 ------------------
 

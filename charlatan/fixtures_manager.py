@@ -117,7 +117,7 @@ class FixturesManager(object):
             )
 
         if len(globbed_filenames) == 1:
-            content = load_file(filenames, self.use_unicode)
+            content = load_file(globbed_filenames[0], self.use_unicode)
         else:
             content = {}
 

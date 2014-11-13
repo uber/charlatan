@@ -12,3 +12,9 @@ relationship_alone:
 from_database:
   id: 1
   model: charlatan.tests.fixtures.models:Toaster
+
+model_list:
+  inherit_from: model
+  objects:
+    - name: "one"
+    - name: "two"

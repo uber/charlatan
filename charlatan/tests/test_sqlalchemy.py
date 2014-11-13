@@ -33,3 +33,9 @@ class TestSqlalchemyFixtures(testing.TestCase):
 
         toaster = self.manager.install_fixture("from_database")
         self.assertEqual(toaster.id, 1)
+
+    def test_installing_collection(self):
+        """Verify that a collection of fixtures is in the database"""
+        self.manager.install_fixture("model_list")
+
+        self.assertEqual(self.session.query(Toaster).count(), 2)

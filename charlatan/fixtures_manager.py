@@ -292,6 +292,10 @@ class FixturesManager(object):
 
             # Save the instance
             if not do_not_save:
+                if hasattr(instance, '__iter__'):
+                    # Save all the instances!
+                    for model in instance:
+                        self.save_instance(model)
                 self.save_instance(instance)
 
         except Exception as exc:

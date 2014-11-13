@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.9 (unreleased)
+0.3.9 (2014-11-13)
 ------------------
 
 - Fix saving collection of fixtures to database (thanks to @joegilley)

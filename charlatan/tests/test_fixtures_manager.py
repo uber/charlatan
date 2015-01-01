@@ -1,6 +1,8 @@
 from __future__ import absolute_import
+from datetime import datetime
 
 import pytest
+from freezegun import freeze_time
 
 from charlatan import testing
 from charlatan import depgraph
@@ -11,7 +13,6 @@ class TestFixturesManager(testing.TestCase):
 
     def test_install_fixture(self):
         """install_fixture should return the fixture."""
-
         fixtures_manager = FixturesManager()
         fixtures_manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
@@ -22,6 +23,15 @@ class TestFixturesManager(testing.TestCase):
             'field1': 'lolin',
             'field2': 2,
         })
+
+    @freeze_time("2014-12-31 11:00:00")
+    def test_install_fixture_with_now(self):
+        """Verify that we can install a fixture with !now tag."""
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
+        fixture = fixtures_manager.install_fixture('fixture')
+        self.assertEqual(fixture,
+                         {'now': datetime(2014, 12, 30, 11, 0)})
 
     def test_uninstall_fixture(self):
         """uninstall_fixture should return the fixture."""

@@ -4,7 +4,7 @@ import datetime
 import yaml
 from yaml.constructor import Constructor
 
-from charlatan.utils import apply_delta, datetime_to_epoch_timestamp
+from charlatan.utils import get_timedelta, datetime_to_epoch_timestamp
 
 
 class RelationshipToken(str):
@@ -29,26 +29,26 @@ def configure_yaml():
     """Add some custom tags to the YAML constructor."""
 
     def now_constructor(loader, node):
-        """Return the current datetime."""
+        """Return a function that returns the current datetime."""
+        delta = get_timedelta(loader.construct_scalar(node))
 
-        delta = loader.construct_scalar(node)
-        now = datetime.datetime.utcnow()
+        def get_now():
+            return datetime.datetime.utcnow() + delta
 
-        if delta:
-            now = apply_delta(now, delta)
-
-        return now
+        return get_now
 
     def epoch_now_constructor(loader, node):
-        """Return the current datetime as seconds since the epoch"""
+        """Return a function that returns the current epoch."""
+        delta = get_timedelta(loader.construct_scalar(node))
 
-        now = now_constructor(loader, node)
+        def get_now():
+            return datetime_to_epoch_timestamp(
+                datetime.datetime.utcnow() + delta)
 
-        return datetime_to_epoch_timestamp(now)
+        return get_now
 
     def relationship_constructor(loader, node):
         """Create _RelationshipToken for `!rel` tags."""
-
         name = loader.construct_scalar(node)
         return RelationshipToken(name)
 

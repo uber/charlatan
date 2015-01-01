@@ -20,8 +20,14 @@ In this example:
   ``Toaster(**fields)``.
 * ``!rel`` lets you create relationships by pointing to another fixture key.
 * ``!now`` lets you enter timestamps. It supports basic operations
-  (adding/subtracting days, months, years). **Note** that ``!now`` is evaluated when
-  the fixture file is read, not when the test is run.
+  (adding/subtracting days, months, years). It is evaluated when the fixture
+  is instantiated.
+* ``!epoch_now`` generates epoch timestamps and supports the same operations as
+  ``!now``.
+
+.. NOTE::
+  Inside ``fields``, ``!now`` is supported only as a first level list item,
+  or as a dictionary value.
 
 
 Defining a fixture

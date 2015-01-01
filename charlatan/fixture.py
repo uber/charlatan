@@ -2,8 +2,9 @@ import copy
 import importlib
 import operator
 
-from charlatan.file_format import RelationshipToken
 from charlatan import _compat
+from charlatan.file_format import RelationshipToken
+from charlatan.utils import safe_iteritems
 
 CAN_BE_INHERITED = frozenset(
     ["model_name", "fields", "post_creation", "depend_on"])
@@ -127,7 +128,6 @@ class Fixture(Inheritable):
             ``include_relationships`` argument was removed.
 
         """
-
         self.inherit_from_parent()  # Does the modification in place.
 
         if self.database_id:
@@ -143,6 +143,10 @@ class Fixture(Inheritable):
             params = copy.deepcopy(self.fields)
             if fields:
                 params.update(fields)
+
+            for key, value in safe_iteritems(params):
+                if callable(value):
+                    params[key] = value()
 
             # Get the class to instantiate
             object_class = self.get_class()
@@ -235,14 +239,7 @@ class Fixture(Inheritable):
         for dep in self.depend_on:
             yield dep, None
 
-        # For dictionaries, iterate over key, value and for lists iterate over
-        # index, item
-        if hasattr(self.fields, 'items'):
-            field_iterator = _compat.iteritems(self.fields)
-        else:
-            field_iterator = enumerate(self.fields)
-
-        for name, value in field_iterator:
+        for name, value in safe_iteritems(self.fields):
             # One to one relationship
             if isinstance(value, RelationshipToken):
                 yield self.extract_rel_name(value)

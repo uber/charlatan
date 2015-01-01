@@ -1,0 +1,3 @@
+fixture:
+  fields:
+    now: !now -1d

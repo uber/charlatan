@@ -13,3 +13,5 @@ flake8==2.1.0
 sqlalchemy==0.9.1
 # Multi-version testing
 tox==1.6.1
+# Freeze time
+freezegun==0.2.8

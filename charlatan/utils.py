@@ -5,40 +5,44 @@ import itertools
 import operator
 import re
 
+from charlatan import _compat
 
-def apply_delta(dt, delta):
-    """Apply datetime delta in string format to a datetime object.
+VALID_SIGNS = frozenset(['-', '+'])
 
-    :param datetime dt:
+
+def get_timedelta(delta):
+    """Return timedelta from string.
+
     :param str delta:
 
-    :rtype: :py:class:`datetime.DateTime` instance
+    :rtype: :py:class:`datetime.timedelta` instance
 
-    >>> base = datetime.datetime(2012, 1, 1, 1, 1, 1)
-    >>> apply_delta(base, "+1h")
-    datetime.datetime(2012, 1, 1, 2, 1, 1)
-    >>> apply_delta(base, "+10h")
-    datetime.datetime(2012, 1, 1, 11, 1, 1)
-    >>> apply_delta(base, "-10d")
-    datetime.datetime(2011, 12, 22, 1, 1, 1)
-    >>> apply_delta(base, "+1m")
-    datetime.datetime(2012, 1, 31, 1, 1, 1)
-    >>> apply_delta(base, "-1y")
-    datetime.datetime(2011, 1, 1, 1, 1, 1)
-    >>> apply_delta(base, "+10d2h")
-    datetime.datetime(2012, 1, 11, 3, 1, 1)
-    >>> apply_delta(base, "-10d2h")
-    datetime.datetime(2011, 12, 21, 23, 1, 1)
-    >>> apply_delta(base, "-21y2m1d24h")
-    datetime.datetime(1990, 11, 5, 1, 1, 1)
-    >>> apply_delta(base, "+5M")
-    datetime.datetime(2012, 1, 1, 1, 6, 1)
-    >>> apply_delta(base, "+4M30s")
-    datetime.datetime(2012, 1, 1, 1, 5, 31)
+    >>> get_timedelta("")
+    datetime.timedelta(0)
+    >>> get_timedelta("+1h")
+    datetime.timedelta(0, 3600)
+    >>> get_timedelta("+10h")
+    datetime.timedelta(0, 36000)
+    >>> get_timedelta("-10d")
+    datetime.timedelta(-10)
+    >>> get_timedelta("+1m")
+    datetime.timedelta(30)
+    >>> get_timedelta("-1y")
+    datetime.timedelta(-365)
+    >>> get_timedelta("+10d2h")
+    datetime.timedelta(10, 7200)
+    >>> get_timedelta("-10d2h")
+    datetime.timedelta(-11, 79200)
+    >>> get_timedelta("-21y2m1d24h")
+    datetime.timedelta(-7727)
+    >>> get_timedelta("+5M")
+    datetime.timedelta(0, 300)
 
     """
-
+    if not delta:
+        return datetime.timedelta()
     sign = delta[0]
+    assert sign in VALID_SIGNS
     delta = delta[1:]
     timedelta_kwargs = {}
 
@@ -46,9 +50,6 @@ def apply_delta(dt, delta):
     # start and the end of string.
     for part in filter(lambda p: p, re.split(r"(\d+\w)", delta)):
         amount, unit = re.findall(r"(\d+)([ymdhMs])", part)[0]
-
-        operators = {"+": operator.add,
-                     "-": operator.sub}
         units = {
             "s": "seconds",
             "M": "minutes",
@@ -60,10 +61,10 @@ def apply_delta(dt, delta):
         timedelta_kwargs[units[unit]] = int(amount)
 
     delta = extended_timedelta(**timedelta_kwargs)
-
-    dt = operators[sign](dt, delta)
-
-    return dt
+    if sign == '-':
+        return -delta
+    else:
+        return delta
 
 
 def extended_timedelta(**kwargs):
@@ -142,3 +143,13 @@ def copy_docstring_from(klass):
         return wrapped
 
     return wrapper
+
+
+def safe_iteritems(items):
+    """Safely iterate over a dict or a list."""
+    # For dictionaries, iterate over key, value and for lists iterate over
+    # index, item
+    if hasattr(items, 'items'):
+        return _compat.iteritems(items)
+    else:
+        return enumerate(items)

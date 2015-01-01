@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.10 (unreleased)
+0.3.10 (2014-12-31)
 -------------------
 
 - Get ``utcnow`` at fixture instantiation time, to allow using ``freezegun``

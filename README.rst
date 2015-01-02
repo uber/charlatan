@@ -7,6 +7,10 @@ Charlatan: Fixtures Made Easy
 .. image:: https://coveralls.io/repos/uber/charlatan/badge.png
   :target: https://coveralls.io/r/uber/charlatan
 
+.. image:: https://pypip.in/version/charlatan/badge.svg
+    :target: https://pypi.python.org/pypi/charlatan/
+    :alt: Latest Version
+
 **Efficiently manage and install data fixtures**
 
 `Charlatan` is a library that you can use in your tests to create database

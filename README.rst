@@ -42,5 +42,5 @@ Copyright Uber 2013, Charles-Axel Dein <charles@uber.com>
 Authors
 -------
 
-Charles-Axel Dein <charles@uber.com>
-Erik Formella <erik@uber.com>
+- Charles-Axel Dein <charles@uber.com>
+- Erik Formella <erik@uber.com>

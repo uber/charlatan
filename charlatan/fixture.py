@@ -268,7 +268,8 @@ class Fixture(Inheritable):
         # One to many relationship
         elif isinstance(field_value, (tuple, list)):
             for i, nested_value in enumerate(field_value):
-                field_value[i] = self._process_field_relationships(nested_value)
+                field_value[i] = self._process_field_relationships(
+                    nested_value)
 
         return field_value
 

@@ -6,7 +6,8 @@ from charlatan import testcase, testing, FixturesManager
 class TestRelationshipsWithoutModels(testing.TestCase,
                                      testcase.FixturesManagerMixin):
 
-    fixtures = ('dict_with_nest', 'simple_dict', 'list_of_relationships',)
+    fixtures = ('dict_with_nest', 'simple_dict', 'list_of_relationships',
+                'nested_list_of_relationships')
 
     def setUp(self):
         self.fixtures_manager = FixturesManager()
@@ -20,3 +21,11 @@ class TestRelationshipsWithoutModels(testing.TestCase,
     def test_relationships_list(self):
         self.assertEqual([self.dict_with_nest, self.simple_dict],
                          self.list_of_relationships)
+
+    def test_nested_list_of_relationships(self):
+        self.assertEqual(self.nested_list_of_relationships, {
+            'dicts': [
+                [self.dict_with_nest],
+                [self.simple_dict],
+            ]
+        })

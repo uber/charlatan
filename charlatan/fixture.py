@@ -250,6 +250,28 @@ class Fixture(Inheritable):
                     if isinstance(nested_value, RelationshipToken):
                         yield self.extract_rel_name(nested_value)
 
+    def _process_field_relationships(self, field_value):
+        """Create any relationship for a field if needed.
+
+        :param mixed field_value: field value to be processed
+
+        For each field that is a relationship or a list of relationships,
+        instantiate those relationships and update the fields.
+
+        Returns new field value and modifies lists in place.
+        """
+
+        # One to one relationship
+        if isinstance(field_value, RelationshipToken):
+            return self.get_relationship(field_value)
+
+        # One to many relationship
+        elif isinstance(field_value, (tuple, list)):
+            for i, nested_value in enumerate(field_value):
+                field_value[i] = self._process_field_relationships(nested_value)
+
+        return field_value
+
     def _process_relationships(self, fields):
         """Create any relationship if needed.
 
@@ -269,15 +291,7 @@ class Fixture(Inheritable):
             field_iterator = enumerate(fields)
 
         for name, value in field_iterator:
-            # One to one relationship
-            if isinstance(value, RelationshipToken):
-                fields[name] = self.get_relationship(value)
-
-            # One to many relationship
-            elif isinstance(value, (tuple, list)):
-                for i, nested_value in enumerate(value):
-                    if isinstance(nested_value, RelationshipToken):
-                        fields[name][i] = (self.get_relationship(nested_value))
+            fields[name] = self._process_field_relationships(value)
 
     def get_relationship(self, name):
         """Get a relationship and its attribute if necessary."""

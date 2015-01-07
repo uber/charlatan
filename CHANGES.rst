@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.3.11 (unreleased)
+-------------------
+
+- Fix getting relationships with fields that are nested more than one level
+
 0.3.10 (2014-12-31)
 -------------------
 

@@ -50,7 +50,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.uninstall_all_fixtures()
 
         fixtures = self.install_all_fixtures()
-        self.assertEqual(len(fixtures), 3)
+        self.assertEqual(len(fixtures), 4)
 
     def test_uninstall_fixture(self):
         """uninstall_fixture should return the uninstalled fixture."""

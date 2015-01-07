@@ -13,3 +13,11 @@ list_of_relationships:
   fields:
     - !rel dict_with_nest
     - !rel simple_dict
+
+nested_list_of_relationships:
+  fields:
+    dicts:
+      -
+        - !rel dict_with_nest
+      -
+        - !rel simple_dict

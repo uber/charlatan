@@ -20,3 +20,14 @@ class TestRelationshipsWithoutModels(testing.TestCase,
     def test_relationships_list(self):
         self.assertEqual([self.dict_with_nest, self.simple_dict],
                          self.list_of_relationships)
+
+    def test_nested_list_of_relationships(self):
+        nested_list_of_relationships = self.install_fixture(
+            'nested_list_of_relationships')
+
+        self.assertEqual(nested_list_of_relationships, {
+            'dicts': [
+                [self.dict_with_nest],
+                [self.simple_dict],
+            ]
+        })

@@ -6,7 +6,7 @@ from charlatan import testcase, testing, FixturesManager
 class TestRelationshipsWithoutModels(testing.TestCase,
                                      testcase.FixturesManagerMixin):
 
-    fixtures = ('dict_with_nest', 'simple_dict', 'list_of_relationships')
+    fixtures = ('dict_with_nest', 'simple_dict', 'list_of_relationships',)
 
     def setUp(self):
         self.fixtures_manager = FixturesManager()

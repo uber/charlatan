@@ -7,6 +7,10 @@ class FixturesManagerMixin(object):
 
     """Class from which test cases should inherit to use fixtures.
 
+    .. versionchanged:: 0.3.12
+        ``FixturesManagerMixin`` does not install class attributes
+        ``fixtures`` anymore.
+
     .. versionchanged:: 0.3.0
         ``use_fixtures_manager`` method renamed ``init_fixtures.``
 
@@ -21,9 +25,6 @@ class FixturesManagerMixin(object):
         This function *must* be called before doing anything else.
         """
         self.fixtures_manager.clean_cache()
-
-        if hasattr(self, "fixtures"):
-            self.install_fixtures(self.fixtures)
 
     @copy_docstring_from(FixturesManager)
     def install_fixture(self, fixture_key, attrs=None, do_not_save=False):

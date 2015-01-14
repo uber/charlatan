@@ -1,6 +1,15 @@
 Changelog for Charlatan
 =======================
 
+0.3.12 (unreleased)
+-------------------
+
+- Do not install the class' ``fixtures`` variable on
+  :py:class:`charlatan.FixturesManagerMixin` initialization. This can lead to
+  bad pattern where a huge list of fixtures is installed for each test, even
+  though each test uses only a few. Also, it's safer to be explicit about this
+  behavior and let the user have this automatic installation.
+
 0.3.11 (2015-01-06)
 -------------------
 

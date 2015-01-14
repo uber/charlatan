@@ -12,23 +12,13 @@ fixtures_manager.load(
 
 class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
 
-    fixtures = (
-        'simple_dict',
-        'dict_with_nest',)
-
     def _pre_setup(self):
         self.fixtures_manager = fixtures_manager
         self.init_fixtures()
+        self.install_fixtures(('simple_dict', 'dict_with_nest'))
 
     def _post_teardown(self):
         self.uninstall_all_fixtures()
-
-    def test_init_fixtures(self):
-        """init_fixtures should install 2 fixtures."""
-        self.uninstall_all_fixtures()
-
-        self.init_fixtures()
-        self.assertEqual(len(self.fixtures_manager.installed_keys), 2)
 
     def test_install_fixture(self):
         """install_fixture should return the installed fixture."""

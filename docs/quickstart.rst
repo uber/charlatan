@@ -71,7 +71,7 @@ class needs to inherits from :py:class:`charlatan.FixturesManagerMixin`.
 `Charlatan` uses an internal cache to store fixtures instance (in particular to
 create relationships). If you are resetting your database after each tests
 (using transactions or by manually truncating all tables), you need to clean
-the cache either in :py:meth:`TestCase.setUp`, otherwise `Charlatan` will try
+the cache in :py:meth:`TestCase.setUp`, otherwise `Charlatan` will try
 accessing objects that are not anymore in the sqlalchemy session.
 
 .. literalinclude:: ../charlatan/tests/test_simple_testcase.py
@@ -80,7 +80,9 @@ accessing objects that are not anymore in the sqlalchemy session.
 Using fixtures
 --------------
 
-There are multiple ways to require and use fixtures.
+There are multiple ways to require and use fixtures. When you install a fixture
+using the :py:class:`charlatan.FixturesManagerMixin`, it gets attached to the
+instance and can be accessed as an instance attribute (e.g. ``self.toaster``).
 
 For each tests, in setUp and tearDown
 """""""""""""""""""""""""""""""""""""
@@ -91,11 +93,11 @@ For each tests, in setUp and tearDown
 
         def setUp(self):
             # This will create self.client and self.driver
-            self.install_fixtures(("client", "driver"))
+            self.install_fixtures(("toaster", "brioche"))
 
-        def tearDown(self):
-            # This will delete self.client and self.driver
-            self.uninstall_fixtures(("client", "driver"))
+        def test_toaster(self):
+            """Verify that a toaster toasts."""
+            self.toaster.toast(self.brioche)
 
 For a single test
 """""""""""""""""
@@ -106,7 +108,7 @@ For a single test
 
         def test_toaster(self):
             self.install_fixture("toaster")
-            # do things... and optionally uninstall it once you're done
+            # Do things... and optionally uninstall it once you're done
             self.uninstall_fixture("toaster")
 
 Getting a fixture without saving it
@@ -149,17 +151,5 @@ Here's the general process:
    it, add it to the session and commit it (``db_session.add(instance); db_session.commit()``).
    If it's not a sqlalchemy model, charlatan will try to call a `save` method
    on the instance. If there's no such method, charlatan will do nothing.
-
-Fixtures are then attached to your test class, you can access them as instance
-attributes:
-
-.. code-block:: python
-
-    class MyTest(FixturesManagerMixin):
-
-        fixtures = ("toaster", "toast1", "toast2")
-
-        def test_toaster(self):
-            self.toaster.toast(self.toast1, self.toast2)
 
 :ref:`hooks` are also supported.

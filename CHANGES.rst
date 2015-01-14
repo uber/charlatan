@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.3.12 (unreleased)
+0.3.12 (2015-01-14)
 -------------------
 
 - Do not install the class' ``fixtures`` variable on

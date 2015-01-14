@@ -8,7 +8,9 @@ Changelog for Charlatan
   :py:class:`charlatan.FixturesManagerMixin` initialization. This can lead to
   bad pattern where a huge list of fixtures is installed for each test, even
   though each test uses only a few. Also, it's safer to be explicit about this
-  behavior and let the user have this automatic installation.
+  behavior and let the user have this automatic installation. Note that you can
+  easily reimplement this behavior by subclassing or installing those in the
+  class ``setUp`` method.
 
 0.3.11 (2015-01-06)
 -------------------

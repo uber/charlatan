@@ -35,7 +35,14 @@ class TestSqlalchemyFixtures(testing.TestCase):
         self.assertEqual(toaster.id, 1)
 
     def test_installing_collection(self):
-        """Verify that a collection of fixtures is in the database"""
+        """Verify that a collection of fixtures is in the database."""
         self.manager.install_fixture("model_list")
 
         self.assertEqual(self.session.query(Toaster).count(), 2)
+
+    def test_inheritance_and_relationship(self):
+        """Verify that inheritance works with relationships."""
+        model, model_1 = self.manager.install_fixtures(('model', 'model_1'))
+
+        self.assertTrue(isinstance(model.color, Color))
+        self.assertTrue(isinstance(model_1.color, Color))

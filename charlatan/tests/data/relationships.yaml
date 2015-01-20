@@ -4,6 +4,11 @@ model:
     name: "toaster1"
   model: charlatan.tests.fixtures.models:Toaster
 
+model_1:
+  inherit_from: model
+  fields:
+    name: "toaster2"
+
 relationship_alone:
   fields:
     name: "red"

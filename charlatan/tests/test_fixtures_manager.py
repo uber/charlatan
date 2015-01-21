@@ -33,6 +33,14 @@ class TestFixturesManager(testing.TestCase):
         self.assertEqual(fixture,
                          {'now': datetime(2014, 12, 30, 11, 0)})
 
+    def test_install_fixture_override(self):
+        """Verify that we can override a fixture field."""
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
+        fixture = fixtures_manager.install_fixture('fixture',
+                                                   attrs={'now': None})
+        self.assertEqual(fixture, {'now': None})
+
     def test_uninstall_fixture(self):
         """uninstall_fixture should return the fixture."""
 

@@ -111,6 +111,30 @@ For a single test
             # Do things... and optionally uninstall it once you're done
             self.uninstall_fixture("toaster")
 
+With pytest
+"""""""""""
+
+It's extremely easy to use charlatan with pytest. There are multiple ways to
+achieve nice readability, here's one possibility.
+
+In ``conftest.py``:
+
+.. code-block:: python
+
+    @pytest.fixture
+    def get_fixture():
+        return fixtures_manager.get_fixture
+
+In your test file:
+
+.. code-block:: python
+
+    def test_toaster(get_fixture):
+        """Verify that a toaster toasts."""
+        toaster = get_fixture('toaster')
+        toast = get_fixture('toast')
+        ...
+
 Getting a fixture without saving it
 """""""""""""""""""""""""""""""""""
 

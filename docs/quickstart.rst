@@ -108,8 +108,6 @@ For a single test
 
         def test_toaster(self):
             self.install_fixture("toaster")
-            # Do things... and optionally uninstall it once you're done
-            self.uninstall_fixture("toaster")
 
 With pytest
 """""""""""
@@ -120,6 +118,9 @@ achieve nice readability, here's one possibility.
 In ``conftest.py``:
 
 .. code-block:: python
+
+    import pytest
+
 
     @pytest.fixture
     def get_fixture():
@@ -177,3 +178,20 @@ Here's the general process:
    on the instance. If there's no such method, charlatan will do nothing.
 
 :ref:`hooks` are also supported.
+
+Uninstalling fixtures
+"""""""""""""""""""""
+
+Because charlatan is not coupled with the persistence layer, it does not have
+strong opinions about resetting the world after a test runs. There's multiple
+ways to handle test tear down:
+
+* Wrap test inside a transaction (if you're using sqlalchemy, its documentation
+  has a `good
+  explanation <http://docs.sqlalchemy.org/en/rel_0_9/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites>`_
+  about how to achieve that).
+* Drop and recreate the database (not really efficient).
+* Install and uninstall fixtures explicitly (you have to keep track of them
+  though, if you forget to uninstall one fixture it will leak in the other
+  tests). See
+  :py:meth:`charlatan.FixturesManager.uninstall_fixture`.

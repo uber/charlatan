@@ -281,7 +281,7 @@ class FixturesManager(object):
 
         :rtype: :data:`fixture_instance`
 
-        .. versionremoved:: 0.3.7
+        .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """
@@ -315,7 +315,7 @@ class FixturesManager(object):
 
         :rtype: list of :data:`fixture_instance`
 
-        .. versionremoved:: 0.3.7
+        .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """
@@ -332,7 +332,7 @@ class FixturesManager(object):
 
         :rtype: list of :data:`fixture_instance`
 
-        .. versionremoved:: 0.3.7
+        .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """
@@ -346,7 +346,7 @@ class FixturesManager(object):
         :param bool do_not_delete: True if fixture should not be deleted.
 
         :rtype: :data:`fixture_instance` or None if no instance was uninstalled
-        with the given key
+            with the given key
         """
 
         try:
@@ -411,7 +411,7 @@ class FixturesManager(object):
 
         :rtype: instantiated but unsaved fixture
 
-        .. versionremoved:: 0.3.7
+        .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """
@@ -445,7 +445,7 @@ class FixturesManager(object):
 
         :rtype: list of instantiated but unsaved fixtures
 
-        .. versionremoved:: 0.3.7
+        .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """

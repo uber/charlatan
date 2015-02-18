@@ -36,6 +36,7 @@ Contents
    installation
    quickstart
    file-format
+   database
    hooks
    builders
    api-reference

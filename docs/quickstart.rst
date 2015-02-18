@@ -167,7 +167,8 @@ You can override a fixture's parameters when getting or installing it.
 What happens when you install a fixture
 """""""""""""""""""""""""""""""""""""""
 
-Here's the default process:
+Here's the default process (you can modify part or all of it using :ref:`hooks`
+or :ref:`builders`):
 
 1. The fixture is instantiated: ``Model(**fields)``.
 2. If there's any post creation hook, they are run (see :ref:`post_creation`

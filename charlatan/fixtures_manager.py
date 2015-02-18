@@ -1,35 +1,19 @@
 from __future__ import print_function
-
 from glob import glob
 from itertools import chain
+import functools
 import os
 
 from charlatan import _compat
+from charlatan import builder
 from charlatan.depgraph import DepGraph
 from charlatan.file_format import load_file
 from charlatan.fixture import Fixture
-from charlatan.fixture_collection import ListFixtureCollection
-from charlatan.fixture_collection import DictFixtureCollection
+from charlatan import fixture_collection
 
 ALLOWED_HOOKS = ("before_save", "after_save", "before_install",
                  "after_install")
 ROOT_COLLECTION = "root"
-
-
-def is_sqlalchemy_model(instance):
-    """Return True if instance is an SQLAlchemy model instance."""
-
-    from sqlalchemy.orm.util import class_mapper
-    from sqlalchemy.orm.exc import UnmappedClassError
-
-    try:
-        class_mapper(instance.__class__)
-
-    except UnmappedClassError:
-        return False
-
-    else:
-        return True
 
 
 def make_list(obj):
@@ -45,17 +29,29 @@ class FixturesManager(object):
     Manage Fixture objects.
 
     :param Session db_session: sqlalchemy Session object
+    :param bool use_unicode:
+    :param func get_builder:
+    :param func delete_builder:
 
     .. versionadded:: 0.3.0
         ``db_session`` argument was added.
-
     """
 
-    def __init__(self, db_session=None, use_unicode=False):
+    DictFixtureCollection = fixture_collection.DictFixtureCollection
+    ListFixtureCollection = fixture_collection.ListFixtureCollection
+
+    default_get_builder = builder.InstantiateAndSave()
+    default_delete_builder = builder.DeleteAndCommit()
+
+    def __init__(self, db_session=None, use_unicode=False,
+                 get_builder=None, delete_builder=None,
+                 ):
         self.hooks = {}
         self.session = db_session
         self.installed_keys = []
         self.use_unicode = use_unicode
+        self.get_builder = get_builder or self.default_get_builder
+        self.delete_builder = delete_builder or self.default_delete_builder
 
     def load(self, filenames, models_package=""):
         """Pre-load the fixtures.
@@ -68,7 +64,7 @@ class FixturesManager(object):
         some pre-instantiation work, like prepending the root model package
         and doing some basic sanity check.
 
-        .. versionchanged:: 0.3.0
+        .. deprecated:: 0.3.0
             ``db_session`` argument was removed and put in the object's
             constructor arguments.
 
@@ -77,13 +73,12 @@ class FixturesManager(object):
             list or string.
 
         """
-
         self.filenames = filenames
         self.models_package = models_package
 
         # Load the data
         fixtures, self.depgraph = self._load_fixtures(self.filenames)
-        self.fixture_collection = DictFixtureCollection(
+        self.fixture_collection = self.DictFixtureCollection(
             ROOT_COLLECTION,
             fixture_manager=self,
             fixtures=fixtures)
@@ -108,13 +103,15 @@ class FixturesManager(object):
 
         :param list or str filenames: files that hold the fixture data
         """
-
         if isinstance(filenames, _compat.string_types):
             globbed_filenames = glob(filenames)
         else:
             globbed_filenames = list(
                 chain.from_iterable(glob(f) for f in filenames)
             )
+
+        if not globbed_filenames:
+            raise IOError('File "%s" not found' % filenames)
 
         if len(globbed_filenames) == 1:
             content = load_file(filenames, self.use_unicode)
@@ -165,9 +162,9 @@ class FixturesManager(object):
         """
 
         if isinstance(objects, list):
-            klass = ListFixtureCollection
+            klass = self.ListFixtureCollection
         else:
-            klass = DictFixtureCollection
+            klass = self.DictFixtureCollection
 
         collection = klass(
             key=namespace,
@@ -217,103 +214,73 @@ class FixturesManager(object):
         self.cache = {}
         self.installed_keys = []
 
-    def save_instance(self, instance):
-        """Save a fixture instance.
-
-        If it's a SQLAlchemy model, it will be added to the session and
-        the session will be committed.
-
-        Otherwise, a :meth:`save` method will be run if the instance has
-        one. If it does not have one, nothing will happen.
-
-        Before and after the process, the :func:`before_save` and
-        :func:`after_save` hook are run.
-
-        """
-
-        self._get_hook("before_save")(instance)
-
-        if self.session and is_sqlalchemy_model(instance):
-            self.session.add(instance)
-            self.session.commit()
-
-        else:
-            getattr(instance, "save", lambda: None)()
-
-        self._get_hook("after_save")(instance)
-
-    def delete_instance(self, instance):
+    def delete_fixture(self, fixture_key, builder=None):
         """Delete a fixture instance.
 
-        If it's a SQLAlchemy model, it will be deleted from the session and the
-        session will be committed.
-
-        Otherwise, :meth:`delete_instance` will be run first. If the instance
-        does not have it, :meth:`delete` will be run. If the instance does not
-        have it, nothing will happen.
+        :param str fixture_key:
+        :param func builder:
 
         Before and after the process, the :func:`before_delete` and
         :func:`after_delete` hook are run.
 
+        .. versionadded:: 0.4.0
+            ``builder`` argument was added.
+
+        .. deprecated:: 0.4.0
+            ``delete_instance`` method renamed to ``delete_fixture`` for
+            consistency reason.
         """
+        builder = builder or self.delete_builder
+        self.get_hook("before_delete")(fixture_key)
 
-        self._get_hook("before_delete")(instance)
+        instance = self.cache.get(fixture_key)
+        if instance:
+            self.cache.pop(fixture_key, None)
+            self.installed_keys.remove(fixture_key)
+            self.delete_builder(self, instance)
 
-        if self.session and is_sqlalchemy_model(instance):
-            self.session.delete(instance)
-            self.session.commit()
+        self.get_hook("after_delete")(fixture_key)
 
-        else:
-            try:
-                getattr(instance, "delete_instance")()
-            except AttributeError:
-                getattr(instance, "delete", lambda: None)()
-
-        self._get_hook("after_delete")(instance)
-
-    def install_fixture(self, fixture_key, do_not_save=False, attrs=None):
-
+    def install_fixture(self, fixture_key, attrs=None):
         """Install a fixture.
 
         :param str fixture_key:
-        :param bool do_not_save: True if fixture should not be saved.
         :param dict attrs: override fields
 
         :rtype: :data:`fixture_instance`
+
+        .. deprecated:: 0.4.0
+            ``do_not_save`` argument was removed.
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """
+        builder = functools.partial(self.get_builder,
+                                    save=True,
+                                    session=self.session)
+        self.get_hook("before_install")()
 
         try:
-            self._get_hook("before_install")()
-            instance = self.get_fixture(fixture_key, attrs=attrs)
-
-            # Save the instance
-            if not do_not_save:
-                if hasattr(instance, '__iter__'):
-                    # Save all the instances!
-                    for model in instance:
-                        self.save_instance(model)
-                self.save_instance(instance)
-
+            instance = self.get_fixture(fixture_key, attrs=attrs,
+                                        builder=builder)
         except Exception as exc:
-            self._get_hook("after_install")(exc)
+            self.get_hook("after_install")(exc)
             raise
 
         else:
-            self._get_hook("after_install")(None)
+            self.get_hook("after_install")(None)
             return instance
 
-    def install_fixtures(self, fixture_keys, do_not_save=False):
+    def install_fixtures(self, fixture_keys):
         """Install a list of fixtures.
 
         :param fixture_keys: fixtures to be installed
         :type fixture_keys: str or list of strs
-        :param bool do_not_save: True if fixture should not be saved.
-
         :rtype: list of :data:`fixture_instance`
+
+        .. deprecated:: 0.4.0
+            ``do_not_save`` argument was removed.
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
@@ -321,124 +288,109 @@ class FixturesManager(object):
         """
         instances = []
         for f in make_list(fixture_keys):
-            instances.append(self.install_fixture(f, do_not_save=do_not_save))
-
+            instances.append(self.install_fixture(f))
         return instances
 
-    def install_all_fixtures(self, do_not_save=False):
+    def install_all_fixtures(self):
         """Install all fixtures.
 
-        :param bool do_not_save: True if fixture should not be saved.
-
         :rtype: list of :data:`fixture_instance`
+
+        .. deprecated:: 0.4.0
+            ``do_not_save`` argument was removed.
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
 
         """
+        return self.install_fixtures(self.keys())
 
-        return self.install_fixtures(self.keys(), do_not_save=do_not_save)
-
-    def uninstall_fixture(self, fixture_key, do_not_delete=False):
+    def uninstall_fixture(self, fixture_key):
         """Uninstall a fixture.
 
         :param str fixture_key:
-        :param bool do_not_delete: True if fixture should not be deleted.
+        :rtype: ``None``
 
-        :rtype: :data:`fixture_instance` or None if no instance was uninstalled
-            with the given key
+        .. deprecated:: 0.4.0
+            ``do_not_delete`` argument was removed. This function does not
+            return anything.
         """
+        builder = functools.partial(self.delete_builder,
+                                    commit=True,
+                                    session=self.session)
+        return self.delete_fixture(fixture_key, builder)
 
-        try:
-            self._get_hook("before_uninstall")()
-            instance = self.cache.get(fixture_key)
-            if instance:
-                self.cache.pop(fixture_key, None)
-                self.installed_keys.remove(fixture_key)
-
-                # delete the instance
-                if not do_not_delete:
-                    self.delete_instance(instance)
-
-        except Exception as exc:
-            self._get_hook("after_uninstall")(exc)
-            raise
-
-        else:
-            self._get_hook("after_uninstall")(None)
-            return instance
-
-    def uninstall_fixtures(self, fixture_keys, do_not_delete=False):
+    def uninstall_fixtures(self, fixture_keys):
         """Uninstall a list of installed fixtures.
-
-        If a given fixture was not previously installed, nothing happens and
-        its instance is not part of the returned list.
 
         :param fixture_keys: fixtures to be uninstalled
         :type fixture_keys: str or list of strs
-        :param bool do_not_delete: True if fixture should not be deleted.
+        :rtype: ``None``
 
-        :rtype: list of :data:`fixture_instance`
+        .. deprecated:: 0.4.0
+            ``do_not_delete`` argument was removed. This function does not
+            return anything.
         """
-        instances = []
         for fixture_key in make_list(fixture_keys):
-            instance = self.uninstall_fixture(fixture_key, do_not_delete)
-            if instance:
-                instances.append(instance)
+            self.uninstall_fixture(fixture_key)
 
-        return instances
-
-    def uninstall_all_fixtures(self, do_not_delete=False):
+    def uninstall_all_fixtures(self):
         """Uninstall all installed fixtures.
 
-        :param bool do_not_delete: True if fixture should not be deleted.
+        :rtype: ``None``
 
-        :rtype: list of :data:`fixture_instance`
+        .. deprecated:: 0.4.0
+            ``do_not_delete`` argument was removed. This function does not
+            return anything.
         """
         installed_fixtures = list(self.installed_keys)
         installed_fixtures.reverse()
-        return self.uninstall_fixtures(installed_fixtures)
+        self.uninstall_fixtures(installed_fixtures)
 
     def keys(self):
         """Return all fixture keys."""
         return self.fixture_collection.fixtures.keys()
 
-    def get_fixture(self, fixture_key, attrs=None):
+    def get_fixture(self, fixture_key, attrs=None, builder=None):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
         :param dict attrs: override fields
-
+        :param func builder: build builder.
         :rtype: instantiated but unsaved fixture
+
+        .. versionadded:: 0.4.0
+            ``builder`` argument was added.
+
+        .. deprecated:: 0.4.0
+            ``do_not_save`` argument was removed.
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
-
         """
+        builder = builder or self.get_builder
         # initialize all parents in topological order
         parents = []
         for fixture in self.depgraph.ancestors_of(fixture_key):
-            parents.append(self.get_fixture(fixture))
+            parents.append(self.get_fixture(fixture, builder=builder))
 
         # Fixture are cached so that setting up relationships is not too
         # expensive. We don't get the cached version if attrs are
         # overriden.
         returned = None
-
         if not attrs:
             returned = self.cache.get(fixture_key)
 
         if not returned:
             returned = self.fixture_collection.get_instance(
-                fixture_key, fields=attrs,
-            )
+                fixture_key, overrides=attrs, builder=builder)
 
             self.cache[fixture_key] = returned
             self.installed_keys.append(fixture_key)
 
         return returned
 
-    def get_fixtures(self, fixture_keys):
+    def get_fixtures(self, fixture_keys, builder=None):
         """Return a list of fixtures instances.
 
         :param iterable fixture_keys:
@@ -447,15 +399,34 @@ class FixturesManager(object):
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
-
         """
+        builder = builder or self.get_builder
         fixtures = []
         for f in fixture_keys:
             fixtures.append(self.get_fixture(f))
         return fixtures
 
-    def _get_hook(self, hook_name):
-        """Return a hook."""
+    def get_all_fixtures(self, fixture_keys, builder=None):
+        """Return a list of fixtures instances.
+
+        :param iterable fixture_keys:
+
+        :rtype: list of instantiated but unsaved fixtures
+
+        .. deprecated:: 0.3.7
+            ``include_relationships`` argument was removed.
+        """
+        builder = builder or self.get_builder
+        fixtures = []
+        for f in fixture_keys:
+            fixtures.append(self.get_fixture(f))
+        return fixtures
+
+    def get_hook(self, hook_name):
+        """Return a hook.
+
+        :param str hook_name: e.g. ``before_delete``.
+        """
 
         if hook_name in self.hooks:
             return self.hooks[hook_name]

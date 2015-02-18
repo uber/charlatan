@@ -153,3 +153,18 @@ def safe_iteritems(items):
         return _compat.iteritems(items)
     else:
         return enumerate(items)
+
+
+def is_sqlalchemy_model(instance):
+    """Return True if instance is an SQLAlchemy model instance."""
+    from sqlalchemy.orm.util import class_mapper
+    from sqlalchemy.orm.exc import UnmappedClassError
+
+    try:
+        class_mapper(instance.__class__)
+
+    except UnmappedClassError:
+        return False
+
+    else:
+        return True

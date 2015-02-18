@@ -37,7 +37,6 @@ class Inheritable(object):
 
     def inherit_from_parent(self):
         """Inherit the attributes from parent, modifying itself."""
-
         if self._has_inherited_from_parent or not self.inherit_from:
             # Nothing to do
             return
@@ -47,7 +46,6 @@ class Inheritable(object):
 
     def get_parent_values(self):
         """Return parent values."""
-
         parent, _ = self.fixture_manager.fixture_collection.get(
             self.inherit_from)
         # Recursive to make sure everything is updated.
@@ -90,13 +88,12 @@ class Fixture(Inheritable):
         :param str model: model used to instantiate the fixture, e.g.
             "yourlib.toaster:Toaster". If empty, the fields will be used as is.
         :param dict fields: args to be provided when instantiating the fixture
-        :param fixture_manager: FixtureManager creating the fixture
+        :param fixture_manager: FixturesManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
         :param str inherit_from: model to inherit from
         :param list depend_on: A list of relationships to depend on
 
         """
-
         super(Fixture, self).__init__()
 
         if id_ and fields:
@@ -118,14 +115,21 @@ class Fixture(Inheritable):
     def __repr__(self):
         return "<Fixture '%s'>" % self.key
 
-    def get_instance(self, path=None, fields=None):
+    def get_instance(self, path=None, overrides=None, builder=None):
         """Instantiate the fixture using the model and return the instance.
 
         :param str path: remaining path to return
-        :param dict fields: overriding fields
+        :param dict overrides: overriding fields
+        :param func builder: function that is used to get the fixture
+
+        .. deprecated:: 0.4.0
+            ``fields`` argument renamed ``overrides``.
+
+        .. versionadded:: 0.4.0
+            ``builder`` argument added.
 
         .. deprecated:: 0.3.7
-            ``include_relationships`` argument was removed.
+            ``include_relationships`` argument removed.
 
         """
         self.inherit_from_parent()  # Does the modification in place.
@@ -141,14 +145,14 @@ class Fixture(Inheritable):
         else:
             # We need to do a copy since we're modifying them.
             params = copy.deepcopy(self.fields)
-            if fields:
-                params.update(fields)
+            if overrides:
+                params.update(overrides)
 
             for key, value in safe_iteritems(params):
                 if callable(value):
                     params[key] = value()
 
-            # Get the class to instantiate
+            # Get the class
             object_class = self.get_class()
 
             # Does not return anything, does the modification in place (in
@@ -156,12 +160,7 @@ class Fixture(Inheritable):
             self._process_relationships(params)
 
             if object_class:
-                try:
-                    instance = object_class(**params)
-                except TypeError as exc:
-                    raise TypeError("Error while trying to instantiate %r "
-                                    "with %r: %s" %
-                                    (object_class, params, exc))
+                instance = builder(self.fixture_manager, object_class, params)
             else:
                 # Return the fields as is. This allows to enter dicts
                 # and lists directly.
@@ -296,7 +295,6 @@ class Fixture(Inheritable):
 
     def get_relationship(self, name):
         """Get a relationship and its attribute if necessary."""
-
         # This function is needed so that this fixture can require other
         # fixtures. If a fixture requires another fixture, it
         # necessarily means that it needs to include other relationships

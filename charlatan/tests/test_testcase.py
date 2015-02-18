@@ -43,25 +43,13 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.assertEqual(len(fixtures), 4)
 
     def test_uninstall_fixture(self):
-        """uninstall_fixture should return the uninstalled fixture."""
-        simple_dict = self.uninstall_fixture('simple_dict')
-        self.assertEqual(simple_dict['field1'], 'lolin')
-        self.assertEqual(simple_dict['field2'], 2)
-
-        dict_with_nest = self.uninstall_fixture('dict_with_nest')
-        self.assertEqual(dict_with_nest['field1'], 'asdlkf')
-        self.assertEqual(dict_with_nest['field2'], 4)
-
-        fixtures = self.uninstall_all_fixtures()
-        self.assertEqual(len(fixtures), 0)
+        self.uninstall_fixture('simple_dict')
+        self.uninstall_fixture('dict_with_nest')
+        self.uninstall_all_fixtures()
 
     def test_uninstall_fixtures(self):
-        """Verify it returns the list of uninstalled fixtures."""
-        fixtures = self.uninstall_fixtures(('simple_dict', 'dict_with_nest'))
-        self.assertEqual(len(fixtures), 2)
-
-        fixtures = self.uninstall_fixtures(('simple_dict', 'dict_with_nest'))
-        self.assertEqual(len(fixtures), 0)
+        self.uninstall_fixtures(('simple_dict', 'dict_with_nest'))
+        self.uninstall_fixtures(('simple_dict', 'dict_with_nest'))
 
     def test_uninstall_all_fixtures(self):
         """uninstall_all_fixtures should uninstall all the installed fixtures.
@@ -69,11 +57,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         The _pre_setup method install the 2 fixtures defined in self.fixtures:
         'simple_dict' and 'dict_with_nest'.
         """
-        fixtures = self.uninstall_all_fixtures()
-        self.assertEqual(len(fixtures), 2)
-
-        fixtures = self.uninstall_all_fixtures()
-        self.assertEqual(len(fixtures), 0)
+        self.uninstall_all_fixtures()
 
     def test_get_fixture(self):
         """get_fixture should return the fixture."""

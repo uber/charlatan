@@ -27,28 +27,24 @@ class FixturesManagerMixin(object):
         self.fixtures_manager.clean_cache()
 
     @copy_docstring_from(FixturesManager)
-    def install_fixture(self, fixture_key, attrs=None, do_not_save=False):
-        fixture = self.fixtures_manager.install_fixture(
-            fixture_key, do_not_save, attrs)
+    def install_fixture(self, fixture_key, attrs=None):
+        fixture = self.fixtures_manager.install_fixture(fixture_key, attrs)
         setattr(self, fixture_key, fixture)
         return fixture
 
     @copy_docstring_from(FixturesManager)
-    def install_fixtures(self, fixtures, do_not_save=False):
+    def install_fixtures(self, fixtures):
         installed = []
         for fixture in make_list(fixtures):
             installed.append(
-                self.install_fixture(fixture, do_not_save=do_not_save)
+                self.install_fixture(fixture)
             )
 
         return installed
 
     @copy_docstring_from(FixturesManager)
-    def install_all_fixtures(self, do_not_save=False):
-        return self.install_fixtures(
-            self.fixtures_manager.keys(),
-            do_not_save=do_not_save,
-        )
+    def install_all_fixtures(self):
+        return self.install_fixtures(self.fixtures_manager.keys())
 
     @copy_docstring_from(FixturesManager)
     def get_fixture(self, fixture_key, attrs=None):
@@ -59,34 +55,18 @@ class FixturesManagerMixin(object):
         return self.fixtures_manager.get_fixtures(fixtures)
 
     @copy_docstring_from(FixturesManager)
-    def uninstall_fixture(self, fixture_key, do_not_delete=False):
-        fixture = self.fixtures_manager.uninstall_fixture(
-            fixture_key, do_not_delete)
-
-        if fixture:
-            delattr(self, fixture_key)
-
-        return fixture
+    def uninstall_fixture(self, fixture_key):
+        self.fixtures_manager.uninstall_fixture(fixture_key)
 
     @copy_docstring_from(FixturesManager)
-    def uninstall_fixtures(self, fixtures, do_not_delete=False):
-        uninstalled = []
+    def uninstall_fixtures(self, fixtures):
         for fixture in make_list(fixtures):
-            instance = self.uninstall_fixture(
-                fixture,
-                do_not_delete=do_not_delete)
-            if instance:
-                uninstalled.append(instance)
-
-        return uninstalled
+            self.uninstall_fixture(fixture)
 
     @copy_docstring_from(FixturesManager)
-    def uninstall_all_fixtures(self, do_not_delete=False):
+    def uninstall_all_fixtures(self):
         # copy and reverse the list in order to remove objects with
         # relationships first
         installed_fixtures = list(self.fixtures_manager.installed_keys)
         installed_fixtures.reverse()
-        return self.uninstall_fixtures(
-            installed_fixtures,
-            do_not_delete=do_not_delete
-        )
+        return self.uninstall_fixtures(installed_fixtures)

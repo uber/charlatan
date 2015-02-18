@@ -258,16 +258,17 @@ class FixturesManager(object):
 
         self.get_hook("after_delete")(fixture_key)
 
-    def install_fixture(self, fixture_key, attrs=None):
+    def install_fixture(self, fixture_key, overrides=None):
         """Install a fixture.
 
         :param str fixture_key:
-        :param dict attrs: override fields
+        :param dict overrides: override fields
 
         :rtype: :data:`fixture_instance`
 
         .. deprecated:: 0.4.0
             ``do_not_save`` argument was removed.
+            ``attrs`` argument renamed ``overrides``.
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
@@ -279,7 +280,7 @@ class FixturesManager(object):
         self.get_hook("before_install")()
 
         try:
-            instance = self.get_fixture(fixture_key, attrs=attrs,
+            instance = self.get_fixture(fixture_key, overrides=overrides,
                                         builder=builder)
         except Exception as exc:
             self.get_hook("after_install")(exc)
@@ -368,16 +369,17 @@ class FixturesManager(object):
         """Return all fixture keys."""
         return self.collection.fixtures.keys()
 
-    def get_fixture(self, fixture_key, attrs=None, builder=None):
+    def get_fixture(self, fixture_key, overrides=None, builder=None):
         """Return a fixture instance (but do not save it).
 
         :param str fixture_key:
-        :param dict attrs: override fields
+        :param dict overrides: override fields
         :param func builder: build builder.
         :rtype: instantiated but unsaved fixture
 
         .. versionadded:: 0.4.0
             ``builder`` argument was added.
+            ``attrs`` argument renamed ``overrides``.
 
         .. deprecated:: 0.4.0
             ``do_not_save`` argument was removed.
@@ -392,15 +394,15 @@ class FixturesManager(object):
             parents.append(self.get_fixture(fixture, builder=builder))
 
         # Fixture are cached so that setting up relationships is not too
-        # expensive. We don't get the cached version if attrs are
+        # expensive. We don't get the cached version if overrides are
         # overriden.
         returned = None
-        if not attrs:
+        if not overrides:
             returned = self.cache.get(fixture_key)
 
         if not returned:
             returned = self.collection.get_instance(
-                fixture_key, overrides=attrs, builder=builder)
+                fixture_key, overrides=overrides, builder=builder)
 
             self.cache[fixture_key] = returned
             self.installed_keys.append(fixture_key)

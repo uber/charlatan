@@ -50,7 +50,7 @@ a fixture's defined attributes:
 .. doctest::
 
     >>> toaster = fixtures_manager.install_fixture("toaster",
-    ...     attrs={"color": "blue"})
+    ...     overrides={"color": "blue"})
     >>> toaster.color
     'blue'
 
@@ -152,18 +152,6 @@ without saving it nor attaching it to the test class:
             self.toaster = self.get_fixture("toaster")
             self.toaster.brand = "Flying"
             self.toaster.save()
-
-Overriding fixture fields
-"""""""""""""""""""""""""
-
-You can override a fixture's parameters when getting or installing it.
-
-.. code-block:: python
-
-    manager = FixturesManager()
-    manager.load("./examples/fixtures.yaml")
-    manager.get_fixture("toaster", attrs={"brand": "Flying"})
-
 
 What happens when you install a fixture
 """""""""""""""""""""""""""""""""""""""

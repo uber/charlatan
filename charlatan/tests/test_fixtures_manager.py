@@ -59,7 +59,7 @@ class TestFixturesManager(testing.TestCase):
         fixtures_manager = FixturesManager()
         fixtures_manager.load('./charlatan/tests/data/simple.yaml')
         fixture = fixtures_manager.install_fixture('fixture',
-                                                   attrs={'now': None})
+                                                   overrides={'now': None})
         self.assertEqual(fixture, {'now': None})
 
     def test_uninstall_fixture(self):

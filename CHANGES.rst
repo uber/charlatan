@@ -11,6 +11,9 @@ Changelog for Charlatan
 - **Breaking change**: ``fields`` argument on
   :py:class:`charlatan.fixture.Fixture` and fixtures collection class has
   been renamed ``overrides`` for consistency reasons.
+- **Breaking change**: ``attrs`` argument on
+  :py:class:`charlatan.FixturesManager` been renamed ``overrides`` for
+  consistency reasons.
 - **Breaking change**: deleting fixtures will not return anything. It used to
   return the fixture or list of fixtures that were successfully deleted. It has
   been removed to apply the command query separation pattern. There are other

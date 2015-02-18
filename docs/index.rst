@@ -14,8 +14,8 @@ Its features include:
 - Straightforward YAML syntax to define fixtures.
 - Rich fixture definition functionalities, including inheritance and
   relationships (fixtures factory).
-- ORM-agnostic. It works well with sqlalchemy.
-- Hooks to further enhance the library.
+- ORM-agnostic. Tested with sqlalchemy, schematics, etc.
+- Flexible thanks to :ref:`hooks` or :ref:`builders`.
 
 Charlatan is a library that you can use in your tests to create database
 fixtures. Its aim is to provide a pragmatic interface that focuses on making it

@@ -27,8 +27,8 @@ class FixturesManagerMixin(object):
         self.fixtures_manager.clean_cache()
 
     @copy_docstring_from(FixturesManager)
-    def install_fixture(self, fixture_key, attrs=None):
-        fixture = self.fixtures_manager.install_fixture(fixture_key, attrs)
+    def install_fixture(self, fixture_key, overrides=None):
+        fixture = self.fixtures_manager.install_fixture(fixture_key, overrides)
         setattr(self, fixture_key, fixture)
         return fixture
 
@@ -47,8 +47,8 @@ class FixturesManagerMixin(object):
         return self.install_fixtures(self.fixtures_manager.keys())
 
     @copy_docstring_from(FixturesManager)
-    def get_fixture(self, fixture_key, attrs=None):
-        return self.fixtures_manager.get_fixture(fixture_key, attrs)
+    def get_fixture(self, fixture_key, overrides=None):
+        return self.fixtures_manager.get_fixture(fixture_key, overrides)
 
     @copy_docstring_from(FixturesManager)
     def get_fixtures(self, fixtures):

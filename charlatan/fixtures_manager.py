@@ -408,10 +408,9 @@ class FixturesManager(object):
         return returned
 
     def get_fixtures(self, fixture_keys, builder=None):
-        """Return a list of fixtures instances.
+        """Get fixtures from iterable
 
         :param iterable fixture_keys:
-
         :rtype: list of instantiated but unsaved fixtures
 
         .. versionadded:: 0.4.0
@@ -426,11 +425,10 @@ class FixturesManager(object):
             fixtures.append(self.get_fixture(f))
         return fixtures
 
-    def get_all_fixtures(self, fixture_keys, builder=None):
-        """Return a list of fixtures instances.
+    def get_all_fixtures(self, builder=None):
+        """Get all fixtures
 
         :param iterable fixture_keys:
-
         :rtype: list of instantiated but unsaved fixtures
 
         .. versionadded:: 0.4.0
@@ -440,10 +438,7 @@ class FixturesManager(object):
             ``include_relationships`` argument was removed.
         """
         builder = builder or self.get_builder
-        fixtures = []
-        for f in fixture_keys:
-            fixtures.append(self.get_fixture(f))
-        return fixtures
+        return self.get_fixtures(self.keys(), builder=builder)
 
     def get_hook(self, hook_name):
         """Return a hook.

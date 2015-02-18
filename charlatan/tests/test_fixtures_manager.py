@@ -33,6 +33,18 @@ class TestFixturesManager(testing.TestCase):
             'field2': 2,
         })
 
+    def test_get_all_fixtures(self):
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
+        assert len(fixtures_manager.get_all_fixtures()) == 1
+
+    def test_uninstall_all_fixtures(self):
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
+        assert len(fixtures_manager.install_all_fixtures()) == 1
+        fixtures_manager.uninstall_all_fixtures()
+        assert len(fixtures_manager.installed_keys) == 0
+
     @freeze_time("2014-12-31 11:00:00")
     def test_install_fixture_with_now(self):
         """Verify that we can install a fixture with !now tag."""

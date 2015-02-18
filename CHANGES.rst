@@ -22,6 +22,8 @@ Changelog for Charlatan
   customizing how fixtures are instantiated and installed. A ``builder``
   argument has been added to most method dealing with getting, installing or
   deleting fixtures. Sane defaults have been added in most places.
+- Improve documentation about using pytest with charlatan.
+- Fix bug preventing being able to load multiple fixtures file.
 
 0.3.12 (2015-01-14)
 -------------------

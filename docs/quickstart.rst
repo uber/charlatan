@@ -123,14 +123,9 @@ In ``conftest.py``:
 
 
     @pytest.fixture
-    def get_fixture():
-        return fixtures_manager.get_fixture
-
-
-    @pytest.fixture(autouse=True)
-    def clean_fixtures(request):
+    def get_fixture(request):
         request.addfinalizer(fixtures_manager.clean_cache)
-
+        return fixtures_manager.get_fixture
 
 In your test file:
 

@@ -120,10 +120,7 @@ def datetime_to_epoch_timestamp(a_datetime):
     1384997591.160611
     """
 
-    return (
-        calendar.timegm(a_datetime.utctimetuple())
-        + a_datetime.microsecond / 1000000.0
-    )
+    return (calendar.timegm(a_datetime.utctimetuple()) + a_datetime.microsecond / 1000000.0)  # noqa
 
 
 # TODO: does not copy the function signature
@@ -153,3 +150,18 @@ def safe_iteritems(items):
         return _compat.iteritems(items)
     else:
         return enumerate(items)
+
+
+def is_sqlalchemy_model(instance):
+    """Return True if instance is an SQLAlchemy model instance."""
+    from sqlalchemy.orm.util import class_mapper
+    from sqlalchemy.orm.exc import UnmappedClassError
+
+    try:
+        class_mapper(instance.__class__)
+
+    except UnmappedClassError:
+        return False
+
+    else:
+        return True

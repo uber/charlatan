@@ -1,0 +1,10 @@
+toaster:
+  fields:
+    color: !rel color
+    name: "toaster1"
+  model: charlatan.tests.fixtures.models:Toaster
+
+color:
+  fields:
+    name: "red"
+  model: charlatan.tests.fixtures.models:Color

@@ -50,7 +50,7 @@ a fixture's defined attributes:
 .. doctest::
 
     >>> toaster = fixtures_manager.install_fixture("toaster",
-    ...     attrs={"color": "blue"})
+    ...     overrides={"color": "blue"})
     >>> toaster.color
     'blue'
 
@@ -123,7 +123,8 @@ In ``conftest.py``:
 
 
     @pytest.fixture
-    def get_fixture():
+    def get_fixture(request):
+        request.addfinalizer(fixtures_manager.clean_cache)
         return fixtures_manager.get_fixture
 
 In your test file:
@@ -152,22 +153,11 @@ without saving it nor attaching it to the test class:
             self.toaster.brand = "Flying"
             self.toaster.save()
 
-Overriding fixture fields
-"""""""""""""""""""""""""
-
-You can override a fixture's parameters when getting or installing it.
-
-.. code-block:: python
-
-    manager = FixturesManager()
-    manager.load("./examples/fixtures.yaml")
-    manager.get_fixture("toaster", attrs={"brand": "Flying"})
-
-
 What happens when you install a fixture
 """""""""""""""""""""""""""""""""""""""
 
-Here's the general process:
+Here's the default process (you can modify part or all of it using :ref:`hooks`
+or :ref:`builders`):
 
 1. The fixture is instantiated: ``Model(**fields)``.
 2. If there's any post creation hook, they are run (see :ref:`post_creation`

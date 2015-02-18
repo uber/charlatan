@@ -106,9 +106,6 @@ in this case, you just need to specify the ``model`` and an ``id``.
 .. literalinclude:: examples/fixtures_id.yaml
     :language: yaml
 
-.. _post_creation:
-
-
 Dependencies
 ------------
 
@@ -120,6 +117,8 @@ section.
     :language: yaml
 
 .. versionadded:: 0.2.7
+
+.. _post_creation:
 
 Post creation
 -------------

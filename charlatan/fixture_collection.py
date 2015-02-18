@@ -17,6 +17,7 @@ class FixtureCollection(Inheritable):
 
     def __init__(self, key, fixture_manager,
                  model=None,
+                 models_package=None,
                  fields=None,
                  post_creation=None,
                  inherit_from=None,
@@ -25,7 +26,6 @@ class FixtureCollection(Inheritable):
         super(FixtureCollection, self).__init__()
         self.key = key
         self.fixture_manager = fixture_manager
-        self.fields = fields or {}
         self.fixtures = fixtures or self.container()
 
         self.key = key
@@ -34,8 +34,9 @@ class FixtureCollection(Inheritable):
         self._has_updated_from_parent = False
 
         # Stuff that can be inherited.
-        self.model_name = model
         self.fields = fields or {}
+        self.model_name = model
+        self.models_package = models_package
         self.post_creation = post_creation or {}
         self.depend_on = depend_on
 
@@ -45,16 +46,34 @@ class FixtureCollection(Inheritable):
     def __iter__(self):
         return self.iterator(self.fixtures)
 
-    def get_instance(self, path=None, fields=None):
+    def get_instance(self, path=None, overrides=None, builder=None):
+        """Get an instance.
+
+        :param str path:
+        :param dict overrides:
+        :param func builder:
+        """
         if not path or path in (DICT_FORMAT, LIST_FORMAT):
-            return self.get_all_instances(fields=fields, format=path)
+            return self.get_all_instances(overrides=overrides,
+                                          format=path,
+                                          builder=builder,
+                                          )
 
         # First get the fixture
         fixture, remaining_path = self.get(path)
         # Then we ask it to return an instance.
-        return fixture.get_instance(path=remaining_path, fields=fields)
+        return fixture.get_instance(path=remaining_path,
+                                    overrides=overrides,
+                                    builder=builder,
+                                    )
 
-    def get_all_instances(self, fields=None, format=None):
+    def get_all_instances(self, overrides=None, format=None, builder=None):
+        """Get all instance.
+
+        :param dict overrides:
+        :param str format:
+        :param func builder:
+        """
         if not format:
             format = self.default_format
 
@@ -66,7 +85,8 @@ class FixtureCollection(Inheritable):
             raise ValueError("Unknown format: %r" % format)
 
         for name, fixture in self:
-            instance = fixture.get_instance(fields=fields)
+            instance = fixture.get_instance(overrides=overrides,
+                                            builder=builder)
 
             if format == LIST_FORMAT:
                 returned.append(instance)

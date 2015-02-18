@@ -1,4 +1,5 @@
 *.py[co]
+tags
 
 # Packages
 *.egg

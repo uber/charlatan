@@ -9,9 +9,11 @@ coveralls==0.4
 pytest==2.5.1
 # Syntax checking
 flake8==2.1.0
-# For tests
-sqlalchemy==0.9.1
 # Multi-version testing
 tox==1.6.1
 # Freeze time
 freezegun==0.2.8
+
+# For tests
+sqlalchemy==0.9.1
+schematics==1.0.2

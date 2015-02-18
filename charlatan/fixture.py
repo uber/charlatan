@@ -7,7 +7,7 @@ from charlatan.file_format import RelationshipToken
 from charlatan.utils import safe_iteritems
 
 CAN_BE_INHERITED = frozenset(
-    ["model_name", "fields", "post_creation", "depend_on"])
+    ["model_name", "models_package", "fields", "post_creation", "depend_on"])
 
 
 def get_class(module, klass):
@@ -37,7 +37,6 @@ class Inheritable(object):
 
     def inherit_from_parent(self):
         """Inherit the attributes from parent, modifying itself."""
-
         if self._has_inherited_from_parent or not self.inherit_from:
             # Nothing to do
             return
@@ -47,9 +46,7 @@ class Inheritable(object):
 
     def get_parent_values(self):
         """Return parent values."""
-
-        parent, _ = self.fixture_manager.fixture_collection.get(
-            self.inherit_from)
+        parent, _ = self.fixture_manager.collection.get(self.inherit_from)
         # Recursive to make sure everything is updated.
         parent.inherit_from_parent()
 
@@ -84,19 +81,23 @@ class Fixture(Inheritable):
                  model=None, fields=None,
                  inherit_from=None,
                  post_creation=None, id_=None,
+                 models_package='',
                  depend_on=frozenset()):
         """Create a Fixture object.
 
         :param str model: model used to instantiate the fixture, e.g.
             "yourlib.toaster:Toaster". If empty, the fields will be used as is.
+        :param str models_package: default models package for relative imports
         :param dict fields: args to be provided when instantiating the fixture
-        :param fixture_manager: FixtureManager creating the fixture
+        :param fixture_manager: FixturesManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
         :param str inherit_from: model to inherit from
         :param list depend_on: A list of relationships to depend on
 
-        """
+        .. versionadded:: 0.4.0
+            ``models_package`` argument added.
 
+        """
         super(Fixture, self).__init__()
 
         if id_ and fields:
@@ -111,6 +112,7 @@ class Fixture(Inheritable):
 
         # Stuff that can be inherited.
         self.model_name = model
+        self.models_package = models_package
         self.fields = fields or {}
         self.post_creation = post_creation or {}
         self.depend_on = depend_on
@@ -118,14 +120,21 @@ class Fixture(Inheritable):
     def __repr__(self):
         return "<Fixture '%s'>" % self.key
 
-    def get_instance(self, path=None, fields=None):
+    def get_instance(self, path=None, overrides=None, builder=None):
         """Instantiate the fixture using the model and return the instance.
 
         :param str path: remaining path to return
-        :param dict fields: overriding fields
+        :param dict overrides: overriding fields
+        :param func builder: function that is used to get the fixture
+
+        .. deprecated:: 0.4.0
+            ``fields`` argument renamed ``overrides``.
+
+        .. versionadded:: 0.4.0
+            ``builder`` argument added.
 
         .. deprecated:: 0.3.7
-            ``include_relationships`` argument was removed.
+            ``include_relationships`` argument removed.
 
         """
         self.inherit_from_parent()  # Does the modification in place.
@@ -141,14 +150,14 @@ class Fixture(Inheritable):
         else:
             # We need to do a copy since we're modifying them.
             params = copy.deepcopy(self.fields)
-            if fields:
-                params.update(fields)
+            if overrides:
+                params.update(overrides)
 
             for key, value in safe_iteritems(params):
                 if callable(value):
                     params[key] = value()
 
-            # Get the class to instantiate
+            # Get the class
             object_class = self.get_class()
 
             # Does not return anything, does the modification in place (in
@@ -156,12 +165,7 @@ class Fixture(Inheritable):
             self._process_relationships(params)
 
             if object_class:
-                try:
-                    instance = object_class(**params)
-                except TypeError as exc:
-                    raise TypeError("Error while trying to instantiate %r "
-                                    "with %r: %s" %
-                                    (object_class, params, exc))
+                instance = builder(self.fixture_manager, object_class, params)
             else:
                 # Return the fields as is. This allows to enter dicts
                 # and lists directly.
@@ -181,16 +185,13 @@ class Fixture(Inheritable):
 
     def get_class(self):
         """Return class object for this instance."""
-
-        root_models_package = self.fixture_manager.models_package
-
         if not self.model_name:
             return
 
         # Relative path, e.g. ".toaster:Toaster"
         if ":" in self.model_name and self.model_name[0] == ".":
             module, klass = self.model_name.split(":")
-            module = root_models_package + module
+            module = self.models_package + module
             return get_class(module, klass)
 
         # Absolute import, e.g. "yourlib.toaster:Toaster"
@@ -201,7 +202,7 @@ class Fixture(Inheritable):
         # Class alone, e.g. "Toaster".
         # Trying to import from e.g.  yourlib.toaster:Toaster
         module = "{models_package}.{model}".format(
-            models_package=root_models_package,
+            models_package=self.models_package,
             model=self.model_name.lower())
         klass = self.model_name
 
@@ -209,7 +210,7 @@ class Fixture(Inheritable):
             return get_class(module, klass)
         except ImportError:
             # Then try to import from yourlib:Toaster
-            return get_class(root_models_package, klass)
+            return get_class(self.models_package, klass)
 
     @staticmethod
     def extract_rel_name(name):
@@ -296,7 +297,6 @@ class Fixture(Inheritable):
 
     def get_relationship(self, name):
         """Get a relationship and its attribute if necessary."""
-
         # This function is needed so that this fixture can require other
         # fixtures. If a fixture requires another fixture, it
         # necessarily means that it needs to include other relationships

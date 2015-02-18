@@ -11,6 +11,15 @@ from charlatan import FixturesManager
 
 class TestFixturesManager(testing.TestCase):
 
+    def test_load_two_files(self):
+        """Verify we can load two files."""
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load(
+            './charlatan/tests/data/relationships_without_models.yaml')
+        fixtures_manager.load(
+            './charlatan/tests/data/simple.yaml')
+        assert 'simple_dict' in fixtures_manager.keys()
+
     def test_install_fixture(self):
         """install_fixture should return the fixture."""
         fixtures_manager = FixturesManager()
@@ -23,6 +32,18 @@ class TestFixturesManager(testing.TestCase):
             'field1': 'lolin',
             'field2': 2,
         })
+
+    def test_get_all_fixtures(self):
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
+        assert len(fixtures_manager.get_all_fixtures()) == 1
+
+    def test_uninstall_all_fixtures(self):
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
+        assert len(fixtures_manager.install_all_fixtures()) == 1
+        fixtures_manager.uninstall_all_fixtures()
+        assert len(fixtures_manager.installed_keys) == 0
 
     @freeze_time("2014-12-31 11:00:00")
     def test_install_fixture_with_now(self):
@@ -38,67 +59,26 @@ class TestFixturesManager(testing.TestCase):
         fixtures_manager = FixturesManager()
         fixtures_manager.load('./charlatan/tests/data/simple.yaml')
         fixture = fixtures_manager.install_fixture('fixture',
-                                                   attrs={'now': None})
+                                                   overrides={'now': None})
         self.assertEqual(fixture, {'now': None})
 
     def test_uninstall_fixture(self):
-        """uninstall_fixture should return the fixture."""
-
         fixtures_manager = FixturesManager()
         fixtures_manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
 
         fixtures_manager.install_fixture('simple_dict')
-        fixture = fixtures_manager.uninstall_fixture('simple_dict')
-        self.assertEqual(fixture, {
-            'field1': 'lolin',
-            'field2': 2,
-        })
+        fixtures_manager.uninstall_fixture('simple_dict')
 
         # verify we are forgiving with list inputs
-        fixtures = fixtures_manager.install_fixtures('simple_dict')
-        self.assertEqual(len(fixtures), 1)
-
-        fixtures = fixtures_manager.uninstall_fixtures('simple_dict')
-        self.assertEqual(len(fixtures), 1)
-        self.assertEqual(fixtures[0], {
-            'field1': 'lolin',
-            'field2': 2,
-        })
+        fixtures_manager.install_fixtures('simple_dict')
+        fixtures_manager.uninstall_fixtures('simple_dict')
 
     def test_uninstall_non_installed_fixture(self):
-        """uninstall_fixture should return None.
-
-        The method returns None since the fixture has not been previously
-        installed.
-        """
-
         fixtures_manager = FixturesManager()
         fixtures_manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
-
-        fixture = fixtures_manager.uninstall_fixture('simple_dict')
-        self.assertEqual(fixture, None)
-
-    def test_uninstall_fixtures(self):
-        """uninstall_fixtures should return the list of installed fixtures."""
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load(
-            './charlatan/tests/data/relationships_without_models.yaml')
-
-        fixture_keys = ('simple_dict', 'dict_with_nest')
-
-        fixtures_manager.install_fixtures(fixture_keys)
-        self.assertEqual(len(fixtures_manager.cache.keys()), 2)
-
-        fixtures = fixtures_manager.uninstall_fixtures(fixture_keys)
-        self.assertEqual(len(fixtures), 2)
-        self.assertEqual(len(fixtures_manager.cache.keys()), 0)
-
-        # uninstalling non-exiting fixtures should not raise an exception
-        fixtures = fixtures_manager.uninstall_fixtures(fixture_keys)
-        self.assertEqual(len(fixtures), 0)
-        self.assertEqual(len(fixtures_manager.cache.keys()), 0)
+        fixtures_manager.uninstall_fixture('simple_dict')
 
     def test_dependency_parsing(self):
         fm = FixturesManager()

@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.4.0 (unreleased)
+0.4.0 (2015-02-18)
 ------------------
 
 - **Breaking change**: ``get_builder`` and ``delete_builder`` arguments were

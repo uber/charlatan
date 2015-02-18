@@ -8,7 +8,7 @@ your own builders and provide them as arguments when you instantiate
 Example
 -------
 
-Here's an example inspired by the schematics library, which expect a dict of
+Here's an example inspired by the schematics library, which expects a dict of
 attributes as a single instantiation argument:
 
 .. literalinclude:: ../charlatan/tests/example/test_custom_builder.py

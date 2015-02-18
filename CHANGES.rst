@@ -1,6 +1,28 @@
 Changelog for Charlatan
 =======================
 
+0.4.0 (unreleased)
+------------------
+
+- **Breaking change**: ``get_builder`` and ``delete_builder`` arguments were
+  added to :py:class:`charlatan.FixturesManager`.
+- **Breaking change**: ``delete_instance``, ``save_instance`` methods were
+  deleted in favor of using builders (see below).
+- **Breaking change**: ``fields`` argument on
+  :py:class:`charlatan.fixture.Fixture` and fixtures collection class has
+  been renamed ``overrides`` for consistency reasons.
+- **Breaking change**: deleting fixtures will not return anything. It used to
+  return the fixture or list of fixtures that were successfully deleted. It has
+  been removed to apply the command query separation pattern. There are other
+  ways to check which fixtures are installed, and hooks or builders can be used
+  to customize deletion.
+- **Breaking change**: ``do_not_save`` and ``do_not_delete`` arguments have
+  been removed from all functions, in favor of using builders.
+- The notion of :py:class:`charlatan.builder.Builder` was added. This allows
+  customizing how fixtures are instantiated and installed. A ``builder``
+  argument has been added to most method dealing with getting, installing or
+  deleting fixtures. Sane defaults have been added in most places.
+
 0.3.12 (2015-01-14)
 -------------------
 

@@ -10,6 +10,10 @@ class Builder(object):
         :param klass: the fixture's class (``model`` in the definition file)
         :param params: the fixture's params (``fields`` in the definition
             file)
+        :param dict kwargs:
+
+        ``kwargs`` allows passing arguments to the builder to change its
+        behavior.
         """
         raise NotImplementedError
 

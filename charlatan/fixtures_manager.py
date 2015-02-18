@@ -33,6 +33,13 @@ class FixturesManager(object):
     :param func get_builder:
     :param func delete_builder:
 
+    .. versionadded:: 0.4.0
+        ``get_builder`` and ``delete_builder`` arguments were added.
+
+    .. deprecated:: 0.4.0
+        ``delete_instance``, ``save_instance`` methods were deleted in favor
+        of using builders.
+
     .. versionadded:: 0.3.0
         ``db_session`` argument was added.
     """
@@ -397,6 +404,9 @@ class FixturesManager(object):
 
         :rtype: list of instantiated but unsaved fixtures
 
+        .. versionadded:: 0.4.0
+            ``builder`` argument was added.
+
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.
         """
@@ -412,6 +422,9 @@ class FixturesManager(object):
         :param iterable fixture_keys:
 
         :rtype: list of instantiated but unsaved fixtures
+
+        .. versionadded:: 0.4.0
+            ``builder`` argument was added.
 
         .. deprecated:: 0.3.7
             ``include_relationships`` argument was removed.

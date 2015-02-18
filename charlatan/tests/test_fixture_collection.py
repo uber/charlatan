@@ -12,7 +12,7 @@ def get_collection(collection):
     """
     manager = FixturesManager()
     manager.load("docs/examples/collection.yaml")
-    return manager.fixture_collection.get(collection)[0]
+    return manager.collection.get(collection)[0]
 
 
 @pytest.fixture(scope="module")

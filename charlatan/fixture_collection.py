@@ -17,6 +17,7 @@ class FixtureCollection(Inheritable):
 
     def __init__(self, key, fixture_manager,
                  model=None,
+                 models_package=None,
                  fields=None,
                  post_creation=None,
                  inherit_from=None,
@@ -35,6 +36,7 @@ class FixtureCollection(Inheritable):
         # Stuff that can be inherited.
         self.fields = fields or {}
         self.model_name = model
+        self.models_package = models_package
         self.post_creation = post_creation or {}
         self.depend_on = depend_on
 

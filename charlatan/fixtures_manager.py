@@ -59,17 +59,18 @@ class FixturesManager(object):
         self.use_unicode = use_unicode
         self.get_builder = get_builder or self.default_get_builder
         self.delete_builder = delete_builder or self.default_delete_builder
+        self.filenames = []
+        self.collection = self.DictFixtureCollection(
+            ROOT_COLLECTION,
+            fixture_manager=self,
+        )
 
     def load(self, filenames, models_package=""):
-        """Pre-load the fixtures.
+        """Pre-load the fixtures. Does not install anything.
 
         :param list_or_str filename: file or list of files that holds the
                                      fixture data
         :param str models_package: package holding the models definition
-
-        Note that this does not effectively instantiate anything. It just does
-        some pre-instantiation work, like prepending the root model package
-        and doing some basic sanity check.
 
         .. deprecated:: 0.3.0
             ``db_session`` argument was removed and put in the object's
@@ -80,17 +81,10 @@ class FixturesManager(object):
             list or string.
 
         """
-        self.filenames = filenames
-        self.models_package = models_package
+        self.filenames.append(filenames)
 
-        # Load the data
-        fixtures, self.depgraph = self._load_fixtures(self.filenames)
-        self.fixture_collection = self.DictFixtureCollection(
-            ROOT_COLLECTION,
-            fixture_manager=self,
-            fixtures=fixtures)
-
-        # Initiate the cache
+        self.depgraph = self._load_fixtures(filenames,
+                                            models_package=models_package)
         self.clean_cache()
 
     def _get_namespace_from_filename(self, filename):
@@ -105,10 +99,11 @@ class FixturesManager(object):
 
         return segments[0]
 
-    def _load_fixtures(self, filenames):
+    def _load_fixtures(self, filenames, models_package=''):
         """Pre-load the fixtures.
 
         :param list or str filenames: files that hold the fixture data
+        :param str models_package:
         """
         if isinstance(filenames, _compat.string_types):
             globbed_filenames = glob(filenames)
@@ -131,16 +126,17 @@ class FixturesManager(object):
                     "objects": load_file(filename, self.use_unicode)
                 }
 
-        fixtures = {}
         for k, v in _compat.iteritems(content):
 
             if "objects" in v:
                 # It's a collection of fictures.
-                fixtures[k] = self._handle_collection(
+                collection = self._handle_collection(
                     namespace=k,
                     definition=v,
                     objects=v["objects"],
+                    models_package=models_package,
                 )
+                self.collection.add(k, collection)
 
             # Named fixtures
             else:
@@ -149,22 +145,34 @@ class FixturesManager(object):
                     v["id_"] = v["id"]
                     del v["id"]
 
-                fixtures[k] = Fixture(key=k, fixture_manager=self, **v)
+                fixture = Fixture(
+                    key=k,
+                    fixture_manager=self,
+                    models_package=models_package,
+                    **v)
+                self.collection.add(k, fixture)
 
+        graph = self._check_cycle(self.collection)
+        return graph
+
+    def _check_cycle(self, collection):
+        """Raise an exception if there's a relationship cycle."""
         d = DepGraph()
-        for fixture in fixtures.values():
+        for _, fixture in collection:
             for dependency, _ in fixture.extract_relationships():
                 d.add_edge(dependency, fixture.key)
 
         # This does nothing except raise an error if there's a cycle
         d.topo_sort()
-        return fixtures, d
+        return d
 
-    def _handle_collection(self, namespace, definition, objects):
+    def _handle_collection(self, namespace, definition, objects,
+                           models_package=''):
         """Handle a collection of fixtures.
 
         :param dict definition: definition of the collection
         :param dict_or_list objects: fixtures in the collection
+        :param str models_package:
 
         """
 
@@ -177,6 +185,7 @@ class FixturesManager(object):
             key=namespace,
             fixture_manager=self,
             model=definition.get('model'),
+            models_package=definition.get('models_package'),
             fields=definition.get('fields'),
             post_creation=definition.get('post_creation'),
             inherit_from=definition.get('inherit_from'),
@@ -208,7 +217,8 @@ class FixturesManager(object):
                     # Automatically inherit from the collection
                     inherit_from=inherit_from,
                     fields=fields,
-                    model=model
+                    model=model,
+                    models_package=models_package,
                     # The rest (default fields, etc.) is
                     # automatically inherited from the collection.
                 )
@@ -356,7 +366,7 @@ class FixturesManager(object):
 
     def keys(self):
         """Return all fixture keys."""
-        return self.fixture_collection.fixtures.keys()
+        return self.collection.fixtures.keys()
 
     def get_fixture(self, fixture_key, attrs=None, builder=None):
         """Return a fixture instance (but do not save it).
@@ -389,7 +399,7 @@ class FixturesManager(object):
             returned = self.cache.get(fixture_key)
 
         if not returned:
-            returned = self.fixture_collection.get_instance(
+            returned = self.collection.get_instance(
                 fixture_key, overrides=attrs, builder=builder)
 
             self.cache[fixture_key] = returned

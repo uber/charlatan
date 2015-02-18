@@ -11,6 +11,15 @@ from charlatan import FixturesManager
 
 class TestFixturesManager(testing.TestCase):
 
+    def test_load_two_files(self):
+        """Verify we can load two files."""
+        fixtures_manager = FixturesManager()
+        fixtures_manager.load(
+            './charlatan/tests/data/relationships_without_models.yaml')
+        fixtures_manager.load(
+            './charlatan/tests/data/simple.yaml')
+        assert 'simple_dict' in fixtures_manager.keys()
+
     def test_install_fixture(self):
         """install_fixture should return the fixture."""
         fixtures_manager = FixturesManager()

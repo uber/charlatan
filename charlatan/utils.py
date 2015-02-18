@@ -120,10 +120,7 @@ def datetime_to_epoch_timestamp(a_datetime):
     1384997591.160611
     """
 
-    return (
-        calendar.timegm(a_datetime.utctimetuple())
-        + a_datetime.microsecond / 1000000.0
-    )
+    return (calendar.timegm(a_datetime.utctimetuple()) + a_datetime.microsecond / 1000000.0)  # noqa
 
 
 # TODO: does not copy the function signature

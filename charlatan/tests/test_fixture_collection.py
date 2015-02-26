@@ -1,8 +1,6 @@
-import mock
 import pytest
 
 from charlatan import FixturesManager
-from charlatan.tests.fixtures.simple_models import User
 
 
 def get_collection(collection):

@@ -165,3 +165,14 @@ def is_sqlalchemy_model(instance):
 
     else:
         return True
+
+
+def richgetter(obj, path):
+    """Return a attrgetter + item getter."""
+    for name in path.split("."):
+        if hasattr(obj, name):
+            obj = getattr(obj, name)
+            continue
+        obj = obj[name]
+
+    return obj

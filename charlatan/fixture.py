@@ -46,7 +46,7 @@ class Inheritable(object):
 
     def get_parent_values(self):
         """Return parent values."""
-        parent, _ = self.fixture_manager.collection.get(self.inherit_from)
+        parent = self.fixture_manager.collection.get(self.inherit_from)
         # Recursive to make sure everything is updated.
         parent.inherit_from_parent()
 

@@ -23,20 +23,6 @@ anonymous_toasters:
     -
       color: black
 
-overridden_toasters:
-  inherit_from: toasters
-
-  # Here we override the model for one of the members of this collection
-  objects:
-
-    toaster:
-      color: red
-
-    user:
-      model: charlatan.tests.fixtures.simple_models:User
-      toasters: !rel toasters
-
-
 # Those collections can be used as is in relationships.
 
 collection:
@@ -51,16 +37,11 @@ users:
   objects:
 
     1:
-      # Since the collection is defined as a dict, we need to coerce it as a
-      # list.
-      toasters: !rel toasters.as_list
-
-    2:
       toasters: !rel anonymous_toasters
 
-    3:
+    2:
       # You can also link to specific relationships using the namespace
       toasters: [!rel toasters.green]
 
-    4:
+    3:
       toasters: [!rel anonymous_toasters.0]

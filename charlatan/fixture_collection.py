@@ -1,8 +1,5 @@
-from charlatan import _compat
+from charlatan import _compat, utils
 from charlatan.fixture import Inheritable
-
-LIST_FORMAT = "as_list"
-DICT_FORMAT = "as_dict"
 
 
 def _sorted_iteritems(dct):
@@ -53,47 +50,53 @@ class FixtureCollection(Inheritable):
         :param dict overrides:
         :param func builder:
         """
-        if not path or path in (DICT_FORMAT, LIST_FORMAT):
-            return self.get_all_instances(overrides=overrides,
-                                          format=path,
-                                          builder=builder,
-                                          )
+        if not path:
+            return self.get_all_instances(overrides=overrides, builder=builder)
 
-        # First get the fixture
-        fixture, remaining_path = self.get(path)
+        remaining_path = ''
+        if isinstance(path, _compat.string_types):
+            path = path.split(".")
+            first_level = path[0]
+            remaining_path = ".".join(path[1:])
+
+        # First try to get the fixture from the cache
+        instance = self.fixture_manager.cache.get(first_level)
+        if (not overrides
+                and instance
+                and not isinstance(instance, FixtureCollection)):
+            if not remaining_path:
+                return instance
+            return utils.richgetter(instance, remaining_path)
+
+        # Or just get it
+        fixture = self.get(first_level)
         # Then we ask it to return an instance.
         return fixture.get_instance(path=remaining_path,
                                     overrides=overrides,
                                     builder=builder,
                                     )
 
-    def get_all_instances(self, overrides=None, format=None, builder=None):
-        """Get all instance.
+    def get_all_instances(self, overrides=None, builder=None):
+        """Get all instances.
 
         :param dict overrides:
-        :param str format:
         :param func builder:
+
+        .. deprecated:: 0.4.0
+            Removed format argument.
         """
-        if not format:
-            format = self.default_format
-
-        if format == LIST_FORMAT:
-            returned = []
-        elif format == DICT_FORMAT:
-            returned = {}
-        else:
-            raise ValueError("Unknown format: %r" % format)
-
+        returned = []
         for name, fixture in self:
             instance = fixture.get_instance(overrides=overrides,
                                             builder=builder)
+            returned.append((name, instance))
 
-            if format == LIST_FORMAT:
-                returned.append(instance)
-            else:
-                returned[name] = instance
-
-        return returned
+        if self.container is dict:
+            return dict(returned)
+        elif self.container is list:
+            return list(map(lambda f: f[1], returned))
+        else:
+            raise ValueError('Unknown container')
 
     def extract_relationships(self):
         # Just proxy to fixtures in this collection.
@@ -103,7 +106,6 @@ class FixtureCollection(Inheritable):
 
 
 class DictFixtureCollection(FixtureCollection):
-    default_format = DICT_FORMAT
     iterator = staticmethod(_sorted_iteritems)
     container = dict
 
@@ -115,19 +117,13 @@ class DictFixtureCollection(FixtureCollection):
 
         :param str path:
         """
-        # Note: this can't be used with 'as_list' etc.
+        if path not in self.fixtures:
+            raise KeyError("No such fixtures: '%s'" % path)
 
-        if isinstance(path, _compat.string_types):
-            path = path.split(".")
-
-        if not path[0] in self.fixtures:
-            raise KeyError("No such fixtures: '%s'" % path[0])
-
-        return self.fixtures[path[0]], ".".join(path[1:])
+        return self.fixtures[path]
 
 
 class ListFixtureCollection(FixtureCollection):
-    default_format = LIST_FORMAT
     iterator = enumerate
     container = list
 
@@ -139,5 +135,4 @@ class ListFixtureCollection(FixtureCollection):
 
         :param str path:
         """
-        path = path.split(".")
-        return self.fixtures[int(path[0])], ".".join(path[1:])
+        return self.fixtures[int(path)]

@@ -9,24 +9,33 @@ from charlatan import depgraph
 from charlatan import FixturesManager
 
 
+def test_overrides_and_in_cache():
+    manager = FixturesManager()
+    manager.load('./docs/examples/simple_fixtures.yaml')
+    # Add it to the cache
+    manager.install_fixture("toaster")
+    toaster = manager.install_fixture("toaster", overrides={"color": "blue"})
+    assert toaster.color == 'blue'
+
+
 class TestFixturesManager(testing.TestCase):
 
     def test_load_two_files(self):
         """Verify we can load two files."""
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load(
+        manager = FixturesManager()
+        manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
-        fixtures_manager.load(
+        manager.load(
             './charlatan/tests/data/simple.yaml')
-        assert 'simple_dict' in fixtures_manager.keys()
+        assert 'simple_dict' in manager.keys()
 
     def test_install_fixture(self):
         """install_fixture should return the fixture."""
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load(
+        manager = FixturesManager()
+        manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
 
-        fixture = fixtures_manager.install_fixture('simple_dict')
+        fixture = manager.install_fixture('simple_dict')
 
         self.assertEqual(fixture, {
             'field1': 'lolin',
@@ -34,51 +43,50 @@ class TestFixturesManager(testing.TestCase):
         })
 
     def test_get_all_fixtures(self):
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
-        assert len(fixtures_manager.get_all_fixtures()) == 1
+        manager = FixturesManager()
+        manager.load('./charlatan/tests/data/simple.yaml')
+        assert len(manager.get_all_fixtures()) == 1
 
     def test_uninstall_all_fixtures(self):
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
-        assert len(fixtures_manager.install_all_fixtures()) == 1
-        fixtures_manager.uninstall_all_fixtures()
-        assert len(fixtures_manager.installed_keys) == 0
+        manager = FixturesManager()
+        manager.load('./charlatan/tests/data/simple.yaml')
+        assert len(manager.install_all_fixtures()) == 1
+        manager.uninstall_all_fixtures()
+        assert len(manager.installed_keys) == 0
 
     @freeze_time("2014-12-31 11:00:00")
     def test_install_fixture_with_now(self):
         """Verify that we can install a fixture with !now tag."""
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
-        fixture = fixtures_manager.install_fixture('fixture')
+        manager = FixturesManager()
+        manager.load('./charlatan/tests/data/simple.yaml')
+        fixture = manager.install_fixture('fixture')
         self.assertEqual(fixture,
                          {'now': datetime(2014, 12, 30, 11, 0)})
 
     def test_install_fixture_override(self):
         """Verify that we can override a fixture field."""
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load('./charlatan/tests/data/simple.yaml')
-        fixture = fixtures_manager.install_fixture('fixture',
-                                                   overrides={'now': None})
+        manager = FixturesManager()
+        manager.load('./charlatan/tests/data/simple.yaml')
+        fixture = manager.install_fixture('fixture', overrides={'now': None})
         self.assertEqual(fixture, {'now': None})
 
     def test_uninstall_fixture(self):
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load(
+        manager = FixturesManager()
+        manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
 
-        fixtures_manager.install_fixture('simple_dict')
-        fixtures_manager.uninstall_fixture('simple_dict')
+        manager.install_fixture('simple_dict')
+        manager.uninstall_fixture('simple_dict')
 
         # verify we are forgiving with list inputs
-        fixtures_manager.install_fixtures('simple_dict')
-        fixtures_manager.uninstall_fixtures('simple_dict')
+        manager.install_fixtures('simple_dict')
+        manager.uninstall_fixtures('simple_dict')
 
     def test_uninstall_non_installed_fixture(self):
-        fixtures_manager = FixturesManager()
-        fixtures_manager.load(
+        manager = FixturesManager()
+        manager.load(
             './charlatan/tests/data/relationships_without_models.yaml')
-        fixtures_manager.uninstall_fixture('simple_dict')
+        manager.uninstall_fixture('simple_dict')
 
     def test_dependency_parsing(self):
         fm = FixturesManager()

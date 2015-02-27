@@ -20,7 +20,7 @@ class TestSqlalchemyFixtures(testing.TestCase):
     def test_double_install(self):
         """Verify that there's no double install."""
         self.manager.install_fixture("model")
-        self.manager.install_fixture("relationship_alone")
+        self.manager.install_fixture("color")
 
         self.assertEqual(self.session.query(Toaster).count(), 1)
         self.assertEqual(self.session.query(Color).count(), 1)
@@ -46,3 +46,8 @@ class TestSqlalchemyFixtures(testing.TestCase):
 
         self.assertTrue(isinstance(model.color, Color))
         self.assertTrue(isinstance(model_1.color, Color))
+
+    def test_explicit_foreign_key(self):
+        """Verify that we can get a db-computed foreign key explicitely."""
+        model = self.manager.install_fixture('model_with_explicit_fk')
+        assert model.color_id is not None

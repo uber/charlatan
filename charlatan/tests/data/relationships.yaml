@@ -1,6 +1,6 @@
 model:
   fields:
-    color: !rel relationship_alone
+    color: !rel color
     name: "toaster1"
   model: charlatan.tests.fixtures.models:Toaster
 
@@ -9,7 +9,13 @@ model_1:
   fields:
     name: "toaster2"
 
-relationship_alone:
+model_with_explicit_fk:
+  model: charlatan.tests.fixtures.models:Toaster
+  fields:
+    name: 'toaster'
+    color_id: !rel color.id
+
+color:
   fields:
     name: "red"
   model: charlatan.tests.fixtures.models:Color

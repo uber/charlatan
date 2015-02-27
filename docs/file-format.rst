@@ -205,7 +205,6 @@ You can also install all of them by installing the name of the collection.
 
 .. literalinclude:: examples/collection.yaml
     :language: yaml
-    :lines: 1-26
 
 Here's how you would use this fixture file to access specific fixtures:
 
@@ -230,23 +229,16 @@ You can also access the whole collection:
 Like any fixture, this collection can be linked to in a relationship using the
 ``!rel`` keyword in an intuitive way.
 
-.. literalinclude:: examples/collection.yaml
-    :language: yaml
-    :lines: 28-
-
 .. doctest::
 
     >>> pprint.pprint(manager.get_fixture("collection"))
     {'things': {'blue': <Toaster 'blue'>, 'green': <Toaster 'green'>}}
     >>> user1 = manager.get_fixture("users.1")
     >>> user1.toasters
-    [<Toaster 'blue'>, <Toaster 'green'>]
-    >>> user2 = manager.get_fixture("users.2")
-    >>> user2.toasters
     [<Toaster 'yellow'>, <Toaster 'black'>]
-    >>> manager.get_fixture("users.3").toasters
+    >>> manager.get_fixture("users.2").toasters
     [<Toaster 'green'>]
-    >>> manager.get_fixture("users.4").toasters
+    >>> manager.get_fixture("users.3").toasters
     [<Toaster 'yellow'>]
 
 .. versionchanged:: 0.3.4

@@ -5,15 +5,15 @@ toaster:   # The fixture's name
     content: !rel toasts  # You can reference other fixtures
   model: charlatan.tests.fixtures.simple_models:Toaster
 
-# Charlatan also supports inheritance
 toaster_green:
+  # Charlatan also supports inheritance
   inherit_from: toaster
   fields:
     color: green
 
 toasts:
+  # No model is defined, so it defaults to what `fields` actually is, i.e.
+  # in our case, a list.
   fields:
     - "Toast 1"
     - "Toast 2"
-  # No model is defined, so it defaults to what `fields` actually is, i.e.
-  # in our case, a list.

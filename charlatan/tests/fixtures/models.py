@@ -14,7 +14,7 @@ class Toaster(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    color_name = Column(String, ForeignKey('colors.name'))
+    color_id = Column(String, ForeignKey('colors.name'))
 
     color = relationship("Color", backref='toasters')
 
@@ -23,4 +23,5 @@ class Color(Base):
 
     __tablename__ = "colors"
 
-    name = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String)

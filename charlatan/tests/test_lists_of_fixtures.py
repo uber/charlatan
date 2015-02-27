@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import operator as op
 
 from charlatan import testing
 from charlatan import FixturesManager
@@ -18,7 +19,6 @@ class TestListOfFixtures(testing.TestCase):
 
     def test_one_to_many_relationship(self):
         """Verify that relations to lists of fixtures work"""
-
         fixture = self.fm.install_fixture('related_fixture')
         self.assertEqual(
             fixture['elements'],
@@ -27,9 +27,6 @@ class TestListOfFixtures(testing.TestCase):
 
     def test_override(self):
         """Verify that we can override attributes on a list of fixtures."""
-        fixtures = self.fm.install_fixture(
-            'fixture_list',
-            overrides={"field1": 12})
-
-        for fixture in fixtures:
-            self.assertEqual(fixture["field1"], 12)
+        fixtures = self.fm.install_fixture('fixture_list',
+                                           overrides={"field1": 12})
+        assert list(map(op.itemgetter('field1'), fixtures)) == [12, 12]

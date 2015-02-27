@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.4.1 (unreleased)
+0.4.1 (2015-02-26)
 ------------------
 
 - Fixed bug where ``!rel a_database_model.id``, where ``id`` is a primary key

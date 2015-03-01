@@ -126,31 +126,32 @@ class FixturesManager(object):
                     "objects": load_file(filename, self.use_unicode)
                 }
 
-        for k, v in _compat.iteritems(content):
+        if content:
+            for k, v in _compat.iteritems(content):
 
-            if "objects" in v:
-                # It's a collection of fictures.
-                collection = self._handle_collection(
-                    namespace=k,
-                    definition=v,
-                    objects=v["objects"],
-                    models_package=models_package,
-                )
-                self.collection.add(k, collection)
+                if "objects" in v:
+                    # It's a collection of fictures.
+                    collection = self._handle_collection(
+                        namespace=k,
+                        definition=v,
+                        objects=v["objects"],
+                        models_package=models_package,
+                    )
+                    self.collection.add(k, collection)
 
-            # Named fixtures
-            else:
-                if "id" in v:
-                    # Renaming id because it's a Python builtin function
-                    v["id_"] = v["id"]
-                    del v["id"]
+                # Named fixtures
+                else:
+                    if "id" in v:
+                        # Renaming id because it's a Python builtin function
+                        v["id_"] = v["id"]
+                        del v["id"]
 
-                fixture = Fixture(
-                    key=k,
-                    fixture_manager=self,
-                    models_package=models_package,
-                    **v)
-                self.collection.add(k, fixture)
+                    fixture = Fixture(
+                        key=k,
+                        fixture_manager=self,
+                        models_package=models_package,
+                        **v)
+                    self.collection.add(k, fixture)
 
         graph = self._check_cycle(self.collection)
         return graph

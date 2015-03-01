@@ -33,7 +33,7 @@ class TestFixturesManager(testing.TestCase):
         """Verify we can load a emtpy file."""
         manager = FixturesManager()
         manager.load('./charlatan/tests/data/empty.yaml')
-        self.assertEqual(manager.keys(), [])
+        self.assertEqual(list(manager.keys()), [])
 
     def test_install_fixture(self):
         """install_fixture should return the fixture."""

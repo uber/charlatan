@@ -29,6 +29,12 @@ class TestFixturesManager(testing.TestCase):
             './charlatan/tests/data/simple.yaml')
         assert 'simple_dict' in manager.keys()
 
+    def test_load_empty_file(self):
+        """Verify we can load a emtpy file."""
+        manager = FixturesManager()
+        manager.load('./charlatan/tests/data/empty.yaml')
+        self.assertEqual(list(manager.keys()), [])
+
     def test_install_fixture(self):
         """install_fixture should return the fixture."""
         manager = FixturesManager()

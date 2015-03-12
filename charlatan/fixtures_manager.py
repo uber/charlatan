@@ -255,7 +255,7 @@ class FixturesManager(object):
         if instance:
             self.cache.pop(fixture_key, None)
             self.installed_keys.remove(fixture_key)
-            self.delete_builder(self, instance)
+            builder(self, instance)
 
         self.get_hook("after_delete")(fixture_key)
 

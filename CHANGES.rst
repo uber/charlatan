@@ -1,6 +1,12 @@
 Changelog for Charlatan
 =======================
 
+(unreleased)
+------------
+
+- Fixed bug where uninstalling a sqlalchemy fixture would not commit the delete
+  to the session.
+
 0.4.1 (2015-02-26)
 ------------------
 

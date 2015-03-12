@@ -51,3 +51,14 @@ class TestSqlalchemyFixtures(testing.TestCase):
         """Verify that we can get a db-computed foreign key explicitely."""
         model = self.manager.install_fixture('model_with_explicit_fk')
         assert model.color_id is not None
+
+    def test_uninstall_deletes_fixtures(self):
+        """Verify uninstalling a fixture drops it from the database"""
+        self.manager.install_fixture("color")
+
+        # sanity check
+        self.assertEqual(self.session.query(Color).count(), 1)
+
+        self.manager.uninstall_fixture("color")
+
+        self.assertEqual(self.session.query(Color).count(), 0)

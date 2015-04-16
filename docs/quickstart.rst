@@ -66,7 +66,7 @@ Using charlatan in test cases
 -----------------------------
 
 `Charlatan` works best when used with :py:class:`unittest.TestCase`. Your test
-class needs to inherits from :py:class:`charlatan.FixturesManagerMixin`.
+class needs to inherit from :py:class:`charlatan.FixturesManagerMixin`.
 
 `Charlatan` uses an internal cache to store fixtures instance (in particular to
 create relationships). If you are resetting your database after each tests

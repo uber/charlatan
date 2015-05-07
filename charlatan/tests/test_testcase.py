@@ -40,7 +40,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.uninstall_all_fixtures()
 
         fixtures = self.install_all_fixtures()
-        self.assertEqual(len(fixtures), 4)
+        self.assertEqual(len(fixtures), 6)
 
     def test_uninstall_fixture(self):
         self.uninstall_fixture('simple_dict')

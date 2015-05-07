@@ -21,3 +21,13 @@ nested_list_of_relationships:
         - !rel dict_with_nest
       -
         - !rel simple_dict
+
+parent_dict:
+  objects:
+    object1:
+      field1: 100
+
+child_dict:
+  objects:
+    object1:
+      field1: !rel parent_dict.object1.field1

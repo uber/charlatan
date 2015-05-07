@@ -1,10 +1,9 @@
 import copy
 import importlib
-import operator
 
 from charlatan import _compat
 from charlatan.file_format import RelationshipToken
-from charlatan.utils import safe_iteritems
+from charlatan.utils import safe_iteritems, richgetter
 
 CAN_BE_INHERITED = frozenset(
     ["model_name", "models_package", "fields", "post_creation", "depend_on"])
@@ -179,7 +178,7 @@ class Fixture(Inheritable):
             setattr(instance, attr, value)
 
         if path:
-            return operator.attrgetter(path)(instance)
+            return richgetter(instance, path)
         else:
             return instance
 

@@ -31,3 +31,9 @@ class TestRelationshipsWithoutModels(testing.TestCase,
                 [self.simple_dict],
             ]
         })
+
+    def test_relationships_dict_attribute(self):
+        parent = self.install_fixture('parent_dict.object1')
+        child = self.install_fixture('child_dict.object1')
+
+        self.assertEquals(child['field1'], parent['field1'])

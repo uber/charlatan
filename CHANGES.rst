@@ -6,6 +6,7 @@ Changelog for Charlatan
 
 - Fixed bug where uninstalling a sqlalchemy fixture would not commit the delete
   to the session.
+- Fixed bug where dict fixtures could not reference fields from other collections of dicts.
 
 0.4.1 (2015-02-26)
 ------------------

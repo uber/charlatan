@@ -39,7 +39,7 @@ setup(
     keywords=["tests", "fixtures", "database"],
     description="Efficiently manage and install data fixtures",
     long_description=read_long_description(),
-    install_requires=["PyYAML>=3.10"],
+    install_requires=["PyYAML>=3.10", "pytz"],
     zip_safe=False,
     classifiers=[
         "Development Status :: 4 - Beta",

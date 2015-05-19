@@ -1,3 +1,5 @@
+.PHONY: bootstrap develop
+
 all: bootstrap develop test
 
 bootstrap:

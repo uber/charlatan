@@ -1,9 +1,12 @@
 Changelog for Charlatan
 =======================
 
-(unreleased)
-------------
+0.4.2 (unreleased)
+------------------
 
+- **Breaking change**: the ``!now`` YAML command now returns timezone-aware
+  datetime by default. You can change that behavior by changing
+  `charlatan.file_format.TIMEZONE_AWARE`.
 - Fixed bug where uninstalling a sqlalchemy fixture would not commit the delete
   to the session.
 - Fixed bug where dict fixtures could not reference fields from other collections of dicts.

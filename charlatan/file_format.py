@@ -1,10 +1,13 @@
 from __future__ import absolute_import
 import datetime
 
+import pytz
 import yaml
 from yaml.constructor import Constructor
 
 from charlatan.utils import get_timedelta, datetime_to_epoch_timestamp
+
+TIMEZONE_AWARE = True
 
 
 class RelationshipToken(str):
@@ -33,7 +36,10 @@ def configure_yaml():
         delta = get_timedelta(loader.construct_scalar(node))
 
         def get_now():
-            return datetime.datetime.utcnow() + delta
+            returned = datetime.datetime.utcnow()
+            if TIMEZONE_AWARE:
+                returned = returned.replace(tzinfo=pytz.utc)
+            return returned + delta
 
         return get_now
 

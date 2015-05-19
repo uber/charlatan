@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import datetime
 
+import pytz
 from freezegun import freeze_time
 
 from charlatan import file_format, testing
@@ -11,7 +12,8 @@ from charlatan.utils import datetime_to_epoch_timestamp
 class TestFileFormat(testing.TestCase):
 
     def setUp(self):
-        self.current_time = datetime.datetime.utcnow()
+        self.current_time = datetime.datetime.utcnow().replace(
+            tzinfo=pytz.utc)
         self.yaml = file_format.load_file(
             './charlatan/tests/data/special_tags.yaml'
         )

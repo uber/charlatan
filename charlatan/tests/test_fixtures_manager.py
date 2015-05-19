@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from datetime import datetime
 
 import pytest
+import pytz
 from freezegun import freeze_time
 
 from charlatan import testing
@@ -61,7 +62,8 @@ class TestFixturesManager(testing.TestCase):
         manager.load('./charlatan/tests/data/simple.yaml')
         fixture = manager.install_fixture('fixture')
         self.assertEqual(fixture,
-                         {'now': datetime(2014, 12, 30, 11, 0)})
+                         {'now': datetime(2014, 12, 30, 11, 0,
+                                          tzinfo=pytz.utc)})
 
     def test_install_fixture_override(self):
         """Verify that we can override a fixture field."""

@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.4.2 (unreleased)
+0.4.2 (2015-05-19)
 ------------------
 
 - **Breaking change**: the ``!now`` YAML command now returns timezone-aware

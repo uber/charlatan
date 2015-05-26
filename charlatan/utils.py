@@ -4,6 +4,7 @@ import functools
 import itertools
 import operator
 import re
+import collections
 
 from charlatan import _compat
 
@@ -170,9 +171,11 @@ def is_sqlalchemy_model(instance):
 def richgetter(obj, path):
     """Return a attrgetter + item getter."""
     for name in path.split("."):
-        if hasattr(obj, name):
+        if isinstance(obj, collections.Mapping):
+            obj = obj[name]
+        elif isinstance(obj, collections.Sequence):
+            obj = obj[int(name)]  # force int type for list indexes
+        else:
             obj = getattr(obj, name)
-            continue
-        obj = obj[name]
 
     return obj

@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.4.3 (unreleased)
+0.4.3 (2015-05-26)
 ------------------
 
 - Fixed anonymous list objects name resolution (thanks to @jvrsantacruz)

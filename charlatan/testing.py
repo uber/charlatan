@@ -5,8 +5,7 @@ import unittest
 class TestCase(unittest.TestCase):
 
     def __call__(self, result=None):
-        """Run a test without having to call super in setUp and tearDown"""
-
+        """Run a test without having to call super in setUp and tearDown."""
         self._pre_setup()
 
         unittest.TestCase.__call__(self, result)

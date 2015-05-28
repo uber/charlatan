@@ -90,7 +90,6 @@ def extended_timedelta(**kwargs):
     >>> extended_timedelta(hours=1)
     datetime.timedelta(0, 3600)
     """
-
     number_of_days = {
         "days": 1,
         "months": 30,
@@ -111,7 +110,7 @@ def extended_timedelta(**kwargs):
 
 
 def datetime_to_epoch_timestamp(a_datetime):
-    """Return the epoch timestamp for the given datetime
+    """Return the epoch timestamp for the given datetime.
 
     :param datetime a_datetime: The datetime to translate
     :rtype: float
@@ -120,7 +119,6 @@ def datetime_to_epoch_timestamp(a_datetime):
     >>> datetime_to_epoch_timestamp(a_datetime)
     1384997591.160611
     """
-
     return (calendar.timegm(a_datetime.utctimetuple()) + a_datetime.microsecond / 1000000.0)  # noqa
 
 
@@ -130,7 +128,6 @@ def datetime_to_epoch_timestamp(a_datetime):
 
 def copy_docstring_from(klass):
     """Copy docstring from another class, using the same function name."""
-
     def wrapper(func):
         func.__doc__ = getattr(klass, func.__name__).__doc__
 

@@ -21,7 +21,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.uninstall_all_fixtures()
 
     def test_install_fixture(self):
-        """install_fixture should return the installed fixture."""
+        """Verify install_fixture should return the installed fixture."""
         self.uninstall_all_fixtures()
 
         simple_dict = self.install_fixture('simple_dict')
@@ -29,7 +29,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.assertEqual(simple_dict['field2'], 2)
 
     def test_install_fixtures(self):
-        """install_fixtures should return the list of installed fixtures."""
+        """Verify install_fixtures should return installed fixtures."""
         self.uninstall_all_fixtures()
 
         fixtures = self.install_fixtures(('simple_dict', 'dict_with_nest'))
@@ -52,7 +52,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.uninstall_fixtures(('simple_dict', 'dict_with_nest'))
 
     def test_uninstall_all_fixtures(self):
-        """uninstall_all_fixtures should uninstall all the installed fixtures.
+        """Verify should uninstall all the installed fixtures.
 
         The _pre_setup method install the 2 fixtures defined in self.fixtures:
         'simple_dict' and 'dict_with_nest'.
@@ -60,7 +60,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.uninstall_all_fixtures()
 
     def test_get_fixture(self):
-        """get_fixture should return the fixture."""
+        """Verify get_fixture should return the fixture."""
         simple_dict = self.get_fixture('simple_dict')
         self.assertEqual(simple_dict['field1'], 'lolin')
         self.assertEqual(simple_dict['field2'], 2)
@@ -70,7 +70,7 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         self.assertEqual(dict_with_nest['field2'], 4)
 
     def test_get_fixtures(self):
-        """get_fixtures should return the list of fixtures."""
+        """Verify get_fixtures should return the list of fixtures."""
         fixtures = self.get_fixtures(('simple_dict', 'dict_with_nest'))
         self.assertEqual(len(fixtures), 2)
 

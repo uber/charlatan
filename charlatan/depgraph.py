@@ -12,7 +12,8 @@ class HasACycle(Exception):
 
 
 class DepGraph(object):
-    """A simple directed graph, suitable for doing dependency management"""
+
+    """A simple directed graph, suitable for doing dependency management."""
 
     def __init__(self):
         self.nodes = set([])

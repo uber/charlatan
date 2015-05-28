@@ -127,7 +127,6 @@ class TestFixturesManager(testing.TestCase):
 
     def test_invalid_hook(self):
         """Verify that can't set an invalid hook."""
-
         manager = FixturesManager()
         with pytest.raises(KeyError):
             manager.set_hook("invalid", lambda p: p)

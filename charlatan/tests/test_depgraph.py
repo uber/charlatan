@@ -7,7 +7,7 @@ from charlatan.depgraph import DepGraph, HasACycle
 class TestDepGraph(testing.TestCase):
 
     def test_topo_sort(self):
-        """Test the topo_sort function of DepGraph"""
+        """Test the topo_sort function of DepGraph."""
         d = DepGraph()
         #
         #      a    b
@@ -27,7 +27,7 @@ class TestDepGraph(testing.TestCase):
         assert d.acyclic
 
     def test_topo_sort_knows_what_cycles_are(self):
-        """Test that topo_sort fails on cyclic graphs"""
+        """Test that topo_sort fails on cyclic graphs."""
         d = DepGraph()
         d.add_edge('a', 'b')
         d.add_edge('b', 'c')
@@ -36,7 +36,7 @@ class TestDepGraph(testing.TestCase):
         assert not d.acyclic
 
     def test_ancestors_of(self):
-        """Test the ancestors_of function in DepGraph"""
+        """Test the ancestors_of function in DepGraph."""
         d = DepGraph()
         #
         #   a    b
@@ -55,7 +55,7 @@ class TestDepGraph(testing.TestCase):
         self.assertCountEqual(l, ['a', 'b', 'c'])
 
     def test_has_edge_between(self):
-        """Test the has_edge_between function"""
+        """Test the has_edge_between function."""
         d = DepGraph()
         #
         #  a    b

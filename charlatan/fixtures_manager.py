@@ -92,7 +92,6 @@ class FixturesManager(object):
 
         :param str filename: filename to extract namespace from
         """
-
         segments = os.path.basename(filename).split(".")
         if len(segments) > 2:
             raise ValueError("Fixtures filename stem may not contain periods")
@@ -176,7 +175,6 @@ class FixturesManager(object):
         :param str models_package:
 
         """
-
         if isinstance(objects, list):
             klass = self.ListFixtureCollection
         else:
@@ -411,7 +409,7 @@ class FixturesManager(object):
         return returned
 
     def get_fixtures(self, fixture_keys, builder=None):
-        """Get fixtures from iterable
+        """Get fixtures from iterable.
 
         :param iterable fixture_keys:
         :rtype: list of instantiated but unsaved fixtures
@@ -429,7 +427,7 @@ class FixturesManager(object):
         return fixtures
 
     def get_all_fixtures(self, builder=None):
-        """Get all fixtures
+        """Get all fixtures.
 
         :param iterable fixture_keys:
         :rtype: list of instantiated but unsaved fixtures
@@ -448,7 +446,6 @@ class FixturesManager(object):
 
         :param str hook_name: e.g. ``before_delete``.
         """
-
         if hook_name in self.hooks:
             return self.hooks[hook_name]
 
@@ -460,7 +457,6 @@ class FixturesManager(object):
         :param str hookname:
         :param function func:
         """
-
         if hookname not in ALLOWED_HOOKS:
             raise KeyError("'%s' is not an allowed hook." % hookname)
 

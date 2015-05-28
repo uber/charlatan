@@ -279,10 +279,11 @@ target fixture with its file namespace.
 .. versionadded:: 0.3.7
     It is now possible to load multiple fixtures files with ``FixturesManager``
 
-Relative timestamps
--------------------
+Datetime and timestamps
+-----------------------
 
-Use ``!now``:
+Use ``!now``, which returns timezone-aware datetime. You can use modifiers, for
+instance:
 
 * ``!now +1y`` returns the current datetime plus one year
 * ``!now +5m`` returns the current datetime plus five months
@@ -290,12 +291,19 @@ Use ``!now``:
 * ``!now +15M`` (note the case) returns the current datetime plus 15 minutes
 * ``!now -30s`` returns the current datetime minus 30 seconds
 
+For naive datetime (see the definition in Python's `datetime
+<https://docs.python.org/2/library/datetime.html>`_ module documentation), use
+``!now_naive``. It also supports deltas.
+
 For Unix timestamps (seconds since the epoch) you can use ``!epoch_now``:
 
 * ``!epoch_now +1d`` returns the current datetime plus one year in seconds
   since the epoch
 
 All the same time deltas work.
+
+.. versionadded:: 0.4.4
+    ``!now_naive`` was added.
 
 .. versionadded:: 0.2.9
     It is now possible to use times in seconds since the epoch

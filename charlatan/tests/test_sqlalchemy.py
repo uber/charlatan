@@ -53,7 +53,7 @@ class TestSqlalchemyFixtures(testing.TestCase):
         assert model.color_id is not None
 
     def test_uninstall_deletes_fixtures(self):
-        """Verify uninstalling a fixture drops it from the database"""
+        """Verify uninstalling a fixture drops it from the database."""
         self.manager.install_fixture("color")
 
         # sanity check

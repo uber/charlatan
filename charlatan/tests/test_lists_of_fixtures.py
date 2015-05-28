@@ -12,13 +12,12 @@ class TestListOfFixtures(testing.TestCase):
         self.fm.load('./charlatan/tests/data/lists.yaml')
 
     def test_get_list_by_name(self):
-        """Verify that lists of fixtures returns lists"""
-
+        """Verify that lists of fixtures returns lists."""
         fixtures = self.fm.install_fixture('fixture_list')
         self.assertIsInstance(fixtures, list)
 
     def test_one_to_many_relationship(self):
-        """Verify that relations to lists of fixtures work"""
+        """Verify that relations to lists of fixtures work."""
         fixture = self.fm.install_fixture('related_fixture')
         self.assertEqual(
             fixture['elements'],

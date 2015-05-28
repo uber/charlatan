@@ -15,7 +15,6 @@ def get_class(module, klass):
     :param str module: module path
     :param str klass: class name
     """
-
     try:
         object_module = importlib.import_module(module)
         cls = getattr(object_module, klass)
@@ -74,6 +73,7 @@ class Inheritable(object):
 
 
 class Fixture(Inheritable):
+
     """Represent a fixture that can be installed."""
 
     def __init__(self, key, fixture_manager,
@@ -213,8 +213,7 @@ class Fixture(Inheritable):
 
     @staticmethod
     def extract_rel_name(name):
-        """Return the relationship and attr from an argument to !rel"""
-
+        """Return the relationship and attr from an argument to !rel."""
         rel_name = name  # e.g. toaster.color
         attr = None
 
@@ -232,7 +231,6 @@ class Fixture(Inheritable):
         Yields ``(depends_on, attr_name)``.
 
         """
-
         # TODO: make this DRYer since it's mostly copied from
         # _process_relationships
 
@@ -260,7 +258,6 @@ class Fixture(Inheritable):
 
         Returns new field value and modifies lists in place.
         """
-
         # One to one relationship
         if isinstance(field_value, RelationshipToken):
             return self.get_relationship(field_value)
@@ -283,7 +280,6 @@ class Fixture(Inheritable):
 
         Does not return anything, modify fields in place.
         """
-
         # For dictionaries, iterate over key, value and for lists iterate over
         # index, item
         if hasattr(fields, 'items'):

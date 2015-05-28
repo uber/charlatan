@@ -1,5 +1,7 @@
 current_time: !now
 
+current_naive_time: !now_naive
+
 tomorrow: !now +1d
 
 current_epoch_time: !epoch_now

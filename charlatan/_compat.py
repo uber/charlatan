@@ -1,4 +1,4 @@
-"""Utilities for writing code that runs on Python 2 and 3"""
+"""Utilities for writing code that runs on Python 2 and 3."""
 
 # Copyright (c) 2010-2013 Benjamin Peterson
 #

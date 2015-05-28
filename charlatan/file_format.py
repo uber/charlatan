@@ -11,26 +11,29 @@ TIMEZONE_AWARE = True
 
 
 class RelationshipToken(str):
+
     """Class used to mark relationships.
 
     This token is used to mark relationships found in YAML file, so that they
     can be processed later.
     """
+
     pass
 
 
 class UnnamedRelationshipToken(dict):
+
     """Class used to mark unamed relationships.
 
     This token is used to mark relationships found in YAML file, so that they
     can be processed later.
     """
+
     pass
 
 
 def configure_yaml():
     """Add some custom tags to the YAML constructor."""
-
     def now_constructor(loader, node):
         """Return a function that returns the current datetime."""
         delta = get_timedelta(loader.construct_scalar(node))
@@ -40,6 +43,23 @@ def configure_yaml():
             if TIMEZONE_AWARE:
                 returned = returned.replace(tzinfo=pytz.utc)
             return returned + delta
+
+        return get_now
+
+    def now_naive_constructor(loader, node):
+        """Return a function that returns the current datetime.
+
+        The returned datetime is always a naive datetime (i.e. without
+        timezone information).
+
+        See the introduction in `datetime
+        <https://docs.python.org/2/library/datetime.html>`_ for more
+        information.
+        """
+        delta = get_timedelta(loader.construct_scalar(node))
+
+        def get_now():
+            return datetime.datetime.utcnow() + delta
 
         return get_now
 
@@ -59,12 +79,13 @@ def configure_yaml():
         return RelationshipToken(name)
 
     yaml.add_constructor(u'!now', now_constructor)
+    yaml.add_constructor(u'!now_naive', now_naive_constructor)
     yaml.add_constructor(u'!epoch_now', epoch_now_constructor)
     yaml.add_constructor(u'!rel', relationship_constructor)
 
 
 def configure_output(use_unicode=False):
-    """Configure output options of the values loaded by pyyaml
+    """Configure output options of the values loaded by pyyaml.
 
     :param bool use_unicode: Use unicode constructor for loading strings
     """
@@ -80,7 +101,6 @@ def load_file(filename, use_unicode=False):
 
     :param str filename:
     """
-
     with open(filename) as f:
         content = f.read()
 

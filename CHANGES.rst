@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.4.4 (unreleased)
+------------------
+
+- Added ``!now_naive`` YAML file command to return naive datetime.
+
 0.4.3 (2015-05-26)
 ------------------
 

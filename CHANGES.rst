@@ -1,7 +1,7 @@
 Changelog for Charlatan
 =======================
 
-0.4.5 (unreleased)
+0.4.5 (2015-05-29)
 ------------------
 
 - Add ``deep_inherit`` to allow nested inheritance of fields.

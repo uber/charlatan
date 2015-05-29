@@ -106,9 +106,6 @@ class Fixture(Inheritable):
         .. versionadded:: 0.4.0
             ``models_package`` argument added.
 
-        .. versionadded:: 0.4.0
-            ``models_package`` argument added.
-
         """
         super(Fixture, self).__init__()
 

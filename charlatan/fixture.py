@@ -66,12 +66,11 @@ class Inheritable(object):
             elif hasattr(children_value, "update"):
                 # If it's a dict, then we try inheriting from the
                 # parent.
-                if not self.deep_inherit:
-                    new_value = copy.deepcopy(parent_value)
-                    new_value.update(children_value)
+                new_value = copy.deepcopy(parent_value)
+                if self.deep_inherit:
+                    deep_update(new_value, children_value)
                 else:
-                    new_value = copy.deepcopy(children_value)
-                    deep_update(new_value, parent_value)
+                    new_value.update(children_value)
 
             if new_value:
                 yield key, new_value

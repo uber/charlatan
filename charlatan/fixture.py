@@ -3,7 +3,7 @@ import importlib
 
 from charlatan import _compat
 from charlatan.file_format import RelationshipToken
-from charlatan.utils import safe_iteritems, richgetter
+from charlatan.utils import safe_iteritems, richgetter, deep_update
 
 CAN_BE_INHERITED = frozenset(
     ["model_name", "models_package", "fields", "post_creation", "depend_on"])
@@ -31,6 +31,7 @@ class Inheritable(object):
         # performance reason.
         self._has_inherited_from_parent = False
         self.inherit_from = None
+        self.deep_inherit = None
         self.fixture_manager = None
 
     def inherit_from_parent(self):
@@ -66,7 +67,10 @@ class Inheritable(object):
                 # If it's a dict, then we try inheriting from the
                 # parent.
                 new_value = copy.deepcopy(parent_value)
-                new_value.update(children_value)
+                if self.deep_inherit:
+                    deep_update(new_value, children_value)
+                else:
+                    new_value.update(children_value)
 
             if new_value:
                 yield key, new_value
@@ -79,6 +83,7 @@ class Fixture(Inheritable):
     def __init__(self, key, fixture_manager,
                  model=None, fields=None,
                  inherit_from=None,
+                 deep_inherit=False,
                  post_creation=None, id_=None,
                  models_package='',
                  depend_on=frozenset()):
@@ -91,7 +96,11 @@ class Fixture(Inheritable):
         :param fixture_manager: FixturesManager creating the fixture
         :param dict post_creation: assignment to be done after instantiation
         :param str inherit_from: model to inherit from
+        :param bool deep_inherit: if True, fields will support nested updates
         :param list depend_on: A list of relationships to depend on
+
+        .. versionadded:: 0.4.5
+            ``deep_inherit`` argument added.
 
         .. versionadded:: 0.4.0
             ``models_package`` argument added.
@@ -100,7 +109,7 @@ class Fixture(Inheritable):
         super(Fixture, self).__init__()
 
         if id_ and fields:
-            raise TypeError(
+            raise ValueError(
                 "Cannot provide both id and fields to create fixture.")
 
         self.key = key
@@ -108,6 +117,7 @@ class Fixture(Inheritable):
 
         self.database_id = id_
         self.inherit_from = inherit_from
+        self.deep_inherit = deep_inherit
 
         # Stuff that can be inherited.
         self.model_name = model

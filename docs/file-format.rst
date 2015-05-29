@@ -73,6 +73,19 @@ Fixtures can inherit from other fixtures.
     >>> fifth.__class__.__name__
     'Counter'
 
+If your fields are dict, then the first-level key will override everything,
+unless you use ``deep_inherit``:
+
+.. literalinclude:: ../charlatan/tests/example/data/deep_inherit.yaml
+    :language: yaml
+
+Example test:
+
+.. literalinclude:: ../charlatan/tests/example/test_deep_inherit.py
+
+.. versionadded:: 0.4.5
+    You can use ``deep_inherit`` to trigger nested inheritance for dicts.
+
 .. versionadded:: 0.2.4
     Fixtures can now inherits from other fixtures.
 

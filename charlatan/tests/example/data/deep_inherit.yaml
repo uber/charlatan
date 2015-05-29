@@ -1,0 +1,18 @@
+toaster:
+  fields:
+    toasts:
+      toast1:
+        type: brioche
+        price: 10
+        weight: 20
+
+toaster2:
+  inherit_from: toaster
+  deep_inherit: true
+  fields:
+    toasts:
+      toast1:
+        type: bread
+        # Because of deep_inherit, the following fields are implied:
+        # price: 10
+        # weight: 20

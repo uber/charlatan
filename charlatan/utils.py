@@ -176,3 +176,15 @@ def richgetter(obj, path):
             obj = getattr(obj, name)
 
     return obj
+
+
+def deep_update(overrides, source):
+    """Update a nested dictionary or similar mapping."""
+    # http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth  # noqa
+    for key, value in source.iteritems():
+        if isinstance(value, collections.Mapping):
+            returned = deep_update(overrides.get(key, {}), value)
+            overrides[key] = returned
+        else:
+            overrides[key] = source[key]
+    return overrides

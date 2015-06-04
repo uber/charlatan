@@ -178,13 +178,16 @@ def richgetter(obj, path):
     return obj
 
 
-def deep_update(overrides, source):
-    """Update a nested dictionary or similar mapping."""
+def deep_update(source, overrides):
+    """Update a nested dictionary or similar mapping.
+
+    Modify ``source`` in place.
+    """
     # http://stackoverflow.com/questions/3232943/update-value-of-a-nested-dictionary-of-varying-depth  # noqa
-    for key, value in _compat.iteritems(source):
-        if isinstance(value, collections.Mapping):
-            returned = deep_update(overrides.get(key, {}), value)
-            overrides[key] = returned
+    for key, value in _compat.iteritems(overrides):
+        if isinstance(value, collections.Mapping) and value:
+            returned = deep_update(source.get(key, {}), value)
+            source[key] = returned
         else:
-            overrides[key] = source[key]
-    return overrides
+            source[key] = overrides[key]
+    return source

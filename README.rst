@@ -37,7 +37,7 @@ License
 
 charlatan is available under the MIT License.
 
-Copyright Uber 2013, Charles-Axel Dein <charles@uber.com>
+Copyright Uber 2013-2015, Charles-Axel Dein <charles@uber.com>
 
 Authors
 -------

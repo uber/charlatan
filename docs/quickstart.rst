@@ -92,7 +92,7 @@ For each tests, in setUp and tearDown
     class MyTest(FixturesManagerMixin):
 
         def setUp(self):
-            # This will create self.client and self.driver
+            # This will create self.toaster and self.brioche
             self.install_fixtures(("toaster", "brioche"))
 
         def test_toaster(self):

@@ -11,10 +11,8 @@ import unittest
 
 from charlatan import testing
 from charlatan import file_format
-from charlatan.utils import (
-    datetime_to_epoch_timestamp,
-    datetime_to_epoch_in_ms
-)
+from charlatan.utils import datetime_to_epoch_in_ms
+from charlatan.utils import datetime_to_epoch_timestamp
 
 
 def test_non_yaml_file():

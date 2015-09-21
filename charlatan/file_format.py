@@ -5,11 +5,10 @@ import pytz
 import yaml
 from yaml.constructor import Constructor
 
-from charlatan.utils import (
-    get_timedelta,
-    datetime_to_epoch_timestamp,
-    datetime_to_epoch_in_ms
-)
+from charlatan.utils import datetime_to_epoch_in_ms
+from charlatan.utils import datetime_to_epoch_timestamp
+from charlatan.utils import get_timedelta
+
 
 TIMEZONE_AWARE = True
 

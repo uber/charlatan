@@ -5,7 +5,7 @@ import pytz
 import yaml
 from yaml.constructor import Constructor
 
-from charlatan.utils import get_timedelta, datetime_to_epoch_timestamp
+from charlatan.utils import get_timedelta, datetime_to_epoch_timestamp, datetime_to_epoch_in_ms
 
 TIMEZONE_AWARE = True
 
@@ -81,8 +81,7 @@ def configure_yaml():
         delta = get_timedelta(loader.construct_scalar(node))
 
         def get_now():
-            return int(1000 * datetime_to_epoch_timestamp(
-                datetime.datetime.utcnow() + delta))
+            return datetime_to_epoch_in_ms(datetime.datetime.utcnow() + delta)
 
         return get_now
 

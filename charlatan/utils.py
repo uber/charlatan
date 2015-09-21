@@ -122,6 +122,22 @@ def datetime_to_epoch_timestamp(a_datetime):
     return (calendar.timegm(a_datetime.utctimetuple()) + a_datetime.microsecond / 1000000.0)  # noqa
 
 
+def datetime_to_epoch_in_ms(a_datetime):
+    """Return the epoch timestamp for the given datetime.
+
+    :param datetime a_datetime: The datetime to translate
+    :rtype: int
+
+    >>> a_datetime = datetime.datetime(2013, 11, 21, 1, 33, 11, 160611)
+    >>> datetime_to_epoch_timestamp(a_datetime)
+    1384997591.160611
+    >>> datetime_to_epoch_in_ms(a_datetime)
+    1384997591161
+    """
+    seconds_in_float = datetime_to_epoch_timestamp(a_datetime)
+    return int(round(seconds_in_float*1000, 0))
+
+
 # TODO: does not copy the function signature
 # see http://stackoverflow.com/questions/2982974/copy-call-signature-to-decorator  # noqa
 

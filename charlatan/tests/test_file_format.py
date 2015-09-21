@@ -11,7 +11,10 @@ import unittest
 
 from charlatan import testing
 from charlatan import file_format
-from charlatan.utils import datetime_to_epoch_timestamp, datetime_to_epoch_in_ms
+from charlatan.utils import (
+    datetime_to_epoch_timestamp,
+    datetime_to_epoch_in_ms
+)
 
 
 def test_non_yaml_file():
@@ -58,7 +61,8 @@ class TestFileFormat(testing.TestCase):
     def test_epoch_now_in_ms_tag(self):
         """Assert !epoch_now_in_ms_tag gives integer time."""
         current_epoch_time_in_ms = datetime_to_epoch_in_ms(self.current_time)
-        self.assertEqual(current_epoch_time_in_ms, self.yaml['current_epoch_time_in_ms']())
+        self.assertEqual(current_epoch_time_in_ms,
+                         self.yaml['current_epoch_time_in_ms']())
 
     def test_epoch_now_in_ms_tag_with_offset(self):
         """Assert !epoch_now_in_ms_tag gives integer time."""

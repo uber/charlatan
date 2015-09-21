@@ -135,7 +135,7 @@ def datetime_to_epoch_in_ms(a_datetime):
     1384997591161
     """
     seconds_in_float = datetime_to_epoch_timestamp(a_datetime)
-    return int(round(seconds_in_float*1000, 0))
+    return int(round(seconds_in_float * 1000, 0))
 
 
 # TODO: does not copy the function signature

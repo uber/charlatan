@@ -312,8 +312,12 @@ For Unix timestamps (seconds since the epoch) you can use ``!epoch_now``:
 
 * ``!epoch_now +1d`` returns the current datetime plus one year in seconds
   since the epoch
+* ``!epoch_now_in_ms`` returns the current timestamp in milliseconds
 
 All the same time deltas work.
+
+.. versionadded:: 0.4.6
+    ``!epoch_now_in_ms`` was added.
 
 .. versionadded:: 0.4.4
     ``!now_naive`` was added.

@@ -1,6 +1,11 @@
 Changelog for Charlatan
 =======================
 
+0.4.6 (unreleased)
+------------------
+
+- Add support for ``epoch_now_in_ms`` (thanks to @chunyan)
+
 0.4.5 (2015-05-29)
 ------------------
 

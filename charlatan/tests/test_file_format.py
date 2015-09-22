@@ -11,6 +11,7 @@ import unittest
 
 from charlatan import testing
 from charlatan import file_format
+from charlatan.utils import datetime_to_epoch_in_ms
 from charlatan.utils import datetime_to_epoch_timestamp
 
 
@@ -54,6 +55,18 @@ class TestFileFormat(testing.TestCase):
         tomorrow = datetime_to_epoch_timestamp(tomorrow_datetime)
 
         self.assertEqual(tomorrow, self.yaml['tomorrow_epoch_time']())
+
+    def test_epoch_now_in_ms_tag(self):
+        """Assert !epoch_now_in_ms_tag gives integer time."""
+        current_epoch_time_in_ms = datetime_to_epoch_in_ms(self.current_time)
+        self.assertEqual(current_epoch_time_in_ms,
+                         self.yaml['current_epoch_time_in_ms']())
+
+    def test_epoch_now_in_ms_tag_with_offset(self):
+        """Assert !epoch_now_in_ms_tag gives integer time."""
+        tomorrow_datetime = self.current_time + datetime.timedelta(days=1)
+        tomorrow = datetime_to_epoch_in_ms(tomorrow_datetime)
+        self.assertEqual(tomorrow, self.yaml['tomorrow_epoch_time_in_ms']())
 
     def test_rel_tag(self):
         """Assert !rel tag makes the value a relationship token."""

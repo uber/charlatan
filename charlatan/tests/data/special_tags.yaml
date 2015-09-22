@@ -8,4 +8,8 @@ current_epoch_time: !epoch_now
 
 tomorrow_epoch_time: !epoch_now +1d
 
+current_epoch_time_in_ms: !epoch_now_in_ms
+
+tomorrow_epoch_time_in_ms: !epoch_now_in_ms +1d
+
 relationship: !rel tomorrow

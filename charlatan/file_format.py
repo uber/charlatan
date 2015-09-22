@@ -5,7 +5,10 @@ import pytz
 import yaml
 from yaml.constructor import Constructor
 
-from charlatan.utils import get_timedelta, datetime_to_epoch_timestamp
+from charlatan.utils import datetime_to_epoch_in_ms
+from charlatan.utils import datetime_to_epoch_timestamp
+from charlatan.utils import get_timedelta
+
 
 TIMEZONE_AWARE = True
 
@@ -73,6 +76,18 @@ def configure_yaml():
 
         return get_now
 
+    def epoch_now_in_ms_constructor(loader, node):
+        """Return a function that returns the current epoch in milliseconds.
+
+        :rtype: int
+        """
+        delta = get_timedelta(loader.construct_scalar(node))
+
+        def get_now():
+            return datetime_to_epoch_in_ms(datetime.datetime.utcnow() + delta)
+
+        return get_now
+
     def relationship_constructor(loader, node):
         """Create _RelationshipToken for `!rel` tags."""
         name = loader.construct_scalar(node)
@@ -81,6 +96,7 @@ def configure_yaml():
     yaml.add_constructor(u'!now', now_constructor)
     yaml.add_constructor(u'!now_naive', now_naive_constructor)
     yaml.add_constructor(u'!epoch_now', epoch_now_constructor)
+    yaml.add_constructor(u'!epoch_now_in_ms', epoch_now_in_ms_constructor)
     yaml.add_constructor(u'!rel', relationship_constructor)
 
 

@@ -37,9 +37,7 @@ clean-build:
 	rm -fr *.egg-info
 
 release: clean test docs
-	prerelease && release
-	git push --tags
-	git push
+	fullrelease
 
 doc: clean develop
 	$(MAKE) -C docs clean

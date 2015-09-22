@@ -3,7 +3,7 @@
 # Documentation
 Sphinx==1.3b2
 # Releaser tool
-zest.releaser==3.56
+zest.releaser==5.5
 # Package checking
 pyroma==1.6
 # Check packages version

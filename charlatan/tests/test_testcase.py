@@ -1,8 +1,11 @@
 from __future__ import absolute_import
 
+import mock
+
 from charlatan import testcase
 from charlatan import testing
 from charlatan import FixturesManager
+from charlatan.builder import Builder
 
 
 fixtures_manager = FixturesManager()
@@ -81,3 +84,13 @@ class TestTestCase(testing.TestCase, testcase.FixturesManagerMixin):
         dict_with_nest = fixtures[1]
         self.assertEqual(dict_with_nest['field1'], 'asdlkf')
         self.assertEqual(dict_with_nest['field2'], 4)
+
+    @mock.patch('charlatan.FixturesManager.get_fixture')
+    def test_get_fixtures_builder(self, mocked_get_fixture):
+        """Verify builder instance passed to inner get_fixture call."""
+        builder = Builder()
+        self.get_fixtures(('simple_dict', 'dict_with_nest'), builder=builder)
+
+        self.assertEqual(mocked_get_fixture.call_count, 2)
+        mocked_get_fixture.assert_any_call('simple_dict', builder=builder)
+        mocked_get_fixture.assert_any_call('dict_with_nest', builder=builder)

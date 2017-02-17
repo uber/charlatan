@@ -423,7 +423,7 @@ class FixturesManager(object):
         builder = builder or self.get_builder
         fixtures = []
         for f in fixture_keys:
-            fixtures.append(self.get_fixture(f))
+            fixtures.append(self.get_fixture(f, builder=builder))
         return fixtures
 
     def get_all_fixtures(self, builder=None):

@@ -51,8 +51,8 @@ class FixturesManagerMixin(object):
         return self.fixtures_manager.get_fixture(fixture_key, overrides)
 
     @copy_docstring_from(FixturesManager)
-    def get_fixtures(self, fixtures):
-        return self.fixtures_manager.get_fixtures(fixtures)
+    def get_fixtures(self, fixtures, builder=None):
+        return self.fixtures_manager.get_fixtures(fixtures, builder=builder)
 
     @copy_docstring_from(FixturesManager)
     def uninstall_fixture(self, fixture_key):

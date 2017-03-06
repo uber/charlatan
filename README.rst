@@ -9,8 +9,6 @@ Charlatan: Fixtures Made Easy [unmaintained]
 .. image:: https://coveralls.io/repos/uber/charlatan/badge.png
   :target: https://coveralls.io/r/uber/charlatan
 
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
-
 **⚠️ This repository is not actively maintained anymore.**
 
 `Charlatan` is a library that you can use in your tests to create database

@@ -1,5 +1,7 @@
-Charlatan: Fixtures Made Easy
-=============================
+Charlatan: Fixtures Made Easy [unmaintained]
+============================================
+
+**Efficiently manage and install data fixtures**
 
 .. image:: https://travis-ci.org/uber/charlatan.png?branch=master
     :target: https://travis-ci.org/uber/charlatan
@@ -7,11 +9,9 @@ Charlatan: Fixtures Made Easy
 .. image:: https://coveralls.io/repos/uber/charlatan/badge.png
   :target: https://coveralls.io/r/uber/charlatan
 
-.. image:: https://pypip.in/version/charlatan/badge.svg
-    :target: https://pypi.python.org/pypi/charlatan/
-    :alt: Latest Version
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-**Efficiently manage and install data fixtures**
+**⚠️ This repository is not actively maintained anymore.**
 
 `Charlatan` is a library that you can use in your tests to create database
 fixtures. Its aim is to provide a pragmatic interface that focuses on making it
@@ -37,7 +37,7 @@ License
 
 charlatan is available under the MIT License.
 
-Copyright Uber 2013-2015, Charles-Axel Dein <charles@uber.com>
+Copyright Uber 2013-2017, Charles-Axel Dein <charles@uber.com>
 
 Authors
 -------

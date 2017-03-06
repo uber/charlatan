@@ -3,8 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Charlatan's documentation!
-=====================================
+Welcome to Charlatan's documentation! [unmaintained]
+====================================================
+
+.. WARNING::
+    This repository is not actively maintained anymore.
 
 Charlatan is a library that lets you efficiently manage and install
 fixtures.

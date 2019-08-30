@@ -93,11 +93,16 @@ def configure_yaml():
         name = loader.construct_scalar(node)
         return RelationshipToken(name)
 
-    yaml.add_constructor(u'!now', now_constructor, yaml.UnsafeLoader)
-    yaml.add_constructor(u'!now_naive', now_naive_constructor, yaml.UnsafeLoader)
-    yaml.add_constructor(u'!epoch_now', epoch_now_constructor, yaml.UnsafeLoader)
-    yaml.add_constructor(u'!epoch_now_in_ms', epoch_now_in_ms_constructor, yaml.UnsafeLoader)
-    yaml.add_constructor(u'!rel', relationship_constructor, yaml.UnsafeLoader)
+    yaml.add_constructor(
+        u'!now', now_constructor, yaml.UnsafeLoader)
+    yaml.add_constructor(
+        u'!now_naive', now_naive_constructor, yaml.UnsafeLoader)
+    yaml.add_constructor(
+        u'!epoch_now', epoch_now_constructor, yaml.UnsafeLoader)
+    yaml.add_constructor(
+        u'!epoch_now_in_ms', epoch_now_in_ms_constructor, yaml.UnsafeLoader)
+    yaml.add_constructor(
+        u'!rel', relationship_constructor, yaml.UnsafeLoader)
 
 
 def configure_output(use_unicode=False):

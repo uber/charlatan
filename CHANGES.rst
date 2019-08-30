@@ -1,6 +1,12 @@
 Changelog for Charlatan
 =======================
 
+0.4.8 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 0.4.7 (2019-08-30)
 ------------------
 

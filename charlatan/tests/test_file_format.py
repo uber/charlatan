@@ -82,7 +82,7 @@ class TestUnicodeLoad(testing.TestCase):
             u'tag:yaml.org,2002:str'
         ]
         self.yaml = file_format.load_file(
-            './charlatan/tests/data/strings.yaml',
+            './charlatan/tests/data/unicode.yaml',
             use_unicode=True,
         )
 

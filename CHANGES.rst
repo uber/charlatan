@@ -1,10 +1,10 @@
 Changelog for Charlatan
 =======================
 
-0.4.7 (unreleased)
+0.4.7 (2019-08-30)
 ------------------
 
-- Nothing changed yet.
+- Silence PyYAML safety warnings
 
 
 0.4.6 (2015-09-22)
